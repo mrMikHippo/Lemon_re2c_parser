@@ -16,44 +16,17 @@ int main() {
 	// YYSTYPE yylval;
 	bool exit = false;
 	int value;
+	int tokenID;
+	
 	while (true) {
 		string cmd;
 		getline(cin, cmd);
 
 		Lexer lexer(cmd.c_str());
 
-		Lexer::token_t tokenID;
-
-		do {
-			tokenID = lexer.scan();
-
-			switch(tokenID) {
-				case Lexer::TOKEN_NUMBER:
-					cout << "Num: " << lexer.getTokenValue() << endl;
-					value = atoi(lexer.getTokenValue().c_str());		
-					Parse(pParser, TOKEN_INT, value);
-					break;
-				case Lexer::TOKEN_ADD:
-					cout << "+: " << lexer.getTokenValue() << endl;
-					Parse(pParser, TOKEN_PLUS, 0);
-					break;
-				case Lexer::TOKEN_SUB:
-					cout << "-: " << lexer.getTokenValue() << endl;
-					Parse(pParser, TOKEN_MINUS, 0);
-					break;
-				case Lexer::TOKEN_MUL:
-					cout << "*: " << lexer.getTokenValue() << endl;
-					Parse(pParser, TOKEN_MULTIPLY, 0);
-					break;
-				case Lexer::TOKEN_DIV:
-					cout << "/: " << lexer.getTokenValue() << endl;
-					Parse(pParser, TOKEN_DIVIDE, 0);
-					break;
-				case Lexer::TOKEN_END:
-					// cout << "end reached" << endl;
-					break;
-			}
-		} while (tokenID != Lexer::TOKEN_END);
+		while(tokenID = lexer.scan()) {
+			Parse(pParser, tokenID, atoi(lexer.getTokenValue().c_str()));
+		}
 		Parse(pParser, 0, 0);
 	}
 

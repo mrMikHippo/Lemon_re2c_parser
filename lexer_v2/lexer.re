@@ -2,18 +2,10 @@
 
 #include <string>
 #include <cstring>
+#include "../parser/parser.h"
 
 class Lexer {
 public:
-	enum token_t {
-		TOKEN_NUMBER = 1,
-		TOKEN_ADD,
-		TOKEN_SUB,
-		TOKEN_MUL,
-		TOKEN_DIV,
-		TOKEN_END,
-		TOKEN_ANOTHER
-	};
 
 	Lexer(const char* s) :
 		_content(s)
@@ -22,7 +14,8 @@ public:
 		_limit = _content + strlen(_content);
 	}
 
-	token_t scan() {
+	int scan() {
+	std:
 		_start = _cursor;
 
 		#define YYCTYPE char
@@ -31,18 +24,18 @@ public:
 		#define YYMARKER _marker
 		#define YYCTXMARKER _ctxmarker
 
-		// [ ]+ 		{ return TOKEN_ANOTHER; }
 		/*!re2c
 		 	re2c:indent:top		= 1;
 		 	re2c:yyfill:enable	= 0;
 			re2c:eof			= 0;
 
-		 	[0-9]+		{ return TOKEN_NUMBER; }
-		 	"+"			{ return TOKEN_ADD; }
-		 	"-"			{ return TOKEN_SUB; }
-		 	"*"			{ return TOKEN_MUL; }
-		 	"/"			{ return TOKEN_DIV; }
-			$			{ return TOKEN_END; }
+		 	[0-9]+		{ return TOKEN_INT; }
+		 	"+"			{ return TOKEN_PLUS; }
+		 	"-"			{ return TOKEN_MINUS; }
+		 	"*"			{ return TOKEN_MULTIPLY; }
+		 	"/"			{ return TOKEN_DIVIDE; }
+			$			{ return 0; }
+			[ ]+		{ goto std; }
 		 */
 	}
 
