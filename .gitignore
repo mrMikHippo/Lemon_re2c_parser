@@ -1,2 +1,4 @@
 lexer_v2/lexer.h
 lre_test*
+parser/parser.*
+!parser/parser.yy

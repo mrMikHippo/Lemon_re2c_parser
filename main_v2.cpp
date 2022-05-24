@@ -13,8 +13,6 @@ int main() {
 	ParseTrace(stderr, (char*)"[Parser] >> ");
 #endif
 
-
-#if 1
 	// YYSTYPE yylval;
 	bool exit = false;
 	int value;
@@ -43,13 +41,14 @@ int main() {
 					cout << "-: " << lexer.getTokenValue() << endl;
 					Parse(pParser, TOKEN_MINUS, 0);
 					break;
-				// case Lexer::TOKEN_MUL:
-					// cout << "*: " << lexer.getTokenValue() << endl;
-					// Parse(pParser, TOKEN_MUL, 0);
-					// break;
-				// case Lexer::TOKEN_DIV:
-					// cout << "/: " << lexer.getTokenValue() << endl;
-					// break;
+				case Lexer::TOKEN_MUL:
+					cout << "*: " << lexer.getTokenValue() << endl;
+					Parse(pParser, TOKEN_MULTIPLY, 0);
+					break;
+				case Lexer::TOKEN_DIV:
+					cout << "/: " << lexer.getTokenValue() << endl;
+					Parse(pParser, TOKEN_DIVIDE, 0);
+					break;
 				case Lexer::TOKEN_END:
 					// cout << "end reached" << endl;
 					break;
@@ -57,14 +56,8 @@ int main() {
 		} while (tokenID != Lexer::TOKEN_END);
 		Parse(pParser, 0, 0);
 	}
-#else
-	Parse(pParser, TOKEN_INT, 15);
-	Parse(pParser, TOKEN_PLUS, 0);
-	Parse(pParser, TOKEN_INT, 2);
 
-#endif
 	ParseFree(pParser, free);
-
 
 	cout << "Finished" << endl;
 	return 0;

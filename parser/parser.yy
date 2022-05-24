@@ -1,6 +1,7 @@
 %token_prefix TOKEN_
 
 %left PLUS MINUS.
+%left MULTIPLY DIVIDE.
 
 %token_type {int}
 
@@ -21,7 +22,15 @@ expr(A) ::= expr(B) PLUS expr(C). {
 
 expr(A) ::= expr(B) MINUS expr(C). { A = B - C; } 
 
-//expr(A) ::= expr(B) MUL expr(C). { A = B - C; } 
+expr(A) ::= expr(B) MULTIPLY expr(C). { A = B * C; } 
+
+expr(A) ::= expr(B) DIVIDE expr(C). { 
+	if ( C != 0) {
+		A = B / C;
+	} else {
+		std::cout << "Divide by zero" << std::endl;
+	}
+} 
 
 expr(A) ::= INT(B). {
 	//std::cout << "1 expr(A) ::= INT(B) [" << A << ";" << B << "]" << std::endl;

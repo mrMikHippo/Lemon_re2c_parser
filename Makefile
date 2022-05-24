@@ -37,4 +37,4 @@ parser.c: $(NEW_PARSER_PATH)/parser.yy
 	lemon $(NEW_PARSER_PATH)/parser.yy
 
 clean:
-	rm -rf lre_test_v2 *.o $(NEW_LEXER_PATH)/lexer.{cpp,h}
+	rm -rf lre_test_v2 *.o $(NEW_LEXER_PATH)/lexer.{cpp,h} $(NEW_PARSER_PATH)/parser.{h,out,c}
