@@ -16,31 +16,42 @@ public:
 	}
 
 	int scan(YYSTYPE& yylval) {
-	std:
-		_start = _cursor;
+		for (;;) {
+			_start = _cursor;
 
-		/*!re2c
-			re2c:define:YYCTYPE		= char;
-			re2c:define:YYCURSOR 	= _cursor;
-			re2c:define:YYLIMIT 	= _limit;
-			re2c:define:YYMARKER 	= _marker;
-			re2c:define:YYCTXMARKER = _ctxmarker;
-		 	re2c:indent:top			= 1;
-		 	re2c:yyfill:enable		= 0;
-			re2c:eof				= 0;
+			/*!re2c
+				re2c:define:YYCTYPE		= char;
+				re2c:define:YYCURSOR 	= _cursor;
+				re2c:define:YYLIMIT 	= _limit;
+				re2c:define:YYMARKER 	= _marker;
+				re2c:define:YYCTXMARKER = _ctxmarker;
+			 	re2c:indent:top			= 1;
+			 	re2c:yyfill:enable		= 0;
+				re2c:eof				= 0;
+			 	
+			 	D = [0-9];
+			 	INT = D+;
+			 	FLOAT = D* "." D+;
 
-			INT	= [1-9][0-9]*;
-		 	INT		{
-		 		yylval.int_value = atoi(this->getTokenValue().c_str()); 
-		 		return TOKEN_INT; 
-		 	}
-		 	"+"			{ return TOKEN_PLUS; }
-		 	"-"			{ return TOKEN_MINUS; }
-		 	"*"			{ return TOKEN_MULTIPLY; }
-		 	"/"			{ return TOKEN_DIVIDE; }
-			$			{ return 0; }
-			[ ]+		{ goto std; }
-		 */
+			 	INT			{
+			 				  yylval.kind = TOKEN_INT;
+			 				  yylval.int_value = atoi(this->getTokenValue().c_str()); 
+			 				  return yylval.kind; 
+			 				}
+			 	FLOAT		{
+			 				  yylval.kind = TOKEN_FLOAT;
+			 				  yylval.float_value = atof(this->getTokenValue().c_str());
+			 				  return yylval.kind;
+			 				}
+			 	"+"			{ return TOKEN_PLUS; }
+			 	"-"			{ return TOKEN_MINUS; }
+			 	"*"			{ return TOKEN_MULTIPLY; }
+			 	"/"			{ return TOKEN_DIVIDE; }
+				[ ]+		{ continue; }
+				"exit"		{ return -1; }
+				$			{ return 0; }
+			 */
+		}
 	}
 
 	std::string getTokenValue() const  {

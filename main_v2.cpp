@@ -18,16 +18,20 @@ int main() {
 	bool exit = false;
 	int tokenID;
 	
-	while (true) {
+	while (!exit) {
 		string cmd;
 		getline(cin, cmd);
 
 		Lexer lexer(cmd.c_str());
 
 		while(tokenID = lexer.scan(yylval)) {
-			Parse(pParser, tokenID, yylval);
+			if (tokenID == -1)
+				exit = true;
+			else
+				Parse(pParser, tokenID, yylval);
 		}
-		Parse(pParser, 0, yylval);
+		if (!exit)
+			Parse(pParser, 0, yylval);
 	}
 
 	ParseFree(pParser, free);
