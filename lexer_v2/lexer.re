@@ -6,12 +6,12 @@
 class Lexer {
 public:
 	enum token_t {
-		TOKEN_END = 0,
+		TOKEN_NUMBER = 1,
 		TOKEN_ADD,
 		TOKEN_SUB,
 		TOKEN_MUL,
 		TOKEN_DIV,
-		TOKEN_NUMBER,
+		TOKEN_END,
 		TOKEN_ANOTHER
 	};
 
@@ -31,18 +31,18 @@ public:
 		#define YYMARKER _marker
 		#define YYCTXMARKER _ctxmarker
 
+		// [ ]+ 		{ return TOKEN_ANOTHER; }
 		/*!re2c
 		 	re2c:indent:top		= 1;
 		 	re2c:yyfill:enable	= 0;
-		 	re2c:eof			= 0;
+			re2c:eof			= 0;
 
-		 	[ ]+ 		{ return TOKEN_ANOTHER; }
 		 	[0-9]+		{ return TOKEN_NUMBER; }
 		 	"+"			{ return TOKEN_ADD; }
 		 	"-"			{ return TOKEN_SUB; }
 		 	"*"			{ return TOKEN_MUL; }
 		 	"/"			{ return TOKEN_DIV; }
-		 	$			{ return TOKEN_END; }
+			$			{ return TOKEN_END; }
 		 */
 	}
 
@@ -50,7 +50,7 @@ public:
 		return std::string(_start, _cursor-_start);
 	}
 
-	int get() const {
+	int getLength() const {
 		return strlen(_content);
 	}
 

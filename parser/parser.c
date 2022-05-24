@@ -115,18 +115,18 @@ typedef union {
 #define ParseCTX_PARAM
 #define ParseCTX_FETCH
 #define ParseCTX_STORE
-#define YYNSTATE             3
-#define YYNRULE              3
-#define YYNRULE_WITH_ACTION  3
+#define YYNSTATE             4
+#define YYNRULE              4
+#define YYNRULE_WITH_ACTION  4
 #define YYNTOKEN             4
-#define YY_MAX_SHIFT         2
-#define YY_MIN_SHIFTREDUCE   5
-#define YY_MAX_SHIFTREDUCE   7
-#define YY_ERROR_ACTION      8
-#define YY_ACCEPT_ACTION     9
-#define YY_NO_ACTION         10
-#define YY_MIN_REDUCE        11
-#define YY_MAX_REDUCE        13
+#define YY_MAX_SHIFT         3
+#define YY_MIN_SHIFTREDUCE   7
+#define YY_MAX_SHIFTREDUCE   10
+#define YY_ERROR_ACTION      11
+#define YY_ACCEPT_ACTION     12
+#define YY_NO_ACTION         13
+#define YY_MIN_REDUCE        14
+#define YY_MAX_REDUCE        17
 /************* End control #defines *******************************************/
 #define YY_NLOOKAHEAD ((int)(sizeof(yy_lookahead)/sizeof(yy_lookahead[0])))
 
@@ -193,27 +193,28 @@ typedef union {
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (6)
+#define YY_ACTTAB_COUNT (9)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */     9,    2,   11,    1,    7,   12,
+ /*     0 */    14,    2,    1,   12,    3,   10,   16,   13,   15,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */     4,    5,    0,    1,    3,    5,    6,    6,    6,    4,
+ /*     0 */     0,    1,    2,    4,    5,    3,    5,    6,    5,    6,
+ /*    10 */     4,    4,    4,
 };
-#define YY_SHIFT_COUNT    (2)
+#define YY_SHIFT_COUNT    (3)
 #define YY_SHIFT_MIN      (0)
 #define YY_SHIFT_MAX      (2)
 static const unsigned char yy_shift_ofst[] = {
- /*     0 */     1,    1,    2,
+ /*     0 */     2,    2,    2,    0,
 };
-#define YY_REDUCE_COUNT (1)
-#define YY_REDUCE_MIN   (-4)
-#define YY_REDUCE_MAX   (0)
+#define YY_REDUCE_COUNT (2)
+#define YY_REDUCE_MIN   (-1)
+#define YY_REDUCE_MAX   (3)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */    -4,    0,
+ /*     0 */    -1,    1,    3,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */     8,    8,    8,
+ /*     0 */    11,   11,   11,   11,
 };
 /********** End of lemon-generated parsing tables *****************************/
 
@@ -336,7 +337,8 @@ static const char *const yyTokenName[] = {
 static const char *const yyRuleName[] = {
  /*   0 */ "program ::= expr",
  /*   1 */ "expr ::= expr PLUS expr",
- /*   2 */ "expr ::= INT",
+ /*   2 */ "expr ::= expr MINUS expr",
+ /*   3 */ "expr ::= INT",
 };
 #endif /* NDEBUG */
 
@@ -750,7 +752,8 @@ static void yy_shift(
 static const YYCODETYPE yyRuleInfoLhs[] = {
      4,  /* (0) program ::= expr */
      5,  /* (1) expr ::= expr PLUS expr */
-     5,  /* (2) expr ::= INT */
+     5,  /* (2) expr ::= expr MINUS expr */
+     5,  /* (3) expr ::= INT */
 };
 
 /* For rule J, yyRuleInfoNRhs[J] contains the negative of the number
@@ -758,7 +761,8 @@ static const YYCODETYPE yyRuleInfoLhs[] = {
 static const signed char yyRuleInfoNRhs[] = {
    -1,  /* (0) program ::= expr */
    -3,  /* (1) expr ::= expr PLUS expr */
-   -1,  /* (2) expr ::= INT */
+   -3,  /* (2) expr ::= expr MINUS expr */
+   -1,  /* (3) expr ::= INT */
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -803,20 +807,31 @@ static YYACTIONTYPE yy_reduce(
       case 0: /* program ::= expr */
 #line 15 "parser/parser.yy"
 { std::cout << "Result=" << yymsp[0].minor.yy0 << std::endl; }
-#line 806 "parser/parser.c"
+#line 810 "parser/parser.c"
         break;
       case 1: /* expr ::= expr PLUS expr */
 #line 17 "parser/parser.yy"
-{ yylhsminor.yy0 = yymsp[-2].minor.yy0 + yymsp[0].minor.yy0; }
-#line 811 "parser/parser.c"
+{ 
+	yylhsminor.yy0 = yymsp[-2].minor.yy0 + yymsp[0].minor.yy0; 
+	//std::cout << "yylhsminor.yy0 = yymsp[-2].minor.yy0 PLUS yymsp[0].minor.yy0: " << yylhsminor.yy0 << " = " << yymsp[-2].minor.yy0 << " PLUS " << yymsp[0].minor.yy0 << std::endl;
+}
+#line 818 "parser/parser.c"
   yymsp[-2].minor.yy0 = yylhsminor.yy0;
         break;
-      case 2: /* expr ::= INT */
-#line 19 "parser/parser.yy"
+      case 2: /* expr ::= expr MINUS expr */
+#line 22 "parser/parser.yy"
+{ yylhsminor.yy0 = yymsp[-2].minor.yy0 - yymsp[0].minor.yy0; }
+#line 824 "parser/parser.c"
+  yymsp[-2].minor.yy0 = yylhsminor.yy0;
+        break;
+      case 3: /* expr ::= INT */
+#line 26 "parser/parser.yy"
 {
+	//std::cout << "1 expr(yylhsminor.yy0) ::= INT(yymsp[0].minor.yy0) [" << yylhsminor.yy0 << ";" << yymsp[0].minor.yy0 << "]" << std::endl;
 	yylhsminor.yy0 = yymsp[0].minor.yy0;
+	//std::cout << "2 expr(yylhsminor.yy0) ::= INT(yymsp[0].minor.yy0) [" << yylhsminor.yy0 << ";" << yymsp[0].minor.yy0 << "]" << std::endl;
 }
-#line 819 "parser/parser.c"
+#line 834 "parser/parser.c"
   yymsp[0].minor.yy0 = yylhsminor.yy0;
         break;
       default:
@@ -881,8 +896,8 @@ static void yy_syntax_error(
 /************ Begin %syntax_error code ****************************************/
 #line 11 "parser/parser.yy"
 
-	std::cerr << "Syntax error!" << std::endl;
-#line 885 "parser/parser.c"
+	perror("Syntax error: ");
+#line 900 "parser/parser.c"
 /************ End %syntax_error code ******************************************/
   ParseARG_STORE /* Suppress warning about unused %extra_argument variable */
   ParseCTX_STORE
