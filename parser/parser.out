@@ -1,0 +1,44 @@
+State 0:
+          program ::= * expr
+          expr ::= * expr PLUS expr
+          expr ::= * INT
+
+                           INT shift-reduce 2      expr ::= INT
+                       program accept
+                          expr shift        2      
+
+State 1:
+          expr ::= * expr PLUS expr
+          expr ::= expr PLUS * expr
+          expr ::= * INT
+
+                           INT shift-reduce 2      expr ::= INT
+                          expr shift-reduce 1      expr ::= expr PLUS expr
+
+State 2:
+      (0) program ::= expr *
+          expr ::= expr * PLUS expr
+
+                             $ reduce       0      program ::= expr
+                          PLUS shift        1      
+
+----------------------------------------------------
+Symbols:
+The first-set of non-terminals is shown after the name.
+
+    0: $:
+    1: PLUS (precedence=1)
+    2: MINUS (precedence=1)
+    3: INT
+    4: program: INT
+    5: expr: INT
+----------------------------------------------------
+Syntax-only Symbols:
+The following symbols never carry semantic content.
+
+$ PLUS MINUS program
+----------------------------------------------------
+Rules:
+   0: program ::= expr.
+   1: expr ::= expr PLUS expr. [PLUS precedence=1]
+   2: expr ::= INT.
