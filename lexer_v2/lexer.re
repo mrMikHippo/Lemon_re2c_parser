@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include "../parser/parser.h"
+#include "lexer.def.h"
 
 class Lexer {
 public:
@@ -14,22 +15,25 @@ public:
 		_limit = _content + strlen(_content);
 	}
 
-	int scan() {
+	int scan(YYSTYPE& yylval) {
 	std:
 		_start = _cursor;
 
-		#define YYCTYPE char
-		#define YYCURSOR _cursor
-		#define YYLIMIT _limit
-		#define YYMARKER _marker
-		#define YYCTXMARKER _ctxmarker
-
 		/*!re2c
-		 	re2c:indent:top		= 1;
-		 	re2c:yyfill:enable	= 0;
-			re2c:eof			= 0;
+			re2c:define:YYCTYPE		= char;
+			re2c:define:YYCURSOR 	= _cursor;
+			re2c:define:YYLIMIT 	= _limit;
+			re2c:define:YYMARKER 	= _marker;
+			re2c:define:YYCTXMARKER = _ctxmarker;
+		 	re2c:indent:top			= 1;
+		 	re2c:yyfill:enable		= 0;
+			re2c:eof				= 0;
 
-		 	[0-9]+		{ return TOKEN_INT; }
+			INT	= [1-9][0-9]*;
+		 	INT		{
+		 		yylval.int_value = atoi(this->getTokenValue().c_str()); 
+		 		return TOKEN_INT; 
+		 	}
 		 	"+"			{ return TOKEN_PLUS; }
 		 	"-"			{ return TOKEN_MINUS; }
 		 	"*"			{ return TOKEN_MULTIPLY; }

@@ -2,6 +2,7 @@
 
 #include "lexer_v2/lexer.h"
 #include "parser/parser.c"
+#include "lexer_v2/lexer.def.h"
 
 using namespace std;
 
@@ -13,9 +14,8 @@ int main() {
 	ParseTrace(stderr, (char*)"[Parser] >> ");
 #endif
 
-	// YYSTYPE yylval;
+	YYSTYPE yylval;
 	bool exit = false;
-	int value;
 	int tokenID;
 	
 	while (true) {
@@ -24,10 +24,10 @@ int main() {
 
 		Lexer lexer(cmd.c_str());
 
-		while(tokenID = lexer.scan()) {
-			Parse(pParser, tokenID, atoi(lexer.getTokenValue().c_str()));
+		while(tokenID = lexer.scan(yylval)) {
+			Parse(pParser, tokenID, yylval);
 		}
-		Parse(pParser, 0, 0);
+		Parse(pParser, 0, yylval);
 	}
 
 	ParseFree(pParser, free);
