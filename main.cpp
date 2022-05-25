@@ -1,36 +1,42 @@
-#include <sstream>
-#include <cassert>
-#include <cstdlib>
-#include "lexer/test_scanner.h"
-#include "lemon_p/parser.c"
+#include <iostream>
+
+#include "lexer/lexer.h"
+#include "parser/parser.c"
+
+using namespace std;
 
 int main() {
 
-	YYSTYPE yylval;
-	Scanner scanner(&std::cin);
-	void *pParser = ParseAlloc(malloc);
-	int tokenID;
+	void* pParser = ParseAlloc(malloc);
 
-
-#if 1
-    ParseTrace(stderr, (char*)"[Parser] >> ");
+#if 0
+	ParseTrace(stderr, (char*)"[Parser] >> ");
 #endif
-	ParserState state;
 
-	// Parse(pParser, INTEGER, 15);
-	// Parse(pParser, PLUS, 0);
-	// Parse(pParser, INTEGER, 7);
-	// Parse(pParser, 0, 0);
+	YYSTYPE yylval;
+	bool exit = false;
+	int tokenID;
+	
+	while (!exit) {
+		string cmd;
+		getline(cin, cmd);
 
-	while (tokenID = scanner.scan(yylval)) {
-		Parse(pParser, tokenID, yylval, &state);
+		Lexer lexer(cmd.c_str());
+
+		while(tokenID = lexer.scan(yylval)) {
+			if (tokenID == -1)
+				exit = true;
+			else {
+				cout << "Parse called for tokenID [" << tokenID << "] " << tokenIDtoString(tokenID) << endl;
+				Parse(pParser, tokenID, yylval);
+			}
+		}
+		if (!exit)
+			Parse(pParser, 0, yylval);
 	}
-
-	Parse(pParser, 0, yylval, &state);
 
 	ParseFree(pParser, free);
 
-	printf("RESULT: %d\n", state.result);
-	
+	cout << "Finished" << endl;
 	return 0;
 }

@@ -1,58 +1,64 @@
 %token_prefix TOKEN_
 
-%left PLUS MINUS.
-%left MULTIPLY DIVIDE.
+%left ADD SUB.
+%left MUL DIV.
 
-%token_type {YYSTYPE}
+%token_type { YYSTYPE }
 
 %include {
 #include <iostream>
-#include "../lexer_v2/lexer.def.h"
+#include "../lexer/lexer.def.h"
 }
 
 %syntax_error {
 	std::cerr << "Syntax error!" << std::endl;
 }
 
-program ::= expr(A). {
-	if (A.kind == TOKEN_INT) {
-		std::cout << "Result i=" << A.int_value << std::endl; 
+%start_symbol main
+
+main ::= expr(A). {
+	std::cout << "Result=" << A.dvalue << std::endl; 
+}
+
+expr(A) ::= expr(B) ADD expr(C). { 
+	std::cout << "expr ADD expr " << B.dvalue << " + " << C.dvalue << " = ";
+	A.dvalue = B.dvalue + C.dvalue; 
+	std::cout << A.dvalue << std::endl; 
+}
+
+expr(A) ::= expr(B) SUB expr(C). { 
+	std::cout << "expr SUB expr " << B.dvalue << " - " << C.dvalue << " = ";
+	A.dvalue = B.dvalue - C.dvalue; 
+	std::cout << A.dvalue << std::endl; 
+}
+
+expr(A) ::= expr(B) MUL expr(C). { 
+	std::cout << "expr MUL expr " << B.dvalue << " * " << C.dvalue << " = ";
+	A.dvalue = B.dvalue * C.dvalue;
+	std::cout << A.dvalue << std::endl; 
+}
+
+expr(A) ::= expr(B) DIV expr(C). { 
+	if (C.dvalue != 0) {
+		std::cout << "expr DIV expr " << B.dvalue << " * " << C.dvalue << " = ";
+		A.dvalue = B.dvalue / C.dvalue;
+		std::cout << A.dvalue << std::endl; 
 	} else {
-		std::cout << "Result f=" << A.float_value << std::endl; 
+		std::cout << "Division by Zero!" << std::endl;
 	}
-} 
+}
 
-expr(A) ::= expr(B) PLUS expr(C). {
-	switch(A.kind) {
-	case TOKEN_INT:
-		A.int_value = B.int_value + C.int_value;
-		break;
-	case TOKEN_FLOAT:
-		A.float_value = B.float_value + C.float_value; 
-		break;
-	}
-} 
-
-expr(A) ::= expr(B) MINUS expr(C). { A.int_value = B.int_value - C.int_value; } 
-
-expr(A) ::= expr(B) MULTIPLY expr(C). { A.int_value = B.int_value * C.int_value; } 
-
-expr(A) ::= expr(B) DIVIDE expr(C). { 
-	if ( C.int_value != 0) {
-		A.int_value = B.int_value / C.int_value;
-	} else {
-		std::cout << "Divide by zero" << std::endl;
-	}
+expr(A) ::= LBR expr(B) RBR. {
+	std::cout << "LBR expr RBR 	(" << B.dvalue << ")" << std::endl;
+	A.dvalue = B.dvalue;
 }
 
 expr(A) ::= INT(B). {
-	std::cout << "In INT statement" << std::endl;
-	A.int_value = B.int_value;
-	A.kind = B.kind;
+	std::cout << "In INT statement " << B.dvalue << std::endl;
+	A.dvalue = B.dvalue;
 }
 
 expr(A) ::= FLOAT(B). {
-	std::cout << "In FLOAT statement" << std::endl;
-	A.float_value = B.float_value;
-	A.kind = B.kind;
+	std::cout << "In FLOAT statement " << B.dvalue << std::endl;
+	A.dvalue = B.dvalue;	
 }

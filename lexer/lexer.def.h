@@ -1,7 +1,7 @@
 #pragma once
 
 typedef union {
-	int int_value;
+	double dvalue;
 } YYSTYPE;
 
 struct ParserState {

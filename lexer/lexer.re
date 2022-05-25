@@ -5,6 +5,28 @@
 #include "../parser/parser.h"
 #include "lexer.def.h"
 
+std::string tokenIDtoString(int tokenID) {
+	switch(tokenID) {
+	case TOKEN_ADD:
+		return "TOKEN_ADD";
+	case TOKEN_SUB:
+		return "TOKEN_SUB";
+	case TOKEN_MUL:
+		return "TOKEN_MUL";
+	case TOKEN_DIV:
+		return "TOKEN_DIV";
+	case TOKEN_LBR:
+		return "TOKEN_LBR";
+	case TOKEN_RBR:
+		return "TOKEN_RBR";
+	case TOKEN_INT:
+		return "TOKEN_INT";
+	case TOKEN_FLOAT:
+		return "TOKEN_FLOAT";
+	}
+	return "Unknown";
+}
+
 class Lexer {
 public:
 
@@ -33,23 +55,23 @@ public:
 			 	INT = D+;
 			 	FLOAT = D* "." D+;
 
-			 	INT			{
-			 				  yylval.kind = TOKEN_INT;
-			 				  yylval.int_value = atoi(this->getTokenValue().c_str()); 
-			 				  return yylval.kind; 
+			 	INT			{ 	
+			 					yylval.dvalue = atoi(this->getTokenValue().c_str());
+			 					return TOKEN_INT; 
 			 				}
-			 	FLOAT		{
-			 				  yylval.kind = TOKEN_FLOAT;
-			 				  yylval.float_value = atof(this->getTokenValue().c_str());
-			 				  return yylval.kind;
-			 				}
-			 	"+"			{ return TOKEN_PLUS; }
-			 	"-"			{ return TOKEN_MINUS; }
-			 	"*"			{ return TOKEN_MULTIPLY; }
-			 	"/"			{ return TOKEN_DIVIDE; }
-				[ ]+		{ continue; }
-				"exit"		{ return -1; }
-				$			{ return 0; }
+ 				FLOAT		{ 	
+ 								yylval.dvalue = stod(this->getTokenValue());
+ 								return TOKEN_FLOAT; 
+ 							}
+			 	"+"			{	return TOKEN_ADD; }
+			 	"-"			{ 	return TOKEN_SUB; }
+			 	"*"			{ 	return TOKEN_MUL; }
+			 	"/"			{ 	return TOKEN_DIV; }
+			 	")"			{	return TOKEN_RBR; }
+				"("			{	return TOKEN_LBR; }
+				[ ]+		{ 	continue; }
+				"exit"		{ 	return -1; }
+				$			{ 	return 0; }
 			 */
 		}
 	}
