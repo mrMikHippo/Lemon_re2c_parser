@@ -2,6 +2,7 @@
 
 typedef union {
 	double dvalue;
+	char* cvalue;
 } YYSTYPE;
 
 struct ParserState {

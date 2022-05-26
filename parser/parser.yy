@@ -1,9 +1,8 @@
 %token_prefix TOKEN_
 
-%left ADD SUB.
-%left MUL DIV.
+%left LEXEME_INTEGER.
 
-%token_type { YYSTYPE }
+%token_type { Token* }
 
 %include {
 #include <iostream>
@@ -16,49 +15,21 @@
 
 %start_symbol main
 
-main ::= expr(A). {
-	std::cout << "Result=" << A.dvalue << std::endl; 
+main ::= expr(A) . {
+	std::cout << "End of parser.yy A" << std::endl; 
 }
 
-expr(A) ::= expr(B) ADD expr(C). { 
-	std::cout << "expr ADD expr " << B.dvalue << " + " << C.dvalue << " = ";
-	A.dvalue = B.dvalue + C.dvalue; 
-	std::cout << A.dvalue << std::endl; 
+expr(A) ::= LEXEME_INTEGER(B) . {
+	std::cout << "In LEXEME_INTEGER statement A | name=" << B->data.str << std::endl;
 }
 
-expr(A) ::= expr(B) SUB expr(C). { 
-	std::cout << "expr SUB expr " << B.dvalue << " - " << C.dvalue << " = ";
-	A.dvalue = B.dvalue - C.dvalue; 
-	std::cout << A.dvalue << std::endl; 
+expr(A) ::= NAME(B) . {
+	std::cout << "In NAME statement" << B->data.str << std::endl;
+	A->kind = B->kind;
+	A->data.str = B->data.str;
 }
 
-expr(A) ::= expr(B) MUL expr(C). { 
-	std::cout << "expr MUL expr " << B.dvalue << " * " << C.dvalue << " = ";
-	A.dvalue = B.dvalue * C.dvalue;
-	std::cout << A.dvalue << std::endl; 
+expr(A) ::= LEXEME_INTEGER NAME(B) SEMICOLON . {
+	std::cout << "In LEXEME_INTEGER NAME SEMICOLON statement (A) name=" << B->data.str << std::endl;
 }
 
-expr(A) ::= expr(B) DIV expr(C). { 
-	if (C.dvalue != 0) {
-		std::cout << "expr DIV expr " << B.dvalue << " * " << C.dvalue << " = ";
-		A.dvalue = B.dvalue / C.dvalue;
-		std::cout << A.dvalue << std::endl; 
-	} else {
-		std::cout << "Division by Zero!" << std::endl;
-	}
-}
-
-expr(A) ::= LBR expr(B) RBR. {
-	std::cout << "LBR expr RBR 	(" << B.dvalue << ")" << std::endl;
-	A.dvalue = B.dvalue;
-}
-
-expr(A) ::= INT(B). {
-	std::cout << "In INT statement " << B.dvalue << std::endl;
-	A.dvalue = B.dvalue;
-}
-
-expr(A) ::= FLOAT(B). {
-	std::cout << "In FLOAT statement " << B.dvalue << std::endl;
-	A.dvalue = B.dvalue;	
-}

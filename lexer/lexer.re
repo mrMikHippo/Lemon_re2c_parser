@@ -3,29 +3,10 @@
 #include <string>
 #include <cstring>
 #include "../parser/parser.h"
-#include "lexer.def.h"
+// #include "lexer.def.h"
+#include "../token.h"
 
-std::string tokenIDtoString(int tokenID) {
-	switch(tokenID) {
-	case TOKEN_ADD:
-		return "TOKEN_ADD";
-	case TOKEN_SUB:
-		return "TOKEN_SUB";
-	case TOKEN_MUL:
-		return "TOKEN_MUL";
-	case TOKEN_DIV:
-		return "TOKEN_DIV";
-	case TOKEN_LBR:
-		return "TOKEN_LBR";
-	case TOKEN_RBR:
-		return "TOKEN_RBR";
-	case TOKEN_INT:
-		return "TOKEN_INT";
-	case TOKEN_FLOAT:
-		return "TOKEN_FLOAT";
-	}
-	return "Unknown";
-}
+#define TOKEN_EOF 0
 
 class Lexer {
 public:
@@ -37,9 +18,14 @@ public:
 		_limit = _content + strlen(_content);
 	}
 
-	int scan(YYSTYPE& yylval) {
+	Token* scan() {
 		for (;;) {
 			_start = _cursor;
+
+			// D = [0-9];
+		    // L = [A-Za-z_];
+    		// ID = (L)(L|D)*
+			// INT			{ 	return create_int_token(this->getTokenValue()); }
 
 			/*!re2c
 				re2c:define:YYCTYPE		= char;
@@ -47,31 +33,21 @@ public:
 				re2c:define:YYLIMIT 	= _limit;
 				re2c:define:YYMARKER 	= _marker;
 				re2c:define:YYCTXMARKER = _ctxmarker;
-			 	re2c:indent:top			= 1;
 			 	re2c:yyfill:enable		= 0;
 				re2c:eof				= 0;
 			 	
 			 	D = [0-9];
 			 	INT = D+;
 			 	FLOAT = D* "." D+;
-
-			 	INT			{ 	
-			 					yylval.dvalue = atoi(this->getTokenValue().c_str());
-			 					return TOKEN_INT; 
-			 				}
- 				FLOAT		{ 	
- 								yylval.dvalue = stod(this->getTokenValue());
- 								return TOKEN_FLOAT; 
- 							}
-			 	"+"			{	return TOKEN_ADD; }
-			 	"-"			{ 	return TOKEN_SUB; }
-			 	"*"			{ 	return TOKEN_MUL; }
-			 	"/"			{ 	return TOKEN_DIV; }
-			 	")"			{	return TOKEN_RBR; }
-				"("			{	return TOKEN_LBR; }
-				[ ]+		{ 	continue; }
-				"exit"		{ 	return -1; }
-				$			{ 	return 0; }
+			 	L = [A-Za-z_];
+			 	ID = (L)(L|D)*;
+			 	
+			 	"Integer"	{	return create_lex_integer_token(this->getTokenValue()); }
+			 	"quit"		{	return create_token(TOKEN_EOF); }
+			 	";"			{	return create_token(TOKEN_SEMICOLON); }
+			 	L+			{	return create_name_token(this->getTokenValue()); }
+			 	[^]			{   continue; }
+				$			{ 	return nullptr; }
 			 */
 		}
 	}
