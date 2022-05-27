@@ -1,6 +1,6 @@
 %token_prefix TOKEN_
 
-%left LEXEME_INTEGER.
+%left INTEGER.
 
 %token_type { Token* }
 
@@ -19,17 +19,24 @@ main ::= expr(A) . {
 	std::cout << "End of parser.yy A" << std::endl; 
 }
 
-expr(A) ::= LEXEME_INTEGER(B) . {
-	std::cout << "In LEXEME_INTEGER statement A | name=" << B->data.str << std::endl;
+expr(A) ::= ID(B) . {
+	std::cout << "In 'ID' statement  | A | B " << std::endl;
+	//A->kind = B->kind;
+	//A->str = B->str;
+	//A->num = B->num;
 }
 
-expr(A) ::= NAME(B) . {
-	std::cout << "In NAME statement" << B->data.str << std::endl;
-	A->kind = B->kind;
-	A->data.str = B->data.str;
+expr(A) ::= ID(B) ID(C) SEMICOLON . {
+	std::cout << "In 'ID ID SEMICOLON' statement(A) ID(\"" << B->str << "\") ID(\"" << C->str << "\") SEMICOLON" << std::endl;
 }
 
-expr(A) ::= LEXEME_INTEGER NAME(B) SEMICOLON . {
-	std::cout << "In LEXEME_INTEGER NAME SEMICOLON statement (A) name=" << B->data.str << std::endl;
+expr ::= ID(B) ID(C) ASSIGN INTEGER(D) SEMICOLON . {
+	std::cout << "In ID(\"" << B->str << "\") ID(\"" << C->str << "\") ASSIGN INTEGER(\"" << D->num << "\") SEMICOLON" << std::endl; 
+}
+
+expr(A) ::= INTEGER(B) . {
+	std::cout << "In 'INTEGER' statement (A) value=B | kind=" << B->kind << ", val=" << B->num << std::endl;
+	//A->kind = B->kind;
+	//A->num = B->num;
 }
 

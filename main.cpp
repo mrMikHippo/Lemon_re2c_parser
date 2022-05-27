@@ -41,11 +41,11 @@ int main() {
 			}
 			tokens.push_back(token);
 			cout << "Parse called for token [" << token->kind << "] " 
-				 << tokenKindToString(token->kind) << " ";
-			if (token->data.str)
-				cout << "name=" << token->data.str << endl;
-			else
-				cout << "num=" << token->data.num << endl;
+				 << tokenKindToString(token->kind) << endl;
+			// if (token->str)
+				// cout << "name=" << token->str << endl;
+			// else
+				// cout << "num=" << token->num << endl;
 #if ENABLE_PARSER
 			Parse(pParser, token->kind, token);
 #endif
@@ -58,7 +58,8 @@ int main() {
 	}
 
 	for (const auto& el : tokens) {
-		delete el;
+		if (el)
+			delete el;
 	}
 
 #if ENABLE_PARSER

@@ -1,0 +1,47 @@
+
+
+
+Integer i_1;
+//ID("Integer") ID("i_1") SEMICOLON
+
+Integer i_2 = 1;
+//ID("Integer") ID("i_2") ASSIGN INTEGER("1") SEMICOLON
+
+i_1 = 2;
+//ID("i_1") ASSIGN INTEGER("2") SEMICOLON
+
+i_2 = a_1;
+//ID("i_2") ASSIGN ID("a_1") SEMICOLON
+
+
+Vector(Integer) vc_1 = Vector(Integer)[];
+//ID("Vector") LRB ID("Integer") RRB ID("vc_1") ASSIGN ID("Vector") LRB ID("Integer") RRB LSB RSB SEMICOLON
+
+Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1];
+//ID("Vector") LRB ID("Vector") LRB ID("Integer") RRB RRB ID("vc_2") ASSIGN ID("Vector") LRB ID("Vector") LRB ID("Integer") RRB RRB LSB ID("vc_1") RSB SEMICOLON
+
+vc_1 = Vector(Integer)[i_1, i_2];
+//ID("vc_1") ASSIGN ID("Vector") LRB ID("Integer") RRB LSB ID("i_1") COMMA ID("i_2") RRB SEMICOLON
+
+vc_1.pushBack(i_1);
+//ID("vc_1") DOT ID("pushBack") LRB ID("i_1") RRB SEMICOLON
+
+
+Map(Integer, Integer) m_1 = Map(Integer, Integer)[];
+//ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB RSB SEMICOLON
+
+Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[m_1];
+//ID("Map") LRB ID("Integer") COMMA ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB RRB ID("m_2") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB RRB LSB ID("m_1") RSB SEMICOLON
+
+m_1 = Map(Integer, Integer)[i_1: i_1, i_2: i_2];
+//ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB ID("i_1") COLON ID("i_1") COMMA ID("i_2") COLON ID("i_2") RSB SEMICOLON
+
+m_1.insert(first = i_1, second = i_2);
+//ID("m_1") DOT ID("insert") LRB ID("first") ASSIGN ID("i_1") COMMA ID("second") ASSIGN ID("i_2") RRB SEMICOLON
+
+
+Type t = Integer;
+//ID("ID") ID("IDD") ASSIGN ID("ID") SEMICOLON
+
+vc_1.type() == Vector(Integer);
+//ID("ID") DOT ID("ID") LRB RRB ASSIGN ASSIGN ID("Vector") LRB ID("Integer") RRB SEMICOLON

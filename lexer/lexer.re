@@ -26,6 +26,11 @@ public:
 		    // L = [A-Za-z_];
     		// ID = (L)(L|D)*
 			// INT			{ 	return create_int_token(this->getTokenValue()); }
+			 	// "Integer"	{	return create_lex_integer_token(this->getTokenValue()); }
+			 	// "quit"		{	return create_token(TOKEN_EOF); }
+			 	// "q"			{	return create_token(TOKEN_EOF); }
+			 	// L+			{	return create_name_token(this->getTokenValue()); }
+			 	// [A-Za-z_0-9]*	{	return create_id_token(this->getTokenValue()); }
 
 			/*!re2c
 				re2c:define:YYCTYPE		= char;
@@ -41,11 +46,13 @@ public:
 			 	FLOAT = D* "." D+;
 			 	L = [A-Za-z_];
 			 	ID = (L)(L|D)*;
+			 	LL = [A-Za-z_];
 			 	
-			 	"Integer"	{	return create_lex_integer_token(this->getTokenValue()); }
 			 	"quit"		{	return create_token(TOKEN_EOF); }
+			 	D+			{	return create_int_token(this->getTokenValue()); }
+			 	(L)(L|D)*	{	return create_id_token(this->getTokenValue()); }
+			 	"="			{	return create_token(TOKEN_ASSIGN); }
 			 	";"			{	return create_token(TOKEN_SEMICOLON); }
-			 	L+			{	return create_name_token(this->getTokenValue()); }
 			 	[^]			{   continue; }
 				$			{ 	return nullptr; }
 			 */
