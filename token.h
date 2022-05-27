@@ -43,15 +43,15 @@ struct Token {
 };
 
 Token* create_token(int kind) {
-	std::cout << "Create Simple token kind[" << kind << "] token_type=" << tokenKindToString(kind) << std::endl;
+	// std::cout << "Create Simple token kind[" << kind << "] token_type=" << tokenKindToString(kind) << std::endl;
 	return new Token(kind);
 }
 
 Token* create_int_token(const std::string& value_) {
 	Token* token = create_token(TOKEN_INTEGER);
-	std::cout << "Create_int_token";
+	// std::cout << "Create_int_token";
 	token->num = atoi(value_.c_str());
-	std::cout << ", value=" << token->num << std::endl;
+	// std::cout << ", value=" << token->num << std::endl;
 	return token;
 }
 
@@ -73,9 +73,9 @@ Token* create_name_token(const std::string& name_) {
 
 Token* create_id_token(const std::string& name_) {
 	Token* token = create_token(TOKEN_ID);
-	std::cout << "Create_Id_token";
+	// std::cout << "Create_Id_token";
 	token->str = new char[name_.size()];
 	strcpy(token->str, name_.c_str());
-	std::cout << ", name=" << token->str << std::endl;
+	// std::cout << ", name=" << token->str << std::endl;
 	return token;
 } 

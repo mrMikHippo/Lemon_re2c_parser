@@ -24,6 +24,7 @@ int main() {
 #endif
 
 	bool exit = false;
+	bool print = false;
 	int tokenID;
 	Token* token;
 	vector<Token *> tokens;
@@ -35,23 +36,31 @@ int main() {
 		Lexer lexer(cmd.c_str());
 
 		while(token = lexer.scan()) {
+			tokens.push_back(token);
+			
 			if (token->kind == TOKEN_EOF) {
 				exit = true;
 				break;
 			}
-			tokens.push_back(token);
-			cout << "Parse called for token [" << token->kind << "] " 
-				 << tokenKindToString(token->kind) << endl;
-			// if (token->str)
-				// cout << "name=" << token->str << endl;
-			// else
-				// cout << "num=" << token->num << endl;
+
+			if (token->kind == TOKEN_PRINT) {
+				cout << "Registered tokens (" << tokens.size() << "):" << endl;
+				for (const auto& el : tokens) {
+					string name = tokenKindToString(el->kind);
+					if (name != "Unknown")
+						cout << "[" << name << "] " << (el->str ? "value="s + string(el->str) : "") << endl;
+				}
+				print = true;
+			} 
 #if ENABLE_PARSER
-			Parse(pParser, token->kind, token);
+			else {
+				Parse(pParser, token->kind, token);
+				print = false;
+			}
 #endif
 		}
 #if ENABLE_PARSER
-		if (!exit)
+		if (!exit && !print)
 			Parse(pParser, 0, token);
 #endif
 

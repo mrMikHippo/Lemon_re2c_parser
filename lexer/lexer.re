@@ -7,6 +7,7 @@
 #include "../token.h"
 
 #define TOKEN_EOF 0
+#define TOKEN_PRINT 150
 
 class Lexer {
 public:
@@ -49,6 +50,7 @@ public:
 			 	LL = [A-Za-z_];
 			 	
 			 	"quit"		{	return create_token(TOKEN_EOF); }
+			 	"print"		{	return create_token(TOKEN_PRINT); }
 			 	D+			{	return create_int_token(this->getTokenValue()); }
 			 	(L)(L|D)*	{	return create_id_token(this->getTokenValue()); }
 			 	"="			{	return create_token(TOKEN_ASSIGN); }

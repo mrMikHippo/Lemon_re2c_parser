@@ -1,5 +1,6 @@
 %token_prefix TOKEN_
 
+%right ASSIGN.
 %left INTEGER.
 
 %token_type { Token* }
@@ -15,28 +16,56 @@
 
 %start_symbol main
 
-main ::= expr(A) . {
-	std::cout << "End of parser.yy A" << std::endl; 
+main ::= expr . {
+	std::cout << "\nEnd of parser.yy A" << std::endl; 
 }
 
-expr(A) ::= ID(B) . {
-	std::cout << "In 'ID' statement  | A | B " << std::endl;
-	//A->kind = B->kind;
-	//A->str = B->str;
-	//A->num = B->num;
+//expr ::= ID(B) ID(C) SEMICOLON . {
+//	std::cout << "In 'ID ID SEMICOLON' statement(A) ID(\"" << B->str << "\") ID(\"" << C->str << "\") SEMICOLON" << std::endl;
+//}
+
+//expr ::= expr_two_ids SEMICOLON . {
+//	std::cout << "In expr_id SEMICOLON" << std::endl;
+//}
+
+//expr ::= ID(B) ID(C) ASSIGN INTEGER(D) SEMICOLON . {
+//	std::cout << "In ID(\"" << B->str << "\") ID(\"" << C->str << "\") ASSIGN INTEGER(\"" << D->num << "\") SEMICOLON" << std::endl; 
+//}
+
+//expr ::= ID(B) ASSIGN INTEGER(C) SEMICOLON . {
+//	std::cout << "In ID(\"" << B->str << "\") ASSIGN INTEGER(\"" << C->num << "\") SEMICOLON" << std::endl; 
+//}
+
+//expr ::= ID(B) ASSIGN ID(C) SEMICOLON . {
+//	std::cout << "In ID(\"" << B->str << "\") ASSIGN ID(\"" << C->str << "\") SEMICOLON" << std::endl; 
+//}
+
+//expr_two_ids ::= ID ID . {
+//	std::cout << "In ID ID statement" << std::endl;
+//}
+
+
+expr ::= expr SEMICOLON . {
+	std::cout << " SEMICOLON";
 }
 
-expr(A) ::= ID(B) ID(C) SEMICOLON . {
-	std::cout << "In 'ID ID SEMICOLON' statement(A) ID(\"" << B->str << "\") ID(\"" << C->str << "\") SEMICOLON" << std::endl;
+expr ::= expr ASSIGN . {
+	std::cout << " ASSIGN";
 }
 
-expr ::= ID(B) ID(C) ASSIGN INTEGER(D) SEMICOLON . {
-	std::cout << "In ID(\"" << B->str << "\") ID(\"" << C->str << "\") ASSIGN INTEGER(\"" << D->num << "\") SEMICOLON" << std::endl; 
+expr ::= ID(B) . {
+	std::cout << " ID(\"" << B->str << "\")";
 }
 
-expr(A) ::= INTEGER(B) . {
-	std::cout << "In 'INTEGER' statement (A) value=B | kind=" << B->kind << ", val=" << B->num << std::endl;
-	//A->kind = B->kind;
-	//A->num = B->num;
+expr ::= expr ID(C) . {
+	std::cout << " ID(\"" << C->str << "\")";
+}
+
+expr ::= expr INTEGER(C) . {
+	std::cout << " INTEGER(\"" << C->num << "\")";
+}
+
+expr ::= INTEGER(B) . {
+	std::cout << " INTEGER(\"" << B->str << "\")";
 }
 
