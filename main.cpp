@@ -5,6 +5,7 @@
 
 #include "token.h"
 #include "lexer/lexer.h"
+#include "ast.h"
 
 #if ENABLE_PARSER
 #include "parser/parser.c"

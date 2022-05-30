@@ -17,7 +17,8 @@
 %start_symbol main
 
 main ::= expr . {
-	std::cout << "\nEnd of parser.yy A" << std::endl; 
+	//std::cout << "\nEnd of parser.yy A" << std::endl; 
+	std::cout << std::endl;
 }
 
 //expr ::= ID(B) ID(C) SEMICOLON . {
@@ -53,10 +54,6 @@ expr ::= expr ASSIGN . {
 	std::cout << " ASSIGN";
 }
 
-expr ::= ID(B) . {
-	std::cout << " ID(\"" << B->str << "\")";
-}
-
 expr ::= expr ID(C) . {
 	std::cout << " ID(\"" << C->str << "\")";
 }
@@ -65,7 +62,39 @@ expr ::= expr INTEGER(C) . {
 	std::cout << " INTEGER(\"" << C->num << "\")";
 }
 
+expr ::= expr LRB . {
+	std::cout << " LRB";
+}
+
+expr ::= expr RRB . {
+	std::cout << " RRB";
+}
+
+expr ::= expr LSB . {
+	std::cout << " LSB";
+}
+
+expr ::= expr RSB . {
+	std::cout << " RSB";
+}
+
+expr ::= expr COMMA . {
+	std::cout << " COMMA";
+}
+
+expr ::= expr COLON . {
+	std::cout << " COLON";
+}
+
+expr ::= expr DOT . {
+	std::cout << " DOT";
+}
+
+expr ::= ID(B) . {
+	std::cout << " ID(\"" << B->str << "\")";
+}
+
 expr ::= INTEGER(B) . {
-	std::cout << " INTEGER(\"" << B->str << "\")";
+	std::cout << " sINTEGER(\"" << B->num << "\")";
 }
 

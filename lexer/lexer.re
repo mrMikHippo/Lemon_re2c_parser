@@ -55,6 +55,13 @@ public:
 			 	(L)(L|D)*	{	return create_id_token(this->getTokenValue()); }
 			 	"="			{	return create_token(TOKEN_ASSIGN); }
 			 	";"			{	return create_token(TOKEN_SEMICOLON); }
+			 	"("			{	return create_token(TOKEN_LRB); }
+			 	")"			{	return create_token(TOKEN_RRB); }
+			 	"["			{	return create_token(TOKEN_LSB); }
+			 	"]"			{	return create_token(TOKEN_RSB); }
+			 	","			{	return create_token(TOKEN_COMMA); }
+			 	":"			{	return create_token(TOKEN_COLON); }
+			 	"."			{	return create_token(TOKEN_DOT); }
 			 	[^]			{   continue; }
 				$			{ 	return nullptr; }
 			 */
