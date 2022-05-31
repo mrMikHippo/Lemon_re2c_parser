@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include "token.h"
 #include "lexer/lexer.h"
@@ -13,12 +14,24 @@
 
 using namespace std;
 
+void printTree(const Expression* node, const string& prefix, bool isLeft) {
+	if (node != nullptr) {
+		cout << prefix;
+		cout << (isLeft ? "├── " : "└── ");
+		cout << node->token->value << endl;
+
+		printTree(node->left,  prefix + (isLeft ? "│   " : "    "), true);
+        printTree(node->right,  prefix + (isLeft ? "│   " : "    "), false);
+	}
+}
+
+void printTree(const Expression* node) {
+	printTree(node, "", false);
+}
 
 int main() {
 
-#if ENABLE_PARSER
 	void* pParser = ParseAlloc(malloc);
-#endif
 
 #if 0
 	ParseTrace(stderr, (char*)"[Parser] >> ");
@@ -29,52 +42,27 @@ int main() {
 	int tokenID;
 	Token* token;
 	vector<Token *> tokens;
+	AST* ast_root = new AST;
 
-	while (!exit) {
-		string cmd;
-		getline(cin, cmd);
+	string cmd;
+	getline(cin, cmd);
 
-		Lexer lexer(cmd.c_str());
+	Lexer lexer(cmd.c_str());
 
-		while(token = lexer.scan()) {
-			tokens.push_back(token);
-			
-			if (token->kind == TOKEN_EOF) {
-				exit = true;
-				break;
-			}
+	while(token = lexer.scan()) {
+		tokens.push_back(token);
 
-			if (token->kind == TOKEN_PRINT) {
-				cout << "Registered tokens (" << tokens.size() << "):" << endl;
-				for (const auto& el : tokens) {
-					string name = tokenKindToString(el->kind);
-					if (name != "Unknown")
-						cout << "[" << name << "] " << (el->str ? "value="s + string(el->str) : "") << endl;
-				}
-				print = true;
-			} 
-#if ENABLE_PARSER
-			else {
-				Parse(pParser, token->kind, token);
-				print = false;
-			}
-#endif
-		}
-#if ENABLE_PARSER
-		if (!exit && !print)
-			Parse(pParser, 0, token);
-#endif
-
+		Parse(pParser, token->type, token, ast_root);
 	}
+	
+	Parse(pParser, 0, token, ast_root);
 
-	for (const auto& el : tokens) {
-		if (el)
-			delete el;
-	}
+	cout << "Tree: " << endl;
+	printTree(ast_root->node);
 
-#if ENABLE_PARSER
 	ParseFree(pParser, free);
-#endif
+
+	delete ast_root;
 
 	cout << "Finished" << endl;
 	return 0;

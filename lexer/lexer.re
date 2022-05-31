@@ -4,7 +4,7 @@
 #include <cstring>
 #include "../parser/parser.h"
 // #include "lexer.def.h"
-#include "../token.h"
+#include "../ast.h"
 
 #define TOKEN_EOF 0
 #define TOKEN_PRINT 150
@@ -29,7 +29,6 @@ public:
 			// INT			{ 	return create_int_token(this->getTokenValue()); }
 			 	// "Integer"	{	return create_lex_integer_token(this->getTokenValue()); }
 			 	// "quit"		{	return create_token(TOKEN_EOF); }
-			 	// "q"			{	return create_token(TOKEN_EOF); }
 			 	// L+			{	return create_name_token(this->getTokenValue()); }
 			 	// [A-Za-z_0-9]*	{	return create_id_token(this->getTokenValue()); }
 
@@ -49,19 +48,14 @@ public:
 			 	ID = (L)(L|D)*;
 			 	LL = [A-Za-z_];
 			 	
-			 	"quit"		{	return create_token(TOKEN_EOF); }
-			 	"print"		{	return create_token(TOKEN_PRINT); }
-			 	D+			{	return create_int_token(this->getTokenValue()); }
-			 	(L)(L|D)*	{	return create_id_token(this->getTokenValue()); }
-			 	"="			{	return create_token(TOKEN_ASSIGN); }
-			 	";"			{	return create_token(TOKEN_SEMICOLON); }
-			 	"("			{	return create_token(TOKEN_LRB); }
-			 	")"			{	return create_token(TOKEN_RRB); }
-			 	"["			{	return create_token(TOKEN_LSB); }
-			 	"]"			{	return create_token(TOKEN_RSB); }
-			 	","			{	return create_token(TOKEN_COMMA); }
-			 	":"			{	return create_token(TOKEN_COLON); }
-			 	"."			{	return create_token(TOKEN_DOT); }
+			 	"quit"		{	return create_token(TOKEN_EOF, this->getTokenValue()); }
+			 	D+			{	return create_token(TOKEN_LITERAL, this->getTokenValue()); }
+			 	(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }
+			 	"+"			{	return create_token(TOKEN_PLUS, this->getTokenValue()); }
+			 	"-"			{	return create_token(TOKEN_MINUS, this->getTokenValue()); }
+			 	"*"			{	return create_token(TOKEN_MUL, this->getTokenValue()); }
+			 	"="			{	return create_token(TOKEN_ASSIGN, this->getTokenValue()); }
+			 	";"			{	return create_token(TOKEN_SEMICOLON, this->getTokenValue()); }
 			 	[^]			{   continue; }
 				$			{ 	return nullptr; }
 			 */

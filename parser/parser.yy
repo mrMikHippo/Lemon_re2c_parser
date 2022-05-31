@@ -1,13 +1,19 @@
 %token_prefix TOKEN_
 
-%right ASSIGN.
-%left INTEGER.
+%left ASSIGN.
+%left PLUS MINUS.
+%left MUL.
 
+%extra_argument { AST* p_ast}
 %token_type { Token* }
+%type expr { Expression* }
+//%default_type { Expression* }
 
 %include {
 #include <iostream>
-#include "../lexer/lexer.def.h"
+#include "../token.h"
+//#include "../lexer/lexer.def.h"
+#include "../ast.h"
 }
 
 %syntax_error {
@@ -16,85 +22,52 @@
 
 %start_symbol main
 
-main ::= expr . {
-	//std::cout << "\nEnd of parser.yy A" << std::endl; 
+main ::= expr(A) . {
+	//std::cout << "\nEnd of parser.yy " << std::endl;
 	std::cout << std::endl;
+	//std::cout << "Create AST... A " << typeid(A).name() << std::endl;
+	p_ast->node = A;
+	std::cout << "root: '" << p_ast->node->token->value << "'" << std::endl;
 }
 
-//expr ::= ID(B) ID(C) SEMICOLON . {
-//	std::cout << "In 'ID ID SEMICOLON' statement(A) ID(\"" << B->str << "\") ID(\"" << C->str << "\") SEMICOLON" << std::endl;
+//expr(A) ::= expr(B) expr(C) SEMICOLON . {
+	// Initialization
+	// expr(C) = typeof expr(B)
+//	std::cout << "Initialization  A B C" << std::endl;
 //}
 
-//expr ::= expr_two_ids SEMICOLON . {
-//	std::cout << "In expr_id SEMICOLON" << std::endl;
-//}
-
-//expr ::= ID(B) ID(C) ASSIGN INTEGER(D) SEMICOLON . {
-//	std::cout << "In ID(\"" << B->str << "\") ID(\"" << C->str << "\") ASSIGN INTEGER(\"" << D->num << "\") SEMICOLON" << std::endl; 
-//}
-
-//expr ::= ID(B) ASSIGN INTEGER(C) SEMICOLON . {
-//	std::cout << "In ID(\"" << B->str << "\") ASSIGN INTEGER(\"" << C->num << "\") SEMICOLON" << std::endl; 
-//}
-
-//expr ::= ID(B) ASSIGN ID(C) SEMICOLON . {
-//	std::cout << "In ID(\"" << B->str << "\") ASSIGN ID(\"" << C->str << "\") SEMICOLON" << std::endl; 
-//}
-
-//expr_two_ids ::= ID ID . {
-//	std::cout << "In ID ID statement" << std::endl;
-//}
-
-
-expr ::= expr SEMICOLON . {
-	std::cout << " SEMICOLON";
+expr(A) ::= expr(B) PLUS(Op) expr(C) . {
+	A = new OperatorExpression(Op);
+	A->left = B;
+	A->right = C;
 }
 
-expr ::= expr ASSIGN . {
-	std::cout << " ASSIGN";
+expr(A) ::= expr(B) MINUS(Op) expr(C) . {
+	A = new OperatorExpression(Op);
+	A->left = B;
+	A->right = C;
 }
 
-expr ::= expr ID(C) . {
-	std::cout << " ID(\"" << C->str << "\")";
+expr(A) ::= expr(B) MUL(Op) expr(C) . {
+	A = new OperatorExpression(Op);
+	A->left = B;
+	A->right = C;
 }
 
-expr ::= expr INTEGER(C) . {
-	std::cout << " INTEGER(\"" << C->num << "\")";
+expr(A) ::= expr(B) ASSIGN(Op) expr(C) SEMICOLON . {
+	A = new OperatorExpression(Op);
+	A->left = B;
+	A->right = C;
+	std::cout << A->token->value << " " << A->left->token->value << " " << A->right->token->value << std::endl;
 }
 
-expr ::= expr LRB . {
-	std::cout << " LRB";
+expr(A) ::= ID(B) . {
+	A = new IDExpression(B);
+	std::cout << " ID(\"" << A->token->value << "\")" << std::endl;
 }
 
-expr ::= expr RRB . {
-	std::cout << " RRB";
-}
-
-expr ::= expr LSB . {
-	std::cout << " LSB";
-}
-
-expr ::= expr RSB . {
-	std::cout << " RSB";
-}
-
-expr ::= expr COMMA . {
-	std::cout << " COMMA";
-}
-
-expr ::= expr COLON . {
-	std::cout << " COLON";
-}
-
-expr ::= expr DOT . {
-	std::cout << " DOT";
-}
-
-expr ::= ID(B) . {
-	std::cout << " ID(\"" << B->str << "\")";
-}
-
-expr ::= INTEGER(B) . {
-	std::cout << " sINTEGER(\"" << B->num << "\")";
+expr(A) ::= LITERAL(B) . {
+	A = new LiteralExpression(B);
+	std::cout << " LITERAL(\"" << A->token->value << "\")" << std::endl;
 }
 
