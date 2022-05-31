@@ -31,6 +31,21 @@ public:
 		types.push_back(type_);
 	}
 
+	std::string toString() {
+		std::string result = type.value;
+		res += "("s;
+		bool first = true;
+		for (const auto& t : types) {
+			if (first) {
+				res += t->type.value;
+				first = false;
+			} else
+				res += ", "s + t->type.value;
+		}
+		res += ")"s;
+		return res;
+	}
+
 private:
 	std::vector<VariableType*> types;
 	Token type;
@@ -38,64 +53,105 @@ private:
 
 class Literal
 {
-	Token value;
-
 public:
-	Literal(const std::string& value_) 
-		: value(value_) {}
-	~Literal() = default;
+	Literal() {}
+	virtual ~Literal() {}
 
-	Token getValue() const {
-		return value;
-	}
+	virtual std::string toString() const = 0;
 };
 
 //100500
 class LiteralInteger : public Literal
 {
 public:
-	LiteralInteger(const std::string& value_) 
-		: Literal(value_) {}
+	LiteralInteger(Token& value_) 
+		: value(value_) {}
+
+	Token getValue() const {
+		return value;
+	}
+
+	std::string toString() const override {
+		return value.value;
+	}
+
+private:
+	Token value;
 };
 
 //Vector(Integer)[100500, id]
 class LiteralVector : public Literal
 {
 public:
-	LiteralVector(const std::string& value_) 
-		: Literal(value_) {}
+	LiteralVector(VariableType* type_, std::vector<Expression*> content_) 
+		: type(type_), content(content_) {}
 
 	void setVariableType(VariableType* type_) {
 		type = type_;
 	}
 
 	void addSubType(Expression* expr) {
-		subTypes.push_back(expr);
+		content.push_back(expr);
+	}
+
+	std::string toString() const override {
+		std::string result = type->toString();
+		result += "["s;
+		bool first = true;
+		for (const auto& el : content) {
+			if (first) {
+				first = false;
+			} else
+				result += ", "s;
+
+			result += el->toString();
+		}
+		result += "]"s;
+		return result;
 	}
 
 private:
 	VariableType* type;
-	std::vector<Expression*> subTypes;
+	std::vector<Expression*> content;
 };
 
 //Map(Integer, Integer)[100500 : id, 42 : id2]
 class LiteralMap : public Literal
 {
 public:
-	LiteralMap(const std::string& value_) 
-		: Literal(value_) {}
+	using ContentType = std::vector<std::pair<Expression*, Expression*>>;
+
+	LiteralMap(VariableType* type_, ContentType content_) 
+		: type(type_), content(content_) {}
 
 	void setVariableType(VariableType* type_) {
 		type = type_;
 	}
 
-	void addKeyValue(	Expression* key_, Expression* value_) {
+	void addKeyValue(Expression* key_, Expression* value_) {
 		body.push_back(std::make_pair<Expression*, Expression*>(key_, value_));
+	}
+
+	std::string toString() const override {
+		std::string res = type->toString();
+		res += "["s;
+		bool first = true;
+		for (const auto& el : content) {
+			if (first)
+				first = false;
+			else
+				res += ", "s;
+			res += el.first->toString();
+			res += " : "s;
+			res += el.second->toString();
+		}
+		res += "]"s;
+		return res;
 	}
 
 private:
     VariableType* type
-    std::vector<std::pair<Expression*, Expression*>> body;
+    ContentType content;
 };
 
 
@@ -104,7 +160,9 @@ class Expression
 {
 public:
 	Expression() {}
-	~Expression() = default;
+	virtual ~Expression() = default;
+
+	virtual std::string toString() const = 0;
 };
 
 //id
@@ -116,6 +174,10 @@ public:
 
 	Token getToken() const {
 		return id;
+	}
+
+	std::string toString() const override {
+		return id.value;
 	}
 
 private:
@@ -137,6 +199,10 @@ public:
 		return id;
 	}
 
+	std::string toString() const override {
+		return id.value + "."s + caller->toString();
+	}
+
 private:
     Expression* caller;
     Token id;
@@ -146,11 +212,26 @@ private:
 class ExpressionCallOrdered : public Expression
 {
 public:
-	ExpressionCallOrdered(Expression* callee_)
-		: callee(callee_) {}
+	ExpressionCallOrdered(Expression* callee_, std::vector<Expression*> args_)
+		: callee(callee_), args(args_) {}
 
 	void addArg(Expression* arg_) {
 		args.push_back(arg_);
+	}
+
+	std::string toString() const override {
+		std::string res = callee->toString();
+		res += "(";
+		bool first = true;
+		for (const auto& el : args) {
+			if (first) {
+				first = false;
+			} else
+				result += ", "s;
+			result += el->toString();
+		}
+		res += ")";
+		return res;
 	}
 
 private:
@@ -162,15 +243,34 @@ private:
 class ExpressionCallNamed : public Expression
 {
 public:
-	ExpressionCallNamed() {}
+	using ArgsType = std::vector<std::pair<Token*, Expression*>>; 
+	ExpressionCallNamed(Expression* callee_, ArgsType args_) 
+		: callee(callee_), args(args_) {}
 
 	void addArg(Token* arg_, Expression* value_) {
 		args.push_back(std::make_pair<Token*, Expression*>(arg_, value_));
 	}
 
+	std::string toString() const override {
+		std::string res = callee->toString();
+		res += "(";
+		bool first = true;
+		for (const auto& el : args) {
+			if (first) {	
+				first = false;
+			} else
+				result += ", "s;
+			result += el.first->value;
+			result += " = "s;
+			result += el.second->toString();
+		}
+		res += ")";
+		return res;
+	}
+
 private:
 	Expression* callee;
-    std::vector<std::pair<Token*, Expression*>> args;
+    ArgsType args;
 };
 
 //id[key]
@@ -179,6 +279,14 @@ class ExpressionAt : public Expression
 public:
 	ExpressionAt(Expression* caller_, Expression* key_) 
 		: caller(caller_), key(key_) {}
+
+	Expression* getCaller() {
+		return caller;
+	}
+
+	std::string toString() const override {
+		return caller->toString() + "["s + key->toString() + "]"s;
+	}
 
 private:
     Expression* caller
@@ -191,6 +299,14 @@ public:
 	ExpressionLiteral(Literal* literal_) 
 		: literal(literal_) {}
 
+	Literal* getLiteral() const {
+		return literal;
+	}
+
+	std::string toString() const override {
+		return literal->toString();
+	}
+
 private:
     Literal* literal;
 };
@@ -198,24 +314,33 @@ private:
 
 class Statement
 {
-
+public:
+	virtual std::string toString() const = 0;
 };
 
 //Integer a = 100500
 class StatementDefinition : public Statement
 {
 public:
-	StatementDefinition(VariableType* type_, Token id_) 
-		: type(type_) id(id_) {}
+	StatementDefinition(VariableType* type_, Token id_, Expression* value_ = nullptr) 
+		: type(type_), id(id_), value(value_) {}
 
-	void addExpression(Expression* expr_) {
-		value = expr_;
+	std::string toString() const override {
+		std::string res = type->toString();
+		res += " "s;
+		res += id.value;
+		res += " "s;
+		if (value) {
+			res += " = ";
+			res += value->toString();
+		}
+		return res;
 	}
 
 private:
     VariableType* type;
     Token id;
-    Expression* value = nullptr;
+    Expression* value;
 };
 
 class StatementExpression : public Statement
@@ -224,6 +349,10 @@ public:
 	StatementExpression(Expression* expr_) 
 		: expr(expr_) {}
 
+	std::string toString() const override {
+		return expr->toString();
+	}
+
 private:
     Expression* expr;
 }
@@ -231,10 +360,19 @@ private:
 class StatementList : public Statement
 {
 public:
-	StatementList() {}
+	StatementList(std::vector<Statement*> statements_)
+		: statements(statements_) {}
 
 	void addStatement(Statement* statement_) {
 		statements.push_back(statement_);
+	}
+
+	std::string toString() const override {
+		std::string res;
+		for (const auto& st : statements) {
+			res += st->toString();
+		}
+		return res;
 	}
 
 private:
