@@ -1,0 +1,65 @@
+Token
+Literal
+Expression
+Statement
+
+
+//Map(Integer, Integer)
+VariableType
+    Token type
+    vector<VariableType>
+
+//100500
+LiteralInteger: Literal
+    Token value
+
+//Vector(Integer)[100500, id]
+LiteralVector: Literal
+    VariableType type
+    vector<Expression> subTypes
+    
+//Vector(Integer, Integer)[100500 : id, 42 : id2]
+LiteralMap: Literal
+    VariableType type
+    vector<pair<Expression, Expression>>
+    
+//id
+ExpressionId: Expression
+    Token id
+
+//id.some
+ExpressionDot: Expression
+    Expression caller
+    Token id
+
+//id.some(arg1, arg2)
+ExpressionCallOrdered: Expression
+    Expression callee
+    vector<Expression> args
+    
+//id.some(key = arg1, key2 = arg2)
+ExpressionCallNamed: Expression
+    Expression callee
+    vector<pair<Token, Expression>> args
+
+//id[key]
+ExpressionAt: Expression
+    Expression caller
+    Expression key
+
+ExpressionLiteral: Expression
+    Literal literal
+    
+
+//Integer a = 100500
+StatementDefinition: Statement
+    VariableType type
+    Token id
+    Expression value = nullptr
+    
+StatementExpression: Statement
+    Expression expr
+    
+StatementList: Statement
+    vector<Statement>
+

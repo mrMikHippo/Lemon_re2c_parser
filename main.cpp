@@ -42,7 +42,7 @@ int main() {
 	int tokenID;
 	Token* token;
 	vector<Token *> tokens;
-	AST* ast_root = new AST;
+	// AST* ast_root = new AST;
 
 	string cmd;
 	getline(cin, cmd);
@@ -52,17 +52,17 @@ int main() {
 	while(token = lexer.scan()) {
 		tokens.push_back(token);
 
-		Parse(pParser, token->type, token, ast_root);
+		Parse(pParser, token->type, token);
 	}
 	
-	Parse(pParser, 0, token, ast_root);
+	Parse(pParser, 0, token);
 
-	cout << "Tree: " << endl;
-	printTree(ast_root->node);
+	// cout << "Tree: " << endl;
+	// printTree(ast_root->node);
 
 	ParseFree(pParser, free);
 
-	delete ast_root;
+	// delete ast_root;
 
 	cout << "Finished" << endl;
 	return 0;

@@ -23,15 +23,6 @@ public:
 		for (;;) {
 			_start = _cursor;
 
-			// D = [0-9];
-		    // L = [A-Za-z_];
-    		// ID = (L)(L|D)*
-			// INT			{ 	return create_int_token(this->getTokenValue()); }
-			 	// "Integer"	{	return create_lex_integer_token(this->getTokenValue()); }
-			 	// "quit"		{	return create_token(TOKEN_EOF); }
-			 	// L+			{	return create_name_token(this->getTokenValue()); }
-			 	// [A-Za-z_0-9]*	{	return create_id_token(this->getTokenValue()); }
-
 			/*!re2c
 				re2c:define:YYCTYPE		= char;
 				re2c:define:YYCURSOR 	= _cursor;
@@ -48,7 +39,6 @@ public:
 			 	ID = (L)(L|D)*;
 			 	LL = [A-Za-z_];
 			 	
-			 	"quit"		{	return create_token(TOKEN_EOF, this->getTokenValue()); }
 			 	D+			{	return create_token(TOKEN_LITERAL, this->getTokenValue()); }
 			 	(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }
 			 	"+"			{	return create_token(TOKEN_PLUS, this->getTokenValue()); }
