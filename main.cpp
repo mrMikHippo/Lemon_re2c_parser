@@ -13,7 +13,7 @@ using namespace std;
 void TestLiteralInteger() {
 	LiteralInteger lint({"10"});
 	AssertEqual(lint.toString(), "10", " literal integer test");
-	cout << "\t" << lint.toString() << endl;
+	cout << ".->\t" << lint.toString() << endl;
 }
 
 void TestVariableType() {
@@ -21,46 +21,43 @@ void TestVariableType() {
 		VariableType sub_type({"Integer"}, {});
 		VariableType type({"Vector"}, {&sub_type});
 		AssertEqual(type.toString(), "Vector(Integer)", " VariableType test"s);
-		cout << "\t" << type.toString() << endl;
+		cout << ".->\t" << type.toString() << endl;
 	}
 	{
 		VariableType sub_type_1({"Integer"}, {});
 		VariableType sub_type_2({"Integer"}, {});
 		VariableType type({"Map"}, {&sub_type_1, &sub_type_2});
 		AssertEqual(type.toString(), "Map(Integer, Integer)", " VariableType test"s);
-		cout << "\t" << type.toString() << endl;
+		cout << "|->\t" << type.toString() << endl;
 	}
 }
 
 void TestExpressionId() {
-	{
-		ExpressionId expr({"100500"});
-		AssertEqual(expr.toString(), "100500", " test for 100500");
-		cout << "\t" << expr.toString() << endl;
-	}
-	{
-		ExpressionId expr({"id"});
-		AssertEqual(expr.toString(), "id", " test for id");
-		cout << "\t" << expr.toString() << endl;
-	}
+	ExpressionId expr({"id"});
+	AssertEqual(expr.toString(), "id", " test for id");
+	cout << ".->\t" << expr.toString() << endl;
 }
 
 void TestLiteralOneParam() {
-	ExpressionId expr1({"100500"});
-	ExpressionId expr2({"id"});
+	LiteralInteger lit_int({"100500"});
+	ExpressionLiteral expr_lit(&lit_int);
+	ExpressionId expr_id({"id"});
 
 	VariableType sub_type({"Integer"}, {});
 	VariableType type({"Vector"}, {&sub_type});
 
-	LiteralOneParam lvec(&type, {&expr1, &expr2});
+	LiteralOneParam lvec(&type, {&expr_lit, &expr_id});
 	AssertEqual(lvec.toString(), "Vector(Integer)[100500, id]");
-	cout << "\t" << lvec.toString() << endl;
+	cout << ".->\t" << lvec.toString() << endl;
 }
 
 void TestLiteralTwoParam() {
-	ExpressionId key1({"100500"});
+	LiteralInteger lit_int_1({"100500"});
+	ExpressionLiteral key1(&lit_int_1);
 	ExpressionId value1({"id"});
-	ExpressionId key2({"42"});
+
+	LiteralInteger lit_int_2({"42"});
+	ExpressionLiteral key2(&lit_int_2);
 	ExpressionId value2({"id2"});
 
 	VariableType sub_type1({"Integer"}, {});
@@ -70,7 +67,7 @@ void TestLiteralTwoParam() {
 	LiteralTwoParam lmap(&type, {{&key1, &value1}, {&key2, &value2}});
 
 	AssertEqual(lmap.toString(), "Map(Integer, Integer)[100500 : id, 42 : id2]");
-	cout << "\t" << lmap.toString() << endl;
+	cout << ".->\t" << lmap.toString() << endl;
 }
 
 void TestExpressionDot() {
@@ -79,7 +76,7 @@ void TestExpressionDot() {
 
 	ExpressionDot expr_dot(func_name, &caller);
 	AssertEqual(expr_dot.toString(), "id.some_method");
-	cout << "\t" << expr_dot.toString() << endl;
+	cout << ".->\t" << expr_dot.toString() << endl;
 }
 
 void TestExpressionCallOrdered() {
@@ -93,7 +90,7 @@ void TestExpressionCallOrdered() {
 
 	ExpressionCallOrdered expr_co(&expr_dot, {&arg1, &arg2});
 	AssertEqual(expr_co.toString(), "id.some_method(arg1, arg2)");
-	cout << "\t" << expr_co.toString() << endl;
+	cout << ".->\t" << expr_co.toString() << endl;
 }
 
 void TestExpressionCallNamed() {
@@ -119,7 +116,7 @@ void TestExpressionCallNamed() {
 	);
 
 	AssertEqual(expr_cn.toString(), "id.some_method(key1 = arg1, key2 = arg2)");
-	cout << "\t" << expr_cn.toString() << endl;
+	cout << ".->\t" << expr_cn.toString() << endl;
 }
 
 void TestExpressionAt() {
@@ -128,11 +125,12 @@ void TestExpressionAt() {
 
 	ExpressionAt expr(&caller, &key);
 	AssertEqual(expr.toString(), "id[key]");
-	cout << "\t" << expr.toString() << endl;
+	cout << ".->\t" << expr.toString() << endl;
 }
 
 void TestExpressionLiteral() {
-	ExpressionId expr1({"100500"});
+	LiteralInteger lit_int({"100500"});
+	ExpressionLiteral expr1(&lit_int);
 
 	VariableType sub_type({"Integer"}, {});
 	VariableType type({"Vector"}, {&sub_type});
@@ -141,7 +139,7 @@ void TestExpressionLiteral() {
 	ExpressionLiteral expr_literal(&lvec);
 
 	AssertEqual(expr_literal.toString(), "Vector(Integer)[100500]");
-	cout << "\t" << expr_literal.toString() << endl;
+	cout << ".->\t" << expr_literal.toString() << endl;
 }
 
 void TestStatementDefinition() {
@@ -153,7 +151,7 @@ void TestStatementDefinition() {
 		StatementDefinition st(&vt, id);
 
 		AssertEqual(st.toString(), "Integer a");	
-		cout << "\t" << st.toString() << endl;
+		cout << ".->\t" << st.toString() << endl;
 	}
 	
 	//Integer a = 100500
@@ -165,7 +163,7 @@ void TestStatementDefinition() {
 
 		StatementDefinition st(&vt, id, &exp_lit);
 		AssertEqual(st.toString(), "Integer a = 12345");
-		cout << "\t" << st.toString() << endl;
+		cout << "|->\t" << st.toString() << endl;
 	}
 	
 	// Vector(Integer) vec = Vector(Integer)[10, 20];
@@ -190,7 +188,7 @@ void TestStatementDefinition() {
 		StatementDefinition st(&vt, id, &expr_lit);
 
 		AssertEqual(st.toString(), "Vector(Integer) vec = Vector(Integer)[10, 20]");
-		cout << "\t" << st.toString() << endl;
+		cout << "|->\t" << st.toString() << endl;
 	}
 }
 
@@ -204,7 +202,7 @@ void TestStatementExpression() {
 	StatementExpression st(&expr);
 
 	AssertEqual(st.toString(), "id[key]");
-	cout << "\t" << st.toString() << endl;
+	cout << ".->\t" << st.toString() << endl;
 }
 
 void TestStatementList() {
@@ -234,9 +232,8 @@ void TestStatementList() {
 
 	StatementList st_list({&st_first, &st_sec});
 
-	cout << "\t" << st_list.toString() << endl;
-
 	AssertEqual(st_list.toString(), "Integer a, Vector(Integer) vec = Vector(Integer)[10, 20]");
+	cout << ".->\t" << st_list.toString() << endl;
 }
 
 int main() {
