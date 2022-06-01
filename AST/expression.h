@@ -1,10 +1,12 @@
 #pragma once
 
 #include "token.h"
-// #include "wrapper.h"
 
 #include <string>
 #include <vector>
+
+
+class Literal;
 
 class Expression
 {
@@ -87,13 +89,13 @@ private:
 };
 
 
-// class ExpressionLiteral : public Expression
-// { 
-// public:
-// 	ExpressionLiteral(Literal* literal_);
+class ExpressionLiteral : public Expression
+{ 
+public:
+	ExpressionLiteral(Literal* literal_);
 
-// 	std::string toString() const override;
+	std::string toString() const override;
 
-// private:
-//     Literal* literal;
-// };
+private:
+    Literal* literal;
+};

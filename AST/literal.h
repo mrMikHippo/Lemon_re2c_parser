@@ -2,12 +2,13 @@
 
 #include "token.h"
 #include "variable_type.h"
-#include "wrapper.h"
-// #include "expression.h"
 
 #include <string>
 #include <vector>
 #include <utility>
+
+
+class Expression;
 
 class Literal
 {

@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "AST/literal.h"
 #include "AST/variable_type.h"
+#include "AST/literal.h"
+#include "AST/expression.h"
 #include <string>
 #include <vector>
 #include <cassert>

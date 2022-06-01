@@ -1,5 +1,6 @@
 #include "literal.h"
 
+#include "expression.h"
 
 LiteralInteger::LiteralInteger(Token value_)
 	: value(value_) 

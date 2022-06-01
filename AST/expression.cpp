@@ -1,5 +1,7 @@
 #include "expression.h"
 
+#include "literal.h"
+
 // ExpressionsId
 ExpressionId::ExpressionId(const Token& id_) 
 	: id(id_)
@@ -114,14 +116,14 @@ std::string ExpressionAt::toString() const
 }
 
 // ExpressionLiteral
-// ExpressionLiteral::ExpressionLiteral(Literal* literal_) 
-// 	: literal(literal_)
-// {
-// 	// Do nothing
-// }
+ExpressionLiteral::ExpressionLiteral(Literal* literal_) 
+	: literal(literal_)
+{
+	// Do nothing
+}
 
-// std::string ExpressionLiteral::toString() const
-// {
-// 	return "DUMMY"; //literal->toString();
-// }
+std::string ExpressionLiteral::toString() const
+{
+	return literal->toString();
+}
 
