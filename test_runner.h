@@ -7,10 +7,10 @@
 
 
 template<class T, class U>
-void AssertEqual(const T& t, const U& u, const std::string& hint) {
+void AssertEqual(const T& t, const U& u, const std::string& hint = "") {
 	if (t != u) {
 		std::ostringstream os;
-		os << "Assertion failed: " << t << " != " << u << " hint: " << hint;
+		os << "Assertion failed: '" << t << "' != '" << u << "' hint: " << hint;
 		throw std::runtime_error(os.str());
 	}
 }
@@ -27,7 +27,7 @@ public:
 			++fail_count;
 			std::cerr << name << " fail: " << e.what() << std::endl;
 		} catch(...) {
-			std::cerr << "Unknown error" << std::endl;
+			std::cerr << name << " Unknown error" << std::endl;
 		}
 	}
 

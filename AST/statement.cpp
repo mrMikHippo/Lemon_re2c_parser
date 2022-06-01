@@ -13,7 +13,6 @@ std::string StatementDefinition::toString() const
 	std::string res = type->toString();
 	res += " ";
 	res += id.value;
-	res += " ";
 	if (value) {
 		res += " = ";
 		res += value->toString();
@@ -49,7 +48,12 @@ void StatementList::addStatement(Statement* statement_)
 std::string StatementList::toString() const
 {
 	std::string res;
+	bool first = true;
 	for (const auto& st : statements) {
+		if (first) {
+			first = false;
+		} else
+			res += ", ";
 		res += st->toString();
 	}
 	return res;

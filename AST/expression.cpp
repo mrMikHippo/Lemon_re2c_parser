@@ -38,7 +38,7 @@ Token ExpressionDot::getId() const
 
 std::string ExpressionDot::toString() const
 {
-	return id.value + "." + caller->toString();
+	return caller->toString() + "." + id.value;
 }
 
 // ExpressionCallOrdered
