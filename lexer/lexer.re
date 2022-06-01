@@ -22,6 +22,14 @@ public:
 	Token* scan() {
 		for (;;) {
 			_start = _cursor;
+			 	
+			 	//"+"			{	return create_token(TOKEN_PLUS, this->getTokenValue()); }
+			 	//D+			{	return create_token(TOKEN_LITERAL, this->getTokenValue()); }
+			 	//(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }
+			 	//"-"			{	return create_token(TOKEN_MINUS, this->getTokenValue()); }
+			 	//"*"			{	return create_token(TOKEN_MUL, this->getTokenValue()); }
+			 	//"="			{	return create_token(TOKEN_ASSIGN, this->getTokenValue()); }
+			 	//";"			{	return create_token(TOKEN_SEMICOLON, this->getTokenValue()); }
 
 			/*!re2c
 				re2c:define:YYCTYPE		= char;
@@ -39,13 +47,6 @@ public:
 			 	ID = (L)(L|D)*;
 			 	LL = [A-Za-z_];
 			 	
-			 	D+			{	return create_token(TOKEN_LITERAL, this->getTokenValue()); }
-			 	(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }
-			 	"+"			{	return create_token(TOKEN_PLUS, this->getTokenValue()); }
-			 	"-"			{	return create_token(TOKEN_MINUS, this->getTokenValue()); }
-			 	"*"			{	return create_token(TOKEN_MUL, this->getTokenValue()); }
-			 	"="			{	return create_token(TOKEN_ASSIGN, this->getTokenValue()); }
-			 	";"			{	return create_token(TOKEN_SEMICOLON, this->getTokenValue()); }
 			 	[^]			{   continue; }
 				$			{ 	return nullptr; }
 			 */

@@ -3,15 +3,19 @@ CXX = g++
 PARSER_PATH=parser
 LEXER_PATH=lexer
 
-CXXFILES = main.cpp
+CXXFLAGS = 
+#-std=c++11
+
+CXXFILES = main.cpp AST/variable_type.cpp AST/literal.cpp AST/expression.cpp AST/statement.cpp
 
 OBJF=lre_test
 
-all: $(OBJF)
+# all: $(OBJF)
 
+HEADERS = lexer.h parser.c
 
-$(OBJF): lexer.h parser.c
-	$(CXX) $(CXXFILES) -o $(OBJF)
+all:
+	$(CXX) $(CXXFLAGS) $(CXXFILES) -o $(OBJF)
 
 lexer.h: $(LEXER_PATH)/lexer.re
 	re2c $(LEXER_PATH)/lexer.re -i --case-ranges -o $(LEXER_PATH)/lexer.h 

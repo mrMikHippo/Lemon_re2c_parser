@@ -17,10 +17,10 @@ std::string tokenKindToString(int kind) {
 		// return "TOKEN_ID";
 	// case TOKEN_INTEGER:
 		// return "TOKEN_INTEGER";
-	case TOKEN_LITERAL:
-		return "TOKEN_LITERAL";
-	case TOKEN_ASSIGN:
-		return "TOKEN_ASSIGN";
+	// case TOKEN_LITERAL:
+		// return "TOKEN_LITERAL";
+	// case TOKEN_ASSIGN:
+		// return "TOKEN_ASSIGN";
 	}
 	return "Unknown";
 }

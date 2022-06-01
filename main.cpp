@@ -1,69 +1,46 @@
-#define ENABLE_PARSER 1
-
 #include <iostream>
-#include <vector>
+
+#include "AST/literal.h"
+#include "AST/variable_type.h"
 #include <string>
-
-#include "token.h"
-#include "lexer/lexer.h"
-#include "ast.h"
-
-#if ENABLE_PARSER
-#include "parser/parser.c"
-#endif
+#include <vector>
+#include <cassert>
 
 using namespace std;
 
-void printTree(const Expression* node, const string& prefix, bool isLeft) {
-	if (node != nullptr) {
-		cout << prefix;
-		cout << (isLeft ? "├── " : "└── ");
-		cout << node->token->value << endl;
-
-		printTree(node->left,  prefix + (isLeft ? "│   " : "    "), true);
-        printTree(node->right,  prefix + (isLeft ? "│   " : "    "), false);
-	}
-}
-
-void printTree(const Expression* node) {
-	printTree(node, "", false);
+template<class T>
+void test(T cont, const string& match) {
+	assert(cont->toString() == match);
 }
 
 int main() {
 
-	void* pParser = ParseAlloc(malloc);
+	cout << "Test for LiteralInteger: ";
+	LiteralInteger* lint = new LiteralInteger({"10"});
+	cout << lint->toString() << endl;
+	delete lint;
 
-#if 0
-	ParseTrace(stderr, (char*)"[Parser] >> ");
-#endif
 
-	bool exit = false;
-	bool print = false;
-	int tokenID;
-	Token* token;
-	vector<Token *> tokens;
-	// AST* ast_root = new AST;
+	cout << "Test for VariableType: ";
+	VariableType v_type({"Vector"});
+	VariableType v_sub_type({"Integer"});
+	v_type.addSubType(&v_sub_type);
+	cout << v_type.toString() << endl;
 
-	string cmd;
-	getline(cin, cmd);
+	cout << "Test for ExpressionId: ";
+	ExpressionId* expr1 = new ExpressionId({"100500"});
+	ExpressionId* expr2 = new ExpressionId({"id"});
+	cout << "[" << expr1->toString() << " " << expr2->toString() << "]" << endl;
 
-	Lexer lexer(cmd.c_str());
+	vector<Expression*> v_expressions = {expr1, expr2};
 
-	while(token = lexer.scan()) {
-		tokens.push_back(token);
-
-		Parse(pParser, token->type, token);
-	}
+	cout << "Test for LiteralVector: ";
+	LiteralVector* lvec = new LiteralVector(&v_type, v_expressions);
+	cout << lvec->toString() << endl;
 	
-	Parse(pParser, 0, token);
+	delete expr1;
+	delete expr2;
+	delete lvec;
 
-	// cout << "Tree: " << endl;
-	// printTree(ast_root->node);
-
-	ParseFree(pParser, free);
-
-	// delete ast_root;
-
-	cout << "Finished" << endl;
 	return 0;
 }
