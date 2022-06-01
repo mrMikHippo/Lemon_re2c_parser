@@ -2,6 +2,7 @@
 
 #include "expression.h"
 
+// LiteralInteger
 LiteralInteger::LiteralInteger(Token value_)
 	: value(value_) 
 {
@@ -11,13 +12,13 @@ std::string LiteralInteger::toString() const {
 	return value.value;
 }
 
-LiteralVector::LiteralVector(VariableType* type_, std::vector<Expression*> content_) 
+// LiteralOneParam
+LiteralOneParam::LiteralOneParam(VariableType* type_, std::vector<Expression*> content_) 
 	: type(type_), content(content_)
 {
-
 }
 
-std::string LiteralVector::toString() const {
+std::string LiteralOneParam::toString() const {
 	std::string result = type->toString();
 	result += "[";
 	bool first = true;
@@ -33,12 +34,12 @@ std::string LiteralVector::toString() const {
 	return result;
 }
 
-
-LiteralMap::LiteralMap(VariableType* type_, std::vector<std::pair<Expression*, Expression*> > content_) 
+// LiteralTwoParam
+LiteralTwoParam::LiteralTwoParam(VariableType* type_, std::vector<std::pair<Expression*, Expression*> > content_) 
 	: type(type_), content(content_) {}
 
 
-std::string LiteralMap::toString() const {
+std::string LiteralTwoParam::toString() const {
 	std::string res = type->toString();
 	res += "[";
 	bool first = true;

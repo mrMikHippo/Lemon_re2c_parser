@@ -32,10 +32,10 @@ private:
 };
 
 // Vector(Integer)[100500, id]
-class LiteralVector : public Literal
+class LiteralOneParam : public Literal
 {
 public:
-	LiteralVector(VariableType* type_, std::vector<Expression*> content_);
+	LiteralOneParam(VariableType* type_, std::vector<Expression*> content_);
 
 	std::string toString() const override;
 
@@ -45,10 +45,10 @@ private:
 };
 
 //Map(Integer, Integer)[100500 : id, 42 : id2]
-class LiteralMap : public Literal
+class LiteralTwoParam : public Literal
 {
 public:
-	LiteralMap(VariableType* type_, std::vector<std::pair<Expression*, Expression*>> content_);
+	LiteralTwoParam(VariableType* type_, std::vector<std::pair<Expression*, Expression*>> content_);
 
 	std::string toString() const override;
 

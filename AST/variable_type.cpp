@@ -1,8 +1,8 @@
 #include "variable_type.h"
 
 
-VariableType::VariableType(const Token& type_) 
-	: type(type_)
+VariableType::VariableType(const Token& type_, const std::vector<VariableType*>& types_) 
+	: type(type_), types(types_)
 {
 
 }
