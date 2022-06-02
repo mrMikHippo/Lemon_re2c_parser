@@ -18,7 +18,7 @@ public:
 class StatementDefinition : public Statement
 {
 public:
-	StatementDefinition(VariableType* type_, Token id_, Expression* value_ = nullptr);
+	StatementDefinition(VariableType* type_, const Token& id_, Expression* value_ = nullptr);
 
 	std::string toString() const override;
 

@@ -1,10 +1,8 @@
 #include "variable_type.h"
 
-
 VariableType::VariableType(const Token& type_, const std::vector<VariableType*>& types_) 
 	: type(type_), types(types_)
 {
-
 }
 
 Token VariableType::getType() const
@@ -30,10 +28,10 @@ std::string VariableType::toString()
 		bool first = true;
 		for (const auto& t : types) {
 			if (first) {
-				res += t->type.value;
 				first = false;
 			} else
-				res += ", " + t->type.value;
+				res += ", ";
+			res += t->toString();
 		}
 		res += ")";
 	}

@@ -14,6 +14,7 @@ string arrow_end = ".->\t";
 string arrow_bet = "|->\t";
 
 void TestLiteralInteger() {
+	// 10
 	LiteralInteger lint({"10"});
 	AssertEqual(lint.toString(), "10", " literal integer test");
 	cout << arrow_end << lint.toString() << endl;
@@ -21,12 +22,14 @@ void TestLiteralInteger() {
 
 void TestVariableType() {
 	{
+		// Vector(Integer)
 		VariableType sub_type({"Integer"}, {});
 		VariableType type({"Vector"}, {&sub_type});
 		AssertEqual(type.toString(), "Vector(Integer)", " VariableType test"s);
 		cout << arrow_end << type.toString() << endl;
 	}
 	{
+		// Map(Integer, Integer)
 		VariableType sub_type_1({"Integer"}, {});
 		VariableType sub_type_2({"Integer"}, {});
 		VariableType type({"Map"}, {&sub_type_1, &sub_type_2});
@@ -36,12 +39,14 @@ void TestVariableType() {
 }
 
 void TestExpressionId() {
+	// id
 	ExpressionId expr({"id"});
 	AssertEqual(expr.toString(), "id", " test for id");
 	cout << arrow_end << expr.toString() << endl;
 }
 
 void TestLiteralOneParam() {
+	// Vector(Integer)[100500, id]
 	LiteralInteger lit_int({"100500"});
 	ExpressionLiteral expr_lit(&lit_int);
 	ExpressionId expr_id({"id"});
@@ -55,6 +60,7 @@ void TestLiteralOneParam() {
 }
 
 void TestLiteralTwoParam() {
+	// Map(Integer, Integer)[100500 : id, 42 : id2]
 	LiteralInteger lit_int_1({"100500"});
 	ExpressionLiteral key1(&lit_int_1);
 	ExpressionId value1({"id"});
@@ -74,6 +80,7 @@ void TestLiteralTwoParam() {
 }
 
 void TestExpressionDot() {
+	// id.some_method
 	ExpressionId caller({"id"});
 	Token func_name({"some_method"});
 
@@ -83,6 +90,7 @@ void TestExpressionDot() {
 }
 
 void TestExpressionCallOrdered() {
+	// id.some_method(arg1, arg2)
 	ExpressionId caller({"id"});
 	Token func_name({"some_method"});
 
@@ -123,6 +131,7 @@ void TestExpressionCallNamed() {
 }
 
 void TestExpressionAt() {
+	// id[key]
 	ExpressionId caller({"id"});
 	ExpressionId key({"key"});
 
@@ -132,6 +141,7 @@ void TestExpressionAt() {
 }
 
 void TestExpressionLiteral() {
+	// Vector(Integer)[100500]
 	LiteralInteger lit_int({"100500"});
 	ExpressionLiteral expr1(&lit_int);
 
@@ -196,7 +206,7 @@ void TestStatementDefinition() {
 }
 
 void TestStatementExpression() {
-
+	// id[key]
 	ExpressionId caller({"id"});
 	ExpressionId key({"key"});
 
@@ -209,12 +219,12 @@ void TestStatementExpression() {
 }
 
 void TestStatementList() {
-	// First statement
+	// First statement: Integer a
 	VariableType vt_first({"Integer"}, {});
 	Token id_first({"a"});
 	StatementDefinition st_first(&vt_first, id_first);
 
-	//Second Statement
+	//Second Statement: Vector(Integer)
 	VariableType vt_sub({"Integer"}, {});
 	VariableType vt({"Vector"}, {&vt_sub});
 	Token id({"vec"});
@@ -223,6 +233,7 @@ void TestStatementList() {
 	VariableType vt_sub_2({"Integer"}, {});
 	VariableType vt_2({"Vector"}, {&vt_sub});
 
+	// Vector(Integer)[10,20]
 	LiteralInteger l_int_1({"10"});
 	LiteralInteger l_int_2({"20"});
 	ExpressionLiteral exp_l_1(&l_int_1);
@@ -239,9 +250,8 @@ void TestStatementList() {
 	cout << arrow_end << st_list.toString() << endl;
 }
 
-void Test1() {
+void TestDefinition() {
 	//Integer i_1;
-	//ID("Integer") ID("i_1") SEMICOLON
 	VariableType vt({"Integer"}, {});
 	Token id({"i_1"});
 
@@ -250,7 +260,7 @@ void Test1() {
 	cout << arrow_end << st.toString() << endl;
 }
 
-void Test2() {
+void TestDefinitionInitialization() {
 	// Integer i_2 = 1;
 	//ID("Integer") ID("i_2") ASSIGN INTEGER("1") SEMICOLON
 	VariableType vt({"Integer"}, {});
@@ -264,7 +274,7 @@ void Test2() {
 	cout << arrow_end << st.toString() << endl;
 }
 
-void Test3() {
+void TestIdAssignmentLiteral() {
 	// i_1 = 2;
 	//ID("i_1") ASSIGN INTEGER("2") SEMICOLON
 	ExpressionId id(Token{"i_1"});
@@ -278,7 +288,7 @@ void Test3() {
 	cout << arrow_end << exprA.toString() << endl;
 }
 
-void Test4() {
+void TestIdAssignmentId() {
 	// i_2 = a_1;
 	//ID("i_2") ASSIGN ID("a_1") SEMICOLON
 
@@ -291,64 +301,214 @@ void Test4() {
 }
 
 
-void Test5() {
+void TestVTypeOneParamInitialization() {
 	// Vector(Integer) vc_1 = Vector(Integer)[];
 	//ID("Vector") LRB ID("Integer") RRB ID("vc_1") ASSIGN ID("Vector") LRB ID("Integer") RRB LSB RSB SEMICOLON
 
-	// VariableType
-	throw std::runtime_error("DUMMMY");
+	VariableType sub_type({"Integer"}, {});
+	VariableType type({"Vector"}, {&sub_type});
+	Token id({"vc_1"});
+
+	VariableType sub_type_right({"Integer"}, {});
+	VariableType type_right({"Vector"}, {&sub_type_right});
+	LiteralOneParam one_param_right(&type_right, {});
+	ExpressionLiteral expr_right(&one_param_right);
+
+	StatementDefinition st_def(&type, id, &expr_right);
+
+	AssertEqual(st_def.toString(), "Vector(Integer) vc_1 = Vector(Integer)[]");
+	cout << arrow_end << st_def.toString() << endl;
 }
 
-void Test6() {
+void TestVTypeVTypeOneParamInitialization() {
 	// Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1];
 	//ID("Vector") LRB ID("Vector") LRB ID("Integer") RRB RRB ID("vc_2") ASSIGN ID("Vector") LRB ID("Vector") LRB ID("Integer") RRB RRB LSB ID("vc_1") RSB SEMICOLON
-	
-	throw std::runtime_error("DUMMMY");
+
+	// Create Vector(Vector(Integer))
+	VariableType vc_sub_sub_type({"Integer"}, {});
+	VariableType vc_sub_type({"Vector"}, {&vc_sub_sub_type});
+	VariableType vc_type({"Vector"}, {&vc_sub_type});
+
+	// Create token vc_1
+	Token vc_1_token({"vc_1"});
+	ExpressionId vc_1_id(vc_1_token);
+
+	LiteralOneParam vc_literal(&vc_type, {&vc_1_id});
+	ExpressionLiteral vc_exp(&vc_literal);
+
+	// Create left side
+	VariableType ltype({"Vector"}, {&vc_sub_type});
+	cout << "Left type: " << ltype.toString() << endl;
+
+	Token id_token({"vc_2"});
+	StatementDefinition st_def(&ltype, id_token, &vc_exp);
+
+	AssertEqual(st_def.toString(), "Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1]");
+	cout << arrow_end << st_def.toString() << endl;
 }
 
-void Test7() {
+void TestIdAssignmentExpression() {
 	// vc_1 = Vector(Integer)[i_1, i_2];
 	//ID("vc_1") ASSIGN ID("Vector") LRB ID("Integer") RRB LSB ID("i_1") COMMA ID("i_2") RRB SEMICOLON
-	
-	throw std::runtime_error("DUMMMY");
+
+	Token left_token({"vc_1"});
+	ExpressionId left_id(left_token);
+
+	VariableType sub_type({"Integer"}, {});
+	VariableType type({"Vector"}, {&sub_type});
+
+	ExpressionId first(Token{"i_1"});
+	ExpressionId sec(Token{"i_2"});
+
+	LiteralOneParam vec(&type, {&first, &sec});
+	ExpressionLiteral assigned_vector(&vec);
+
+	ExpressionAssign exprA(&left_id, &assigned_vector);
+
+	AssertEqual(exprA.toString(), "vc_1 = Vector(Integer)[i_1, i_2]");
+
+	cout << arrow_end << exprA.toString() << endl;
 }
 
-void Test8() {
+void TestExpressionCallPushBack() {
 	// vc_1.pushBack(i_1);
 	//ID("vc_1") DOT ID("pushBack") LRB ID("i_1") RRB SEMICOLON
-	
+
+	ExpressionId callee(Token{"vc_1"});
+	ExpressionId id_to_push(Token{"i_1"});
+
+	Token method_name({"pushBack"});
+
+	ExpressionDot expr(method_name, &callee);
+
+	ExpressionCallOrdered expr_co(&expr, {&id_to_push});
+
+	AssertEqual(expr_co.toString(), "vc_1.pushBack(i_1)");
+	cout << arrow_end << expr_co.toString() << endl;
 }
 
-void Test9() {
+void TestExpressionTwoParamInitialization() {
 	// Map(Integer, Integer) m_1 = Map(Integer, Integer)[];
 	//ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB RSB SEMICOLON
 	
+	VariableType sub_type1({"Integer"}, {});
+	VariableType sub_type2({"Integer"}, {});
+	VariableType type_left({"Map"}, {&sub_type1, &sub_type2});
+	Token id({"m_1"});
+
+	VariableType rtype({"Map"}, {&sub_type1, &sub_type2});
+
+	LiteralOneParam rliteral(&rtype, {});
+	ExpressionLiteral rexp_lit(&rliteral);
+
+	StatementDefinition st(&type_left, id, &rexp_lit);
+
+	AssertEqual(st.toString(), "Map(Integer, Integer) m_1 = Map(Integer, Integer)[]");
+	cout << arrow_end << st.toString() << endl;
+
 }
-void Test10() {
+
+void TestExpressionTwoParamInitializationById() {
 	// Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[m_1];
 	//ID("Map") LRB ID("Integer") COMMA ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB RRB ID("m_2") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB RRB LSB ID("m_1") RSB SEMICOLON
-	
-}
-void Test11() {
-	// m_1 = Map(Integer, Integer)[i_1: i_1, i_2: i_2];
-	//ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB ID("i_1") COLON ID("i_1") COMMA ID("i_2") COLON ID("i_2") RSB SEMICOLON
-	
-}
-void Test12() {
-	// m_1.insert(first = i_1, second = i_2);
-	//ID("m_1") DOT ID("insert") LRB ID("first") ASSIGN ID("i_1") COMMA ID("second") ASSIGN ID("i_2") RRB SEMICOLON
-	
-}
-void Test13() {
-	// Type t = Integer;
-	//ID("ID") ID("IDD") ASSIGN ID("ID") SEMICOLON
+	VariableType int_type(Token{"Integer"}, {});
+	VariableType sec_type_left(Token{"Map"}, {&int_type, &int_type});
+	VariableType ltype(Token{"Map"}, {&int_type, &sec_type_left});
+	// cout << ltype.toString() << endl;
+
+	VariableType rtype(Token{"Map"}, {&int_type, &sec_type_left});
+	// cout << rtype.toString() << endl;
+
+
+	Token id({"m_2"});
+
+	Token id_r({"m_1"});
+	// LiteralTwoParam ltp(&rtype, );
+
+
+
+
+	StatementDefinition st(&ltype, Token{"m_2"});
+	AssertEqual(st.toString(), "Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[m_1]");
+	cout << arrow_end << st.toString() << endl;
 	
 }
 
-void Test14() {
+void TestIdAssignmentExpressionTwoParam() {
+	// m_1 = Map(Integer, Integer)[i_1: i_1, i_2: i_2];
+	//ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB ID("i_1") COLON ID("i_1") COMMA ID("i_2") COLON ID("i_2") RSB SEMICOLON
+	ExpressionId id(Token{"m_1"});
+	VariableType int_type(Token{"Integer"}, {});
+	VariableType map_type(Token{"Map"}, {&int_type, &int_type});
+
+	ExpressionId key1(Token{"i_1"});
+	ExpressionId val1(Token{"j_1"});
+	ExpressionId key2(Token{"i_2"});
+	ExpressionId val2(Token{"j_2"});
+
+	LiteralTwoParam map_container(&map_type, {{&key1, &val1}, {&key2, &val2}});
+	ExpressionLiteral map_expr_cont(&map_container);
+
+	ExpressionAssign exprA(&id, &map_expr_cont);
+	
+	AssertEqual(exprA.toString(), "m_1 = Map(Integer, Integer)[i_1 : j_1, i_2 : j_2]");
+	cout << arrow_end << exprA.toString() << endl;
+}
+
+void TestExpressionDotCallNamed() {
+	// m_1.insert(first = i_1, second = i_2);
+	//ID("m_1") DOT ID("insert") LRB ID("first") ASSIGN ID("i_1") COMMA ID("second") ASSIGN ID("i_2") RRB SEMICOLON
+
+	ExpressionId callee(Token{"m_1"});
+	Token method_name({"insert"});
+
+	ExpressionDot expr_dot(method_name, &callee);
+
+	Token first({"first"});
+	ExpressionId first_val({"i_1"});
+	Token second({"second"});
+	ExpressionId second_val({"i_2"});
+
+	ExpressionCallNamed expr_cn(&expr_dot, {{&first, &first_val}, {&second, &second_val}});
+
+	AssertEqual(expr_cn.toString(), "m_1.insert(first = i_1, second = i_2)");
+	cout << arrow_end << expr_cn.toString() << endl;
+}
+
+void TestTypeInitialization() {
+	// Type t = Integer;
+	//ID("ID") ID("IDD") ASSIGN ID("ID") SEMICOLON
+
+	VariableType type({"Type"}, {});
+	Token id({"t"}); 
+
+	// VariableType t({"Integer"}, {});
+	// Token t({"Integer"});
+	ExpressionId type_id(Token{"Integer"});
+
+	StatementDefinition st(&type, id, &type_id);
+	AssertEqual(st.toString(), "Type t = Integer");
+	cout << arrow_end << st.toString() << endl;
+}
+
+void TestExprDotStatementExpressionVarType() {
 	// vc_1.type() == Vector(Integer);
 	//ID("ID") DOT ID("ID") LRB RRB ASSIGN ASSIGN ID("Vector") LRB ID("Integer") RRB SEMICOLON
+
+	// ExpressionId callee(Token{"vc_1"});
+
+	// Token method_name({"type"});
+	// ExpressionDot expr(method_name, &callee);
+	// ExpressionCallOrdered expr_co(&expr, {});
+
+	// VariableType sub_vt({"Integer"}, {})
+	// VariableType vt({"Vector"}, {&sub_vt});
+
 	
+	// // StatementExpression
+
+	// AssertEqual(expr_co.toString(), "vc_1.type() == Vector(Integer)");
+	// cout << arrow_end << expr_co.toString() << endl;
 }
 
 int main() {
@@ -367,13 +527,20 @@ int main() {
 	tr.RunTest(TestStatementDefinition, "TestStatementDefinition");
 	tr.RunTest(TestStatementExpression, "TestStatementExpression");
 	tr.RunTest(TestStatementList, "TestStatementList");
-	tr.RunTest(Test1, "Test Assembly of 'Integer i_1'");
-	tr.RunTest(Test2, "Test Assembly of 'Integer i_2 = 1'");
-	tr.RunTest(Test3, "Test Assembly of 'i_1 = 2'");
-	tr.RunTest(Test4, "Test Assembly of 'i_1 = a_1'");
-	tr.RunTest(Test5, "Test Assembly of 'Vector(Integer) vc_1 = Vector(Integer)[]'");
-	tr.RunTest(Test6, "Test Assembly of 'Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1]'");
-	tr.RunTest(Test7, "Test Assembly of 'vc_1 = Vector(Integer)[i_1, i_2]'");
+	tr.RunTest(TestDefinition, "TestDefinition");
+	tr.RunTest(TestDefinitionInitialization, "TestDefinitionInitialization");
+	tr.RunTest(TestIdAssignmentLiteral, "TestIdAssignmentLiteral");
+	tr.RunTest(TestIdAssignmentId, "TestIdAssignmentId");
+	tr.RunTest(TestVTypeOneParamInitialization, "TestVTypeOneParamInitialization");
+	tr.RunTest(TestVTypeVTypeOneParamInitialization, "TestVTypeVTypeOneParamInitialization");
+	tr.RunTest(TestIdAssignmentExpression, "TestIdAssignmentExpression");
+	tr.RunTest(TestExpressionCallPushBack, "TestExpressionCallPushBack");
+	tr.RunTest(TestExpressionTwoParamInitialization, "TestExpressionTwoParamInitialization");
+	tr.RunTest(TestExpressionTwoParamInitializationById, "TestExpressionTwoParamInitializationById");
+	tr.RunTest(TestIdAssignmentExpressionTwoParam, "TestIdAssignmentExpressionTwoParam");
+	tr.RunTest(TestExpressionDotCallNamed, "TestExpressionDotCallNamed");
+	tr.RunTest(TestTypeInitialization, "TestTypeInitialization");
+	tr.RunTest(TestExprDotStatementExpressionVarType, "TestExprDotStatementExpressionVarType");
 
 
 	cout << "..................." << endl;
