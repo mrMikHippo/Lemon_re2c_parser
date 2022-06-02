@@ -19,6 +19,18 @@ std::string ExpressionId::toString() const
 	return id.value;
 }
 
+// ExpressionAssign
+ExpressionAssign::ExpressionAssign(Expression* left_, Expression* right_)
+	: left(left_), right(right_)
+{
+	// Do nothing
+}
+
+std::string ExpressionAssign::toString() const
+{
+	return left->toString() + " = " + right->toString();
+}
+
 // ExpressionDot
 ExpressionDot::ExpressionDot(const Token& id_, Expression* caller_) 
 	: id(id_), caller(caller_)

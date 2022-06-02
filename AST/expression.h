@@ -29,6 +29,18 @@ private:
     Token id;
 };
 
+class ExpressionAssign : public Expression
+{
+public:
+	ExpressionAssign(Expression* left_, Expression* right_);
+
+	std::string toString() const override;
+
+private:
+	Expression* left;
+	Expression* right;
+};
+
 //id.some
 class ExpressionDot : public Expression
 {
