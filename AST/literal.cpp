@@ -12,6 +12,16 @@ std::string LiteralInteger::toString() const {
 	return value.value;
 }
 
+// LiteralType
+LiteralType::LiteralType(VariableType* type_)
+	: type(type_) 
+{
+}
+
+std::string LiteralType::toString() const {
+	return type->toString();
+}
+
 // LiteralOneParam
 LiteralOneParam::LiteralOneParam(VariableType* type_, std::vector<Expression*> content_) 
 	: type(type_), content(content_)

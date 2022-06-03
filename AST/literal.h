@@ -31,6 +31,46 @@ private:
 	Token value;
 };
 
+//10.5
+class LiteralFloat : public Literal
+{
+public:
+	LiteralFloat(Token value_);
+	virtual ~LiteralFloat() {}
+
+	std::string toString() const override;
+
+private:
+	Token value;
+};
+
+// "Some string"
+class LiteralString : public Literal
+{
+public:
+	LiteralString(Token value_);
+	virtual ~LiteralString() {}
+
+	std::string toString() const override;
+
+private:
+	Token value;
+};
+// Other primitives Literals ...
+
+
+// Integer or Type or Vector(Integer) etc.
+class LiteralType : public Literal
+{
+public:
+	LiteralType(VariableType* type_);
+
+	std::string toString() const override;
+private:
+	VariableType* type;
+};
+
+
 // Vector(Integer)[100500, id]
 class LiteralOneParam : public Literal
 {

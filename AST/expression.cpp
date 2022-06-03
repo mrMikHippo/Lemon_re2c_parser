@@ -139,3 +139,15 @@ std::string ExpressionLiteral::toString() const
 	return literal->toString();
 }
 
+// ExpressionLiteral
+ExpressionEqual::ExpressionEqual(Expression* left_, Expression* right_)
+	: left(left_), right(right_)
+{
+	// Do nothing
+}
+
+std::string ExpressionEqual::toString() const
+{
+	return left->toString() + " == " + right->toString();
+}
+

@@ -30,7 +30,7 @@ vc_1.pushBack(i_1);
 Map(Integer, Integer) m_1 = Map(Integer, Integer)[];
 //ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB RSB SEMICOLON
 
-Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[m_1];
+Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1];
 //ID("Map") LRB ID("Integer") COMMA ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB RRB ID("m_2") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB RRB LSB ID("m_1") RSB SEMICOLON
 
 m_1 = Map(Integer, Integer)[i_1: i_1, i_2: i_2];

@@ -112,3 +112,16 @@ public:
 private:
     Literal* literal;
 };
+
+// a == b
+class ExpressionEqual : public Expression
+{
+public:
+	ExpressionEqual(Expression* left_, Expression* right_);
+
+	std::string toString() const override;
+
+private:
+	Expression* left;
+	Expression* right;
+};

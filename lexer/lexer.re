@@ -25,6 +25,7 @@ public:
 			 	
 			 	//"+"			{	return create_token(TOKEN_PLUS, this->getTokenValue()); }
 			 	//D+			{	return create_token(TOKEN_LITERAL, this->getTokenValue()); }
+			 					// if getTokenID is at global map of types -  create_token type else create token ID
 			 	//(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }
 			 	//"-"			{	return create_token(TOKEN_MINUS, this->getTokenValue()); }
 			 	//"*"			{	return create_token(TOKEN_MUL, this->getTokenValue()); }
