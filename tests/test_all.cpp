@@ -7,20 +7,44 @@
 #include <string>
 #include <vector>
 #include "test_runner.h"
+#include <iostream>
 
 using namespace std;
 
 string arrow_end = ".->\t";
 string arrow_bet = "|->\t";
 
-bool verbose = true;
+bool verbose = false;
 
+class Log
+{
+public:
+	Log(bool debug_ = false, ostream& stream_ = cout) 
+		: _out_stream(stream_), _debug(debug_) {}
+
+	// operator std::ostream() {
+	// 	return _out_stream;
+	// }
+
+	template<typename T>
+	Log& operator<< (const T& data) {
+		if (_debug)
+			_out_stream << data;
+		return *this;
+	}
+
+private:
+	bool _debug;
+	std::ostream& _out_stream;
+};
+
+static Log log(verbose);
 
 void TestLiteralInteger() {
 	// 10
 	LiteralInteger lint({"10"});
 	AssertEqual(lint.toString(), "10", " literal integer test");
-	std::cout << arrow_end << lint.toString() << endl;
+	log << arrow_end << lint.toString() << "\n";
 }
 
 void TestVariableType() {
@@ -29,7 +53,7 @@ void TestVariableType() {
 		VariableType sub_type({"Integer"}, {});
 		VariableType type({"Vector"}, {&sub_type});
 		AssertEqual(type.toString(), "Vector(Integer)", " VariableType test"s);
-		cout << arrow_end << type.toString() << endl;
+		log << arrow_end << type.toString() << "\n";
 	}
 	{
 		// Map(Integer, Integer)
@@ -37,7 +61,7 @@ void TestVariableType() {
 		VariableType sub_type_2({"Integer"}, {});
 		VariableType type({"Map"}, {&sub_type_1, &sub_type_2});
 		AssertEqual(type.toString(), "Map(Integer, Integer)", " VariableType test"s);
-		cout << arrow_bet << type.toString() << endl;
+		log << arrow_bet << type.toString() << "\n";
 	}
 }
 
@@ -45,7 +69,7 @@ void TestExpressionId() {
 	// id
 	ExpressionId expr({"id"});
 	AssertEqual(expr.toString(), "id", " test for id");
-	cout << arrow_end << expr.toString() << endl;
+	log << arrow_end << expr.toString() << "\n";
 }
 
 void TestLiteralOneParam() {
@@ -59,7 +83,7 @@ void TestLiteralOneParam() {
 
 	LiteralOneParam lvec(&type, {&expr_lit, &expr_id});
 	AssertEqual(lvec.toString(), "Vector(Integer)[100500, id]");
-	cout << arrow_end << lvec.toString() << endl;
+	log << arrow_end << lvec.toString() << "\n";
 }
 
 void TestLiteralTwoParam() {
@@ -79,7 +103,7 @@ void TestLiteralTwoParam() {
 	LiteralTwoParam lmap(&type, {{&key1, &value1}, {&key2, &value2}});
 
 	AssertEqual(lmap.toString(), "Map(Integer, Integer)[100500 : id, 42 : id2]");
-	cout << arrow_end << lmap.toString() << endl;
+	log << arrow_end << lmap.toString() << "\n";
 }
 
 void TestExpressionDot() {
@@ -89,7 +113,7 @@ void TestExpressionDot() {
 
 	ExpressionDot expr_dot(func_name, &caller);
 	AssertEqual(expr_dot.toString(), "id.some_method");
-	cout << arrow_end << expr_dot.toString() << endl;
+	log << arrow_end << expr_dot.toString() << "\n";
 }
 
 void TestExpressionCallOrdered() {
@@ -104,7 +128,7 @@ void TestExpressionCallOrdered() {
 
 	ExpressionCallOrdered expr_co(&expr_dot, {&arg1, &arg2});
 	AssertEqual(expr_co.toString(), "id.some_method(arg1, arg2)");
-	cout << arrow_end << expr_co.toString() << endl;
+	log << arrow_end << expr_co.toString() << "\n";
 }
 
 void TestExpressionCallNamed() {
@@ -130,7 +154,7 @@ void TestExpressionCallNamed() {
 	);
 
 	AssertEqual(expr_cn.toString(), "id.some_method(key1 = arg1, key2 = arg2)");
-	cout << arrow_end << expr_cn.toString() << endl;
+	log << arrow_end << expr_cn.toString() << "\n";
 }
 
 void TestExpressionAt() {
@@ -140,7 +164,7 @@ void TestExpressionAt() {
 
 	ExpressionAt expr(&caller, &key);
 	AssertEqual(expr.toString(), "id[key]");
-	cout << arrow_end << expr.toString() << endl;
+	log << arrow_end << expr.toString() << "\n";
 }
 
 void TestExpressionLiteral() {
@@ -155,7 +179,7 @@ void TestExpressionLiteral() {
 	ExpressionLiteral expr_literal(&lvec);
 
 	AssertEqual(expr_literal.toString(), "Vector(Integer)[100500]");
-	cout << arrow_end << expr_literal.toString() << endl;
+	log << arrow_end << expr_literal.toString() << "\n";
 }
 
 void TestStatementDefinition() {
@@ -167,7 +191,7 @@ void TestStatementDefinition() {
 		StatementDefinition st(&vt, id);
 
 		AssertEqual(st.toString(), "Integer a");	
-		cout << arrow_end << st.toString() << endl;
+		log << arrow_end << st.toString() << "\n";
 	}
 	
 	//Integer a = 100500
@@ -179,7 +203,7 @@ void TestStatementDefinition() {
 
 		StatementDefinition st(&vt, id, &exp_lit);
 		AssertEqual(st.toString(), "Integer a = 12345");
-		cout << arrow_bet << st.toString() << endl;
+		log << arrow_bet << st.toString() << "\n";
 	}
 	
 	// Vector(Integer) vec = Vector(Integer)[10, 20];
@@ -204,7 +228,7 @@ void TestStatementDefinition() {
 		StatementDefinition st(&vt, id, &expr_lit);
 
 		AssertEqual(st.toString(), "Vector(Integer) vec = Vector(Integer)[10, 20]");
-		cout << arrow_bet << st.toString() << endl;
+		log << arrow_bet << st.toString() << "\n";
 	}
 }
 
@@ -218,7 +242,7 @@ void TestStatementExpression() {
 	StatementExpression st(&expr);
 
 	AssertEqual(st.toString(), "id == key");
-	cout << arrow_end << st.toString() << endl;
+	log << arrow_end << st.toString() << "\n";
 }
 
 void TestStatementList() {
@@ -250,7 +274,7 @@ void TestStatementList() {
 	StatementList st_list({&st_first, &st_sec});
 
 	AssertEqual(st_list.toString(), "Integer a, Vector(Integer) vec = Vector(Integer)[10, 20]");
-	cout << arrow_end << st_list.toString() << endl;
+	log << arrow_end << st_list.toString() << "\n";
 }
 
 void TestDefinition() {
@@ -260,7 +284,7 @@ void TestDefinition() {
 
 	StatementDefinition st(&vt, id);
 	AssertEqual(st.toString(), "Integer i_1");
-	cout << arrow_end << st.toString() << endl;
+	log << arrow_end << st.toString() << "\n";
 }
 
 void TestDefinitionInitialization() {
@@ -274,7 +298,7 @@ void TestDefinitionInitialization() {
 
 	StatementDefinition st(&vt, id, &expr);
 	AssertEqual(st.toString(), "Integer i_2 = 1");
-	cout << arrow_end << st.toString() << endl;
+	log << arrow_end << st.toString() << "\n";
 }
 
 void TestIdAssignmentLiteral() {
@@ -288,7 +312,7 @@ void TestIdAssignmentLiteral() {
 	// i_1 = 2
 	ExpressionAssign exprA = ExpressionAssign(&id, &elit);
 	AssertEqual(exprA.toString(), "i_1 = 2");
-	cout << arrow_end << exprA.toString() << endl;
+	log << arrow_end << exprA.toString() << "\n";
 }
 
 void TestIdAssignmentId() {
@@ -300,7 +324,7 @@ void TestIdAssignmentId() {
 
 	ExpressionAssign exprA(&id_left, &id_right);
 	AssertEqual(exprA.toString(), "i_2 = a_1");	
-	cout << arrow_end << exprA.toString() << endl;
+	log << arrow_end << exprA.toString() << "\n";
 }
 
 
@@ -320,7 +344,7 @@ void TestVTypeOneParamInitialization() {
 	StatementDefinition st_def(&type, id, &expr_right);
 
 	AssertEqual(st_def.toString(), "Vector(Integer) vc_1 = Vector(Integer)[]");
-	cout << arrow_end << st_def.toString() << endl;
+	log << arrow_end << st_def.toString() << "\n";
 }
 
 void TestVTypeVTypeOneParamInitialization() {
@@ -346,7 +370,7 @@ void TestVTypeVTypeOneParamInitialization() {
 	StatementDefinition st_def(&ltype, id_token, &vc_exp);
 
 	AssertEqual(st_def.toString(), "Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1]");
-	cout << arrow_end << st_def.toString() << endl;
+	log << arrow_end << st_def.toString() << "\n";
 }
 
 void TestIdAssignmentExpression() {
@@ -369,7 +393,7 @@ void TestIdAssignmentExpression() {
 
 	AssertEqual(exprA.toString(), "vc_1 = Vector(Integer)[i_1, i_2]");
 
-	cout << arrow_end << exprA.toString() << endl;
+	log << arrow_end << exprA.toString() << "\n";
 }
 
 void TestExpressionCallPushBack() {
@@ -386,7 +410,7 @@ void TestExpressionCallPushBack() {
 	ExpressionCallOrdered expr_co(&expr, {&id_to_push});
 
 	AssertEqual(expr_co.toString(), "vc_1.pushBack(i_1)");
-	cout << arrow_end << expr_co.toString() << endl;
+	log << arrow_end << expr_co.toString() << "\n";
 }
 
 void TestStatementTwoParamInitializationEmpty() {
@@ -406,7 +430,7 @@ void TestStatementTwoParamInitializationEmpty() {
 	StatementDefinition st(&type_left, id, &rexp_lit);
 
 	AssertEqual(st.toString(), "Map(Integer, Integer) m_1 = Map(Integer, Integer)[]");
-	cout << arrow_end << st.toString() << endl;
+	log << arrow_end << st.toString() << "\n";
 
 }
 
@@ -430,7 +454,7 @@ void TestStatementTwoParamInitializationWithValue() {
 	StatementDefinition st(&ltype, id, &rmap);
 
 	AssertEqual(st.toString(), "Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1]");
-	cout << arrow_end << st.toString() << endl;
+	log << arrow_end << st.toString() << "\n";
 }
 
 void TestIdAssignmentExpressionTwoParam() {
@@ -451,7 +475,7 @@ void TestIdAssignmentExpressionTwoParam() {
 	ExpressionAssign exprA(&id, &map_expr_cont);
 	
 	AssertEqual(exprA.toString(), "m_1 = Map(Integer, Integer)[i_1 : j_1, i_2 : j_2]");
-	cout << arrow_end << exprA.toString() << endl;
+	log << arrow_end << exprA.toString() << "\n";
 }
 
 void TestExpressionDotCallNamed() {
@@ -471,7 +495,7 @@ void TestExpressionDotCallNamed() {
 	ExpressionCallNamed expr_cn(&expr_dot, {{&first, &first_val}, {&second, &second_val}});
 
 	AssertEqual(expr_cn.toString(), "m_1.insert(first = i_1, second = i_2)");
-	cout << arrow_end << expr_cn.toString() << endl;
+	log << arrow_end << expr_cn.toString() << "\n";
 }
 
 void TestTypeInitialization() {
@@ -491,7 +515,7 @@ void TestTypeInitialization() {
 	// ???
 	StatementDefinition st(&vtype, id, &el_type_int);
 	AssertEqual(st.toString(), "Type type_var = Integer");
-	cout << arrow_end << st.toString() << endl;
+	log << arrow_end << st.toString() << "\n";
 }
 
 void TestExprDotStatementExpressionVarType() {
@@ -514,7 +538,7 @@ void TestExprDotStatementExpressionVarType() {
 	StatementExpression st_expr(&expr_eq_eq);
 										// exprCall exprDOt exprId  | expr tpye
 	AssertEqual(st_expr.toString(), "vc_1.type() == Vector(Integer)");
-	cout << arrow_end << st_expr.toString() << endl;
+	log << arrow_end << st_expr.toString() << "\n";
 }
 
 void TestAll() {
@@ -547,8 +571,8 @@ void TestAll() {
 	tr.RunTest(TestTypeInitialization, "TestTypeInitialization");
 	tr.RunTest(TestExprDotStatementExpressionVarType, "TestExprDotStatementExpressionVarType");
 
-	cout << "..................." << endl;
-	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << endl;
+	cout << "..................." << "\n";
+	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << "\n";
 	if (tr.getFailCount())
-		cout << "Fail: " << tr.getFailCount() << endl;
+		cout << "Fail: " << tr.getFailCount() << "\n";
 }

@@ -18,7 +18,7 @@ LiteralVector: Literal
     VariableType type
     vector<Expression> subTypes
     
-//Vector(Integer, Integer)[100500 : id, 42 : id2]
+//Map(Integer, Integer)[100500 : id, 42 : id2]
 LiteralMap: Literal
     VariableType type
     vector<pair<Expression, Expression>>

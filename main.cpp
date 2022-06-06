@@ -1,84 +1,50 @@
-#define ENABLE_PARSER 0
-
 #include <iostream>
 #include <vector>
 #include <string>
 
 #include "tests/test_all.h"
-
-// #include "token.h"
-// #include "lexer/lexer.h"
-// #include "ast.h"
-
-#if ENABLE_PARSER
-#include "parser/parser.c"
-#endif
-
-// #include "token.h"
-// #include "AST/literal.h"
-// #include "AST/expression.h"
+#include "lexer/lexer.h"
+#include "AST/global_types_map.h"
 
 using namespace std;
 
-#if 0
-void printTree(const Expression* node, const string& prefix, bool isLeft) {
-	if (node != nullptr) {
-		cout << prefix;
-		cout << (isLeft ? "├── " : "└── ");
-		cout << node->token->value << endl;
 
-		printTree(node->left,  prefix + (isLeft ? "│   " : "    "), true);
-        printTree(node->right,  prefix + (isLeft ? "│   " : "    "), false);
-	}
-}
-
-void printTree(const Expression* node) {
-	printTree(node, "", false);
-}
-#endif
-
-
+// static void InitGlobalTypesMap() {
+// 	GlobalTypeMap::getInstance().types.push_back(string("Integer"));
+// 	GlobalTypeMap::getInstance().types.push_back(string("String"));
+// 	GlobalTypeMap::getInstance().types.push_back(string("Vector"));
+// 	GlobalTypeMap::getInstance().types.push_back(string("Map"));
+// }
 
 int main() {
 
 	TestAll();
 
-#if 0
-	bool exit = false;
-	void* pParser = ParseAlloc(malloc);
-#endif
-#if 0
-	ParseTrace(stderr, (char*)"[Parser] >> ");
-#endif
-
-#if 0
 	bool exit = false;
 	bool print = false;
 	int tokenID;
-	Token* token;
-	vector<Token *> tokens;
-	// AST* ast_root = new AST;
-
 	string cmd;
-	getline(cin, cmd);
 
-	Lexer lexer(cmd.c_str());
+	// InitGlobalTypesMap();
 
-	while(token = lexer.scan()) {
-		tokens.push_back(token);
+	for (const auto& t : GlobalTypeMap::getInstance().types)
+		cout << t << endl;
 
-		Parse(pParser, token->type, token);
+	while (!exit) {
+		cout << "> ";
+		getline(cin, cmd);
+
+		if (cmd == "quit")
+			break;
+		else if (cmd.empty())
+			continue;
+		else {
+			Lexer lexer(cmd.c_str());
+
+			lexer.scan();
+		}
 	}
-	
-	Parse(pParser, 0, token);
 
-	// cout << "Tree: " << endl;
-	// printTree(ast_root->node);
-
-	ParseFree(pParser, free);
-
-	// delete ast_root;
-#endif
 	cout << "Finished" << endl;
 	return 0;
 }

@@ -7,6 +7,7 @@ CXXFLAGS =
 #-std=c++11
 
 CXXFILES = main.cpp AST/variable_type.cpp AST/literal.cpp AST/expression.cpp AST/statement.cpp tests/test_all.cpp
+# AST/token.cpp
 
 OBJF=lre_test
 
@@ -14,7 +15,7 @@ OBJF=lre_test
 
 HEADERS = lexer.h parser.c
 
-all:
+all: lexer.h
 	$(CXX) $(CXXFLAGS) $(CXXFILES) -o $(OBJF)
 
 lexer.h: $(LEXER_PATH)/lexer.re

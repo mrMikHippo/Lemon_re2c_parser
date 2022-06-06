@@ -2,12 +2,12 @@
 
 #include <string>
 #include <cstring>
-#include "../parser/parser.h"
+#include <algorithm>
+#include <iostream>
+// #include "../parser/parser.h"
 // #include "lexer.def.h"
-#include "../ast.h"
-
-#define TOKEN_EOF 0
-#define TOKEN_PRINT 150
+#include "../AST/token.h"
+#include "../AST/global_types_map.h"
 
 class Lexer {
 public:
@@ -19,18 +19,13 @@ public:
 		_limit = _content + strlen(_content);
 	}
 
-	Token* scan() {
+	void scan() {
 		for (;;) {
 			_start = _cursor;
 			 	
 			 	//"+"			{	return create_token(TOKEN_PLUS, this->getTokenValue()); }
 			 	//D+			{	return create_token(TOKEN_LITERAL, this->getTokenValue()); }
-			 					// if getTokenID is at global map of types -  create_token type else create token ID
-			 	//(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }
-			 	//"-"			{	return create_token(TOKEN_MINUS, this->getTokenValue()); }
-			 	//"*"			{	return create_token(TOKEN_MUL, this->getTokenValue()); }
-			 	//"="			{	return create_token(TOKEN_ASSIGN, this->getTokenValue()); }
-			 	//";"			{	return create_token(TOKEN_SEMICOLON, this->getTokenValue()); }
+			 	//(L)(L|D)*	{	return create_token(TOKEN_ID, this->getTokenValue()); }			 	//";"			{	return create_token(TOKEN_SEMICOLON, this->getTokenValue()); }
 
 			/*!re2c
 				re2c:define:YYCTYPE		= char;
@@ -46,10 +41,31 @@ public:
 			 	FLOAT = D* "." D+;
 			 	L = [A-Za-z_];
 			 	ID = (L)(L|D)*;
-			 	LL = [A-Za-z_];
+			 	QS = "\"";
+			 	CR = "\r";
+			 	LF = "\n";
+			 	CRLF = CR?LF;
 			 	
+			 	INT			{	std::cout << "TOKEN_LITERAL_INTEGER: " << this->getTokenValue() << std::endl; continue; }
+			 	FLOAT		{	std::cout << "TOKEN_LITERAL_FLOAT: " << this->getTokenValue() << std::endl; continue; }
+				QS			{	goto string_loop; }
+			 	ID			{
+			 					// if getTokenID is at global map of types -  create token Type else create token ID
+			 	 				std::vector<std::string>& mp = GlobalTypeMap::getInstance().types;
+			 	 				if (std::find(mp.begin(), mp.end(), this->getTokenValue()) != mp.end()) {
+					 				std::cout << "TOKEN_TYPE: " << this->getTokenValue() << std::endl;	
+					 			} else
+					 				std::cout << "TOKEN_ID: " << this->getTokenValue() << std::endl;
+					 			continue;	
+			 	 			}
 			 	[^]			{   continue; }
-				$			{ 	return nullptr; }
+				$			{ 	break; }
+			 */
+		string_loop:
+			/*!re2c
+			 	QS			{	std::cout << "TOKEN_LITERAL_STRING: " << this->getTokenValue() << std::endl; continue; }
+			 	[^]			{	goto string_loop; }
+			 	$			{ 	continue; }
 			 */
 		}
 	}
