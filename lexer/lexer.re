@@ -65,8 +65,8 @@ public:
 			 	CRLF = CR?LF;
 
 			 	INT			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								// Parse(pParser, LEX_LITERAL_INTEGER, _module->insertToken(lex), _module);
+								auto lex = _module->createToken(this->getTokenValue());
+								Parse(pParser, LEX_LITERAL_INTEGER, _module->insertToken(lex), _module);
 		 						continue;
 		 					}
 			 	FLOAT		{	std::cout << "[ Lexer ] LEX_LITERAL_FLOAT: " << this->getTokenValue() << std::endl; continue; }
@@ -74,7 +74,6 @@ public:
 			 	ID			{
 			 					// if getTokenID is at global map of types -  create token Type else create token ID
 								std::vector<std::string>& mp = GlobalTypeMap::getInstance().types;
-
 								if (std::find(mp.begin(), mp.end(), this->getTokenValue()) != mp.end()) {
 									auto lex = _module->createToken(this->getTokenValue());
 									Parse(pParser, LEX_TYPE, _module->insertToken(lex), _module);
@@ -90,8 +89,8 @@ public:
 								continue;
 							}
 				"="			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								// Parse(pParser, LEX_ASSIGN, _module->insertToken(lex), _module);
+								auto lex = _module->createToken(this->getTokenValue());
+								Parse(pParser, LEX_ASSIGN, _module->insertToken(lex), _module);
 								continue;
 							}
 			 	[^]			{   continue; }
@@ -100,8 +99,8 @@ public:
 		string_loop:
 			/*!re2c
 			 	QS			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								// Parse(pParser, LEX_LITERAL_STRING, _module->insertToken(lex), _module);
+								auto lex = _module->createToken(this->getTokenValue());
+								Parse(pParser, LEX_LITERAL_STRING, _module->insertToken(lex), _module);
 								continue;
 							}
 			 	[^]			{	goto string_loop; }

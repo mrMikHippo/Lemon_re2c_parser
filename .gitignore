@@ -1,4 +1,4 @@
 lexer/lexer.h
 lre_test*
 parser/parser.*
-!parser/parser.yy
+!parser/parser.y
