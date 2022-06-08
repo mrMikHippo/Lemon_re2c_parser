@@ -3,18 +3,9 @@
 #include <string>
 
 #include "tests/test_all.h"
-#include "lexer/lexer.h"
-#include "AST/global_types_map.h"
+#include "module.h"
 
 using namespace std;
-
-
-// static void InitGlobalTypesMap() {
-// 	GlobalTypeMap::getInstance().types.push_back(string("Integer"));
-// 	GlobalTypeMap::getInstance().types.push_back(string("String"));
-// 	GlobalTypeMap::getInstance().types.push_back(string("Vector"));
-// 	GlobalTypeMap::getInstance().types.push_back(string("Map"));
-// }
 
 int main() {
 
@@ -25,10 +16,7 @@ int main() {
 	int tokenID;
 	string cmd;
 
-	// InitGlobalTypesMap();
-
-	for (const auto& t : GlobalTypeMap::getInstance().types)
-		cout << t << endl;
+	Module module;
 
 	while (!exit) {
 		cout << "> ";
@@ -39,9 +27,9 @@ int main() {
 		else if (cmd.empty())
 			continue;
 		else {
-			Lexer lexer(cmd.c_str());
-
-			lexer.scan();
+			module.run(cmd);
+			// Lexer lexer(cmd.c_str());
+			// lexer.scan();
 		}
 	}
 
