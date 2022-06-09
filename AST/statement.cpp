@@ -2,11 +2,13 @@
 #include "statement.h"
 
 // StatementDefinition
-StatementDefinition::StatementDefinition(VariableType* type_, const Token& id_, Expression* value_) 
+StatementDefinition::StatementDefinition(VariableType* type_, const Token& id_, Expression* value_)
 	: type(type_), id(id_), value(value_)
 {
 	// Do nothing
 }
+
+StatementDefinition::~StatementDefinition() = default;
 
 std::string StatementDefinition::toString() const
 {
@@ -21,7 +23,7 @@ std::string StatementDefinition::toString() const
 }
 
 // StatementExpression
-StatementExpression::StatementExpression(Expression* expr_) 
+StatementExpression::StatementExpression(Expression* expr_)
 	: expr(expr_)
 {
 	// Do nothing

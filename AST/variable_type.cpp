@@ -1,6 +1,6 @@
 #include "variable_type.h"
 
-VariableType::VariableType(const Token& type_, const std::vector<VariableType*>& types_) 
+VariableType::VariableType(const Token& type_, const std::vector<VariableType*> types_)
 	: type(type_), types(types_)
 {
 }
@@ -10,17 +10,17 @@ Token VariableType::getType() const
 	return type;
 }
 
-std::vector<VariableType*> VariableType::getSubTypes() const 
+std::vector<VariableType*> VariableType::getSubTypes() const
 {
 	return types;
 }
 
-void VariableType::addSubType(VariableType* type_) 
+void VariableType::addSubType(VariableType* type_)
 {
 	types.push_back(type_);
 }
 
-std::string VariableType::toString() 
+std::string VariableType::toString()
 {
 	std::string res = type.value;
 	if (!types.empty()) {

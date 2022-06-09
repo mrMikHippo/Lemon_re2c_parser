@@ -19,7 +19,7 @@ bool verbose = false;
 class Log
 {
 public:
-	Log(bool debug_ = false, ostream& stream_ = cout) 
+	Log(bool debug_ = false, ostream& stream_ = cout)
 		: _out_stream(stream_), _debug(debug_) {}
 
 	// operator std::ostream() {
@@ -132,7 +132,7 @@ void TestExpressionCallOrdered() {
 }
 
 void TestExpressionCallNamed() {
-	
+
 	//id.some(key = arg1, key2 = arg2)
 
 	ExpressionId caller({"id"});
@@ -183,17 +183,17 @@ void TestExpressionLiteral() {
 }
 
 void TestStatementDefinition() {
-	
+
 	//Integer a
 	{
 		VariableType vt({"Integer"}, {});
 		Token id({"a"});
 		StatementDefinition st(&vt, id);
 
-		AssertEqual(st.toString(), "Integer a");	
+		AssertEqual(st.toString(), "Integer a");
 		log << arrow_end << st.toString() << "\n";
 	}
-	
+
 	//Integer a = 100500
 	{
 		VariableType vt({"Integer"}, {});
@@ -205,7 +205,7 @@ void TestStatementDefinition() {
 		AssertEqual(st.toString(), "Integer a = 12345");
 		log << arrow_bet << st.toString() << "\n";
 	}
-	
+
 	// Vector(Integer) vec = Vector(Integer)[10, 20];
 	{
 		// Vector(Integer) vec
@@ -319,11 +319,11 @@ void TestIdAssignmentId() {
 	// i_2 = a_1;
 	//ID("i_2") ASSIGN ID("a_1") SEMICOLON
 
-	ExpressionId id_left(Token{"i_2"});	
+	ExpressionId id_left(Token{"i_2"});
 	ExpressionId id_right(Token{"a_1"});
 
 	ExpressionAssign exprA(&id_left, &id_right);
-	AssertEqual(exprA.toString(), "i_2 = a_1");	
+	AssertEqual(exprA.toString(), "i_2 = a_1");
 	log << arrow_end << exprA.toString() << "\n";
 }
 
@@ -416,7 +416,7 @@ void TestExpressionCallPushBack() {
 void TestStatementTwoParamInitializationEmpty() {
 	// Map(Integer, Integer) m_1 = Map(Integer, Integer)[];
 	//ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB RSB SEMICOLON
-	
+
 	VariableType sub_type1({"Integer"}, {});
 	VariableType sub_type2({"Integer"}, {});
 	VariableType type_left({"Map"}, {&sub_type1, &sub_type2});
@@ -473,7 +473,7 @@ void TestIdAssignmentExpressionTwoParam() {
 	ExpressionLiteral map_expr_cont(&map_container);
 
 	ExpressionAssign exprA(&id, &map_expr_cont);
-	
+
 	AssertEqual(exprA.toString(), "m_1 = Map(Integer, Integer)[i_1 : j_1, i_2 : j_2]");
 	log << arrow_end << exprA.toString() << "\n";
 }
@@ -543,6 +543,7 @@ void TestExprDotStatementExpressionVarType() {
 
 void TestAll() {
 	TestRunner tr;
+	#if 0
 	tr.RunTest(TestLiteralInteger, "TestLiteralInteger");
 	tr.RunTest(TestVariableType, "TestVariableType");
 	tr.RunTest(TestExpressionId, "TestExpressionId");
@@ -570,7 +571,7 @@ void TestAll() {
 	tr.RunTest(TestExpressionDotCallNamed, "TestExpressionDotCallNamed");
 	tr.RunTest(TestTypeInitialization, "TestTypeInitialization");
 	tr.RunTest(TestExprDotStatementExpressionVarType, "TestExprDotStatementExpressionVarType");
-
+	#endif
 	cout << "..................." << "\n";
 	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << "\n";
 	if (tr.getFailCount())

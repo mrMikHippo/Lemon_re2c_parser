@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 // #include "wrapper.h"
 #include "variable_type.h"
@@ -19,6 +20,7 @@ class StatementDefinition : public Statement
 {
 public:
 	StatementDefinition(VariableType* type_, const Token& id_, Expression* value_ = nullptr);
+	~StatementDefinition();
 
 	std::string toString() const override;
 
@@ -38,7 +40,7 @@ public:
 private:
     Expression* expr;
 };
-    
+
 class StatementList : public Statement
 {
 public:

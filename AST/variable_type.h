@@ -4,12 +4,13 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 //Map(Integer, Integer)
 class VariableType
 {
 public:
-	VariableType(const Token& type_, const std::vector<VariableType*>& types_);
+	VariableType(const Token& type_, const std::vector<VariableType*> types_);
 
 	Token getType() const;
 

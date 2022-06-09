@@ -7,6 +7,8 @@
 
 //%type expr { Expression* }
 //%default_type { Expression* }
+/* %type statement { Statement* } */
+/* %type variable_type { VariableType* } */
 
 %include {
 #include <iostream>
@@ -24,24 +26,46 @@
 %start_symbol main
 
 main ::= expr(B) . {
-	module->setRootNode(module->getToken(B));
-	std::cout << "\nEnd of parser.yy | token value: '" << module->getToken(B)->value << "'" << std::endl;
+
+	module->setRootNode(module->getStatement(B));
+	std::cout << "\nEnd of parser.yy B=" << B;
+	if (module->getStatement(B))
+		std::cout << " | statement: '" << module->getStatement(B)->toString() << "'";
+	std::cout << std::endl;
 }
 
 expr(left) ::= statement(s) . {
 	left = s;
 }
 
+/* statement(left) ::= statement_expression(se) . {
+	left = se;
+}
+statement(left) ::= statement_list(sl) . {
+	left = sl;
+} */
 statement(left) ::= statement_definition(sd) . {
 	left = sd;
 }
-	statement_definition(left) ::= statement_simple(ss) SEMICOLON . {
+	statement_definition(left) ::= statement_simple_definition(ss) SEMICOLON . {
 		left = ss;
 		std::cout << " SEMICOLON";
 	}
-		statement_simple(left) ::= . {
+		statement_simple_definition(left) ::= . {
 			left = 0;
 		}
+		statement_simple_definition(left) ::= statement_type_definition(std) . {
+			left = std;
+		}
+			statement_type_definition(left) ::= variable_type(vt) variable_id(vi) . {
+				VariableType* vtype = module->getVariableType(vt);
+				Token vid = module->getToken(vi);
+				StatementDefinition* st = module->createStatementDefinition(vtype, vid);
+				std::cout << " TYPE(\"" << vtype->toString() << "\")"
+						  << " ID(\"" << vid.value << "\")";
+				left = module->insertStatementDefinition(st);
+			}
+		/*
 		statement_simple(left) ::= statement_simple_definition(ssd) . {
 			left = ssd;
 		}
@@ -58,9 +82,9 @@ statement(left) ::= statement_definition(sd) . {
 				auto tmp_left = module->createToken(tmp_left_str);
 				left = module->insertToken(tmp_left);
 				std::cout << " ASSIGN";
-			}
+			} */
 
-expression(left) ::= expression_literal(el) . {
+/* expression(left) ::= expression_literal(el) . {
 	left = el;
 }
 	expression_literal(left) ::= literal(l) . {
@@ -82,14 +106,17 @@ variable_definition(left) ::= variable_value_definition(vvd) . {
 		std::string vvd_string = module->getToken(vt)->value + " " + module->getToken(vi)->value;
 		auto t_left = module->createToken(vvd_string);
 		left = module->insertToken(t_left);
-	}
+	} */
 
 variable_type(left) ::= TYPE(T) . {
-	left = T;
-	std::cout << " TYPE(\"" << module->getToken(T)->value << "\")";
+	auto token = module->getToken(T);
+	VariableType* vt = module->createVariableType(token, {});
+	/* std::cout << " TYPE(\"" << vt->toString() << "\")"; */
+	/* std::cout << " TYPE(\"" << module->getVariableType(id)->toString() << "\")"; */
+	left = module->insertVariableType(vt);
 }
 
 variable_id(left) ::= ID(I) . {
 	left = I;
-	std::cout << " ID(\"" << module->getToken(I)->value << "\")";
+	/* std::cout << " ID(\"" << module->getToken(I).value << "\")"; */
 }

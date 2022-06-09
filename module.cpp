@@ -13,8 +13,14 @@ Module::Module() {
 	cout << "]" << endl;
 }
 
+Module::~Module() {
+	for (auto t : vtypes)
+		delete t;
+	for (auto st : statements)
+		delete st;
+}
+
 void Module::run(const string& source) {
-	// cout << "[Module] Source: " << source << endl;
 	Lexer lex(this);
 	lex.scan(source);
 
@@ -25,31 +31,52 @@ void Module::run(const string& source) {
 			first = false;
 		else
 			cout << ",";
-		cout << " '" << el->value << "'";
+		cout << " '" << el.value << "'";
 	}
 	cout << " ]" << endl;
 }
 
-shared_ptr<Token> Module::createToken(const std::string& token_value) {
-	shared_ptr<Token> token = make_shared<Token>(Token{token_value});
-	// cout << "[Module] Create token: " << token->value << endl;
-	return token;
-}
-
-uint64_t Module::insertToken(shared_ptr<Token> token) {
-	// cout << "[Module] Insert token: " << token->value << ", id=" << tokens.size() << endl;
+uint64_t Module::insertToken(const Token& token) {
 	tokens.push_back(token);
 	return tokens.size() - 1;
 }
 
-std::string Module::getTokenValue(uint64_t id) {
-	return tokens.at(id)->value;
+Token Module::getToken(uint64_t id) {
+	cout << "[getToken] id=" << id << ", tokens.size=" << tokens.size() << endl;
+	if (id < tokens.size())
+		return tokens.at(id);
+	return {"None"};
 }
 
-std::shared_ptr<Token> Module::getToken(uint64_t id) {
-	return tokens.at(id);
+void Module::setRootNode(Statement* node) {
+	root = node;
 }
 
-void Module::setRootNode(std::shared_ptr<Token> token) {
-	root = token;
+VariableType* Module::createVariableType(const Token& token, const vector<VariableType*> types_) {
+	return new VariableType(token, types_);
+}
+uint64_t Module::insertVariableType(VariableType* vtype) {
+	vtypes.push_back(vtype);
+	return vtypes.size() - 1;
+}
+
+VariableType* Module::getVariableType(uint64_t id) {
+	if (id < vtypes.size())
+		return vtypes.at(id);
+	return nullptr;
+}
+
+StatementDefinition* Module::createStatementDefinition(VariableType* type, const Token& id, Expression* value) {
+	return new StatementDefinition(type, id, value);
+}
+
+uint64_t Module::insertStatementDefinition(StatementDefinition* st) {
+	statements.push_back(st);
+	return statements.size() - 1;
+}
+
+Statement* Module::getStatement(uint64_t id) {
+	if (id < statements.size())
+		return statements.at(id);
+	return nullptr;
 }
