@@ -543,7 +543,7 @@ void TestExprDotStatementExpressionVarType() {
 
 void TestAll() {
 	TestRunner tr;
-	#if 0
+	#if 1
 	tr.RunTest(TestLiteralInteger, "TestLiteralInteger");
 	tr.RunTest(TestVariableType, "TestVariableType");
 	tr.RunTest(TestExpressionId, "TestExpressionId");

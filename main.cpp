@@ -27,9 +27,11 @@ int main() {
 		else if (cmd.empty())
 			continue;
 		else {
-			module.run(cmd);
-			// Lexer lexer(cmd.c_str());
-			// lexer.scan();
+			try {
+				module.run(cmd);
+			} catch(std::exception& ex) {
+				cerr << ex.what() << endl;
+			}
 		}
 	}
 

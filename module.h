@@ -27,17 +27,35 @@ public:
 
 	void setRootNode(Statement* node);
 
-	VariableType* createVariableType(const Token& token, const std::vector<VariableType*> types_);
-	uint64_t insertVariableType(VariableType* vtype);
+	uint64_t createVariableType(const Token& token, const std::vector<VariableType*> types_);
+	// VariableType* createVariableType(const Token& token, const std::vector<VariableType*> types_);
+	// uint64_t insertVariableType(VariableType* vtype);
 	VariableType* getVariableType(uint64_t id);
 
 	StatementDefinition* createStatementDefinition(VariableType* type, const Token& id, Expression* value = nullptr);
 	uint64_t insertStatementDefinition(StatementDefinition* st);
 	Statement* getStatement(uint64_t id);
 
+	uint64_t insertLiteral(Literal* literal);
+	Literal* getLiteral(uint64_t id);
+
+	template<typename T>
+	uint64_t createLiteral(int64_t id) {
+		Token token = getToken(id);
+		literals.push_back(new T(token));
+		return literals.size() - 1;
+	}
+
+	uint64_t insertExpression(Expression* expr);
+	Expression* getExpression(uint64_t id);
+
+
+
 private:
 	Statement* root;
 	std::vector<Token> tokens;
 	std::vector<VariableType*> vtypes;
 	std::vector<Statement*> statements;
+	std::vector<Literal*> literals;
+	std::vector<Expression*> expressions;
 };

@@ -1,6 +1,6 @@
 %token_prefix LEX_
 
-/* %left ASSIGN. */
+%left ASSIGN.
 
 %token_type { uint64_t }
 %extra_argument { Module* module}
@@ -20,7 +20,8 @@
 }
 
 %syntax_error {
-	std::cerr << " Syntax error! TODO Info message for Error! " << yyminor << " | " << yymajor << std::endl;
+	std::string err_msg = " Syntax error! TODO Info message for Error! " + std::to_string(yyminor) + " | " + std::to_string(yymajor);
+	throw std::invalid_argument(err_msg.c_str());
 }
 
 %start_symbol main
@@ -65,58 +66,52 @@ statement(left) ::= statement_definition(sd) . {
 						  << " ID(\"" << vid.value << "\")";
 				left = module->insertStatementDefinition(st);
 			}
-		/*
-		statement_simple(left) ::= statement_simple_definition(ssd) . {
-			left = ssd;
-		}
-			statement_simple_definition(left) ::= variable_definition(vd) . {
-				left = vd;
-			}
-		statement_simple(left) ::= statement_assign_definition(sad) . {
+		statement_simple_definition(left) ::= statement_assign_definition(sad) . {
 			left = sad;
 		}
-			statement_assign_definition(left) ::= variable_definition(vd) ASSIGN expression(el) . {
-				auto tmp_vd = module->getToken(vd);
-				auto tmp_el = module->getToken(el);
-				std::string tmp_left_str = tmp_vd->value + " " + tmp_el->value;
-				auto tmp_left = module->createToken(tmp_left_str);
-				left = module->insertToken(tmp_left);
-				std::cout << " ASSIGN";
-			} */
+			statement_assign_definition(left) ::= variable_type(vt) variable_id(vi) ASSIGN expression(ex) . {
+				VariableType* vtype = module->getVariableType(vt);
+				Token vid = module->getToken(vi);
+				Expression* expr = module->getExpression(ex);
+				StatementDefinition* st = module->createStatementDefinition(vtype, vid, expr);
+				std::cout << " TYPE(\"" << vtype->toString() << "\")"
+						  << " ID(\"" << vid.value << "\") ASSIGN " << expr->toString() << std::endl;
+				left = module->insertStatementDefinition(st);
+			}
 
-/* expression(left) ::= expression_literal(el) . {
+
+expression(left) ::= expression_literal(el) . {
 	left = el;
 }
 	expression_literal(left) ::= literal(l) . {
-		left = l;
+		ExpressionLiteral* exp_lit = new ExpressionLiteral(module->getLiteral(l));
+		left = module->insertExpression(exp_lit);
 	}
-		literal(left) ::= LITERAL_INTEGER(I) . {
-			left = I;
-			std::cout << " INTEGER(\"" << module->getToken(I)->value << "\")";
-		}
-		literal(left) ::= LITERAL_STRING(S) . {
-			left = S;
-			std::cout << " STRING(\"" << module->getToken(S)->value << "\")";
-		}
-
-variable_definition(left) ::= variable_value_definition(vvd) . {
-	left = vvd;
-}
-	variable_value_definition(left) ::= variable_type(vt) variable_id(vi) . {
-		std::string vvd_string = module->getToken(vt)->value + " " + module->getToken(vi)->value;
-		auto t_left = module->createToken(vvd_string);
-		left = module->insertToken(t_left);
-	} */
 
 variable_type(left) ::= TYPE(T) . {
 	auto token = module->getToken(T);
-	VariableType* vt = module->createVariableType(token, {});
-	/* std::cout << " TYPE(\"" << vt->toString() << "\")"; */
-	/* std::cout << " TYPE(\"" << module->getVariableType(id)->toString() << "\")"; */
-	left = module->insertVariableType(vt);
+	left = module->createVariableType(module->getToken(T), {});
 }
 
 variable_id(left) ::= ID(I) . {
 	left = I;
-	/* std::cout << " ID(\"" << module->getToken(I).value << "\")"; */
 }
+
+literal(left) ::= literal_integer(li) . {
+	left = li;
+}
+	literal_integer(left) ::= LITERAL_INTEGER(LI) . {
+		left = module->createLiteral<LiteralInteger>(LI);
+	}
+literal(left) ::= literal_float(lf) . {
+	left = lf;
+}
+	literal_float(left) ::= LITERAL_FLOAT(LF) . {
+		left = module->createLiteral<LiteralFloat>(LF);
+	}
+literal(left) ::= literal_string(ls) . {
+	left = ls;
+}
+	literal_string(left) ::= LITERAL_STRING(LS) . {
+		left = module->createLiteral<LiteralString>(LS);
+	}

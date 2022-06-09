@@ -42,7 +42,7 @@ uint64_t Module::insertToken(const Token& token) {
 }
 
 Token Module::getToken(uint64_t id) {
-	cout << "[getToken] id=" << id << ", tokens.size=" << tokens.size() << endl;
+	// cout << "[getToken] id=" << id << ", tokens.size=" << tokens.size() << endl;
 	if (id < tokens.size())
 		return tokens.at(id);
 	return {"None"};
@@ -52,13 +52,18 @@ void Module::setRootNode(Statement* node) {
 	root = node;
 }
 
-VariableType* Module::createVariableType(const Token& token, const vector<VariableType*> types_) {
-	return new VariableType(token, types_);
-}
-uint64_t Module::insertVariableType(VariableType* vtype) {
-	vtypes.push_back(vtype);
+uint64_t Module::createVariableType(const Token& token, const vector<VariableType*> types_) {
+	vtypes.push_back(new VariableType(token, types_));
 	return vtypes.size() - 1;
 }
+
+// VariableType* Module::createVariableType(const Token& token, const vector<VariableType*> types_) {
+// 	return new VariableType(token, types_);
+// }
+// uint64_t Module::insertVariableType(VariableType* vtype) {
+// 	vtypes.push_back(vtype);
+// 	return vtypes.size() - 1;
+// }
 
 VariableType* Module::getVariableType(uint64_t id) {
 	if (id < vtypes.size())
@@ -79,4 +84,24 @@ Statement* Module::getStatement(uint64_t id) {
 	if (id < statements.size())
 		return statements.at(id);
 	return nullptr;
+}
+
+uint64_t Module::insertLiteral(Literal* literal) {
+	literals.push_back(literal);
+	return literals.size() - 1;
+}
+
+Literal* Module::getLiteral(uint64_t id) {
+	if (id < literals.size())
+		return literals.at(id);
+	return nullptr;
+}
+
+uint64_t Module::insertExpression(Expression* expr) {
+	expressions.push_back(expr);
+	return expressions.size() - 1;
+}
+
+Expression* Module::getExpression(uint64_t id) {
+	return expressions.at(id);
 }
