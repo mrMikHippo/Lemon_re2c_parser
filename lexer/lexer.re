@@ -28,7 +28,6 @@ public:
 	// }
 
 	void scan(const std::string& source) {
-		// void scan() {
 		_content = source.c_str();
 		_start = _cursor = _content;
 		_limit = _content + strlen(_content);

@@ -5,11 +5,6 @@
 %token_type { uint64_t }
 %extra_argument { Module* module}
 
-//%type expr { Expression* }
-//%default_type { Expression* }
-/* %type statement { Statement* } */
-/* %type variable_type { VariableType* } */
-
 %include {
 #include <iostream>
 //#include "../token.h"
@@ -41,12 +36,12 @@ expr(left) ::= statement(s) . {
 
 /* Statements */
 /* 	StatementDefinition */
-statement(left) ::= statement_definition(sd) . {
+statement(left) ::= statement_definition(sd) SEMICOLON. {
 	left = sd;
+	std::cout << " SEMICOLON";
 }
-	statement_definition(left) ::= statement_simple_definition(ss) SEMICOLON . {
+	statement_definition(left) ::= statement_simple_definition(ss) . {
 		left = ss;
-		std::cout << " SEMICOLON";
 	}
 		statement_simple_definition(left) ::= . {
 			left = 0;
@@ -73,9 +68,14 @@ statement(left) ::= statement_definition(sd) . {
 				  left = module->createToken<StatementDefinition>(vtype, vid, expr);
 		}
 /* StatementExpression */
-/* statement(left) ::= statement_expression(se) . {
+statement(left) ::= statement_expression(se) SEMICOLON . {
 	left = se;
 }
+	statement_expression(left) ::= expression_id(vi) ASSIGN expression(e) . {
+		auto vid = module->getToken<ExpressionId>(vi);
+		auto expr = module->getToken<Expression>(e);
+		left = module->createToken<ExpressionAssign>(vid, expr);
+	}
 /* StatementList */
 /* statement(left) ::= statement_list(sl) . {
 	left = sl;
@@ -88,6 +88,12 @@ expression(left) ::= expression_literal(el) . {
 	expression_literal(left) ::= literal(l) . {
 		left = module->createToken<ExpressionLiteral>(module->getToken<Literal>(l));
 	}
+expression(left) ::= expression_id(ei) . {
+	left = ei;
+}
+	expression_id(left) ::= variable_id(vi) . {
+		left = module->createToken<ExpressionId>(module->getToken<Token>(vi));
+	}
 
 /* VeriableTypes */
 variable_type(left) ::= TYPE(T) . {
@@ -95,7 +101,6 @@ variable_type(left) ::= TYPE(T) . {
 	std::vector<VariableType*> vec;
 	left = module->createToken<VariableType>(t, vec);
 }
-
 variable_id(left) ::= ID(I) . {
 	left = I;
 }
