@@ -7,12 +7,12 @@
 #include <memory>
 
 //Map(Integer, Integer)
-class VariableType
+class VariableType : public Token
 {
 public:
-	VariableType(const Token& type_, const std::vector<VariableType*> types_);
+	VariableType(Token* type_, const std::vector<VariableType*> types_);
 
-	Token getType() const;
+	Token* getType() const;
 
 	std::vector<VariableType*> getSubTypes() const;
 
@@ -22,5 +22,5 @@ public:
 
 private:
 	std::vector<VariableType*> types;
-	Token type;
+	Token* type;
 };

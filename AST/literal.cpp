@@ -3,31 +3,31 @@
 #include "expression.h"
 
 // LiteralInteger
-LiteralInteger::LiteralInteger(Token value_)
+LiteralInteger::LiteralInteger(Token* value_)
 	: value(value_)
 {
 }
 
 std::string LiteralInteger::toString() const {
-	return value.value;
+	return value->value;
 }
 // LiteralFloat
-LiteralFloat::LiteralFloat(Token value_)
+LiteralFloat::LiteralFloat(Token* value_)
 	: value(value_)
 {
 }
 
 std::string LiteralFloat::toString() const {
-	return value.value;
+	return value->value;
 }
 // LiteralString
-LiteralString::LiteralString(Token value_)
+LiteralString::LiteralString(Token* value_)
 	: value(value_)
 {
 }
 
 std::string LiteralString::toString() const {
-	return value.value;
+	return value->value;
 }
 
 // LiteralType

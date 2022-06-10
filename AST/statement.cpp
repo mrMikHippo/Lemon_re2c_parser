@@ -2,7 +2,7 @@
 #include "statement.h"
 
 // StatementDefinition
-StatementDefinition::StatementDefinition(VariableType* type_, const Token& id_, Expression* value_)
+StatementDefinition::StatementDefinition(VariableType* type_, Token* id_, Expression* value_)
 	: type(type_), id(id_), value(value_)
 {
 	// Do nothing
@@ -14,7 +14,7 @@ std::string StatementDefinition::toString() const
 {
 	std::string res = type->toString();
 	res += " ";
-	res += id.value;
+	res += id->value;
 	if (value) {
 		res += " = ";
 		res += value->toString();

@@ -2,21 +2,23 @@
 
 #include "literal.h"
 
+#include <iostream>
+
 // ExpressionsId
-ExpressionId::ExpressionId(const Token& id_) 
+ExpressionId::ExpressionId(Token* id_)
 	: id(id_)
 {
 	// Do nothing
 }
 
-Token ExpressionId::getToken() const
+Token* ExpressionId::getToken() const
 {
 	return id;
 }
 
 std::string ExpressionId::toString() const
 {
-	return id.value;
+	return id->value;
 }
 
 // ExpressionAssign
@@ -32,7 +34,7 @@ std::string ExpressionAssign::toString() const
 }
 
 // ExpressionDot
-ExpressionDot::ExpressionDot(const Token& id_, Expression* caller_) 
+ExpressionDot::ExpressionDot(Token* id_, Expression* caller_)
 	: id(id_), caller(caller_)
 {
 	// Do nothing
@@ -43,14 +45,14 @@ Expression* ExpressionDot::getCaller() const
 	return caller;
 }
 
-Token ExpressionDot::getId() const
+Token* ExpressionDot::getId() const
 {
 	return id;
 }
 
 std::string ExpressionDot::toString() const
 {
-	return caller->toString() + "." + id.value;
+	return caller->toString() + "." + id->value;
 }
 
 // ExpressionCallOrdered
@@ -82,15 +84,11 @@ std::string ExpressionCallOrdered::toString() const
 }
 
 // ExpressionCallNamed
-ExpressionCallNamed::ExpressionCallNamed(Expression* callee_, ArgsType args_) 
+ExpressionCallNamed::ExpressionCallNamed(Expression* callee_, ArgsType args_)
 	: callee(callee_), args(args_)
 {
 	// Do nothing
 }
-
-// void addArg(Token arg_, Expression* value_) {
-// 	args.push_back(std::make_pair<Token*, Expression*>(arg_, value_));
-// }
 
 std::string ExpressionCallNamed::toString() const
 {
@@ -98,7 +96,7 @@ std::string ExpressionCallNamed::toString() const
 	res += "(";
 	bool first = true;
 	for (const auto& el : args) {
-		if (first) {	
+		if (first) {
 			first = false;
 		} else
 			res += ", ";
@@ -111,7 +109,7 @@ std::string ExpressionCallNamed::toString() const
 }
 
 // ExpressionAt
-ExpressionAt::ExpressionAt(Expression* caller_, Expression* key_) 
+ExpressionAt::ExpressionAt(Expression* caller_, Expression* key_)
 	: caller(caller_), key(key_)
 {
 	// Do nothing
@@ -128,7 +126,7 @@ std::string ExpressionAt::toString() const
 }
 
 // ExpressionLiteral
-ExpressionLiteral::ExpressionLiteral(Literal* literal_) 
+ExpressionLiteral::ExpressionLiteral(Literal* literal_)
 	: literal(literal_)
 {
 	// Do nothing
@@ -150,4 +148,3 @@ std::string ExpressionEqual::toString() const
 {
 	return left->toString() + " == " + right->toString();
 }
-

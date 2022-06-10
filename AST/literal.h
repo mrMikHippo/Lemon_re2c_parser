@@ -6,11 +6,12 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <iostream>
 
 
 class Expression;
 
-class Literal
+class Literal : public Token
 {
 public:
 	virtual ~Literal() {};
@@ -22,39 +23,36 @@ public:
 class LiteralInteger : public Literal
 {
 public:
-	LiteralInteger(Token value_);
-	virtual ~LiteralInteger() {}
+	LiteralInteger(Token* value_);
 
 	std::string toString() const override;
 
 private:
-	Token value;
+	Token* value;
 };
 
 //10.5
 class LiteralFloat : public Literal
 {
 public:
-	LiteralFloat(Token value_);
-	virtual ~LiteralFloat() {}
+	LiteralFloat(Token* value_);
 
 	std::string toString() const override;
 
 private:
-	Token value;
+	Token* value;
 };
 
 // "Some string"
 class LiteralString : public Literal
 {
 public:
-	LiteralString(Token value_);
-	virtual ~LiteralString() {}
+	LiteralString(Token* value_);
 
 	std::string toString() const override;
 
 private:
-	Token value;
+	Token* value;
 };
 // Other primitives Literals ...
 

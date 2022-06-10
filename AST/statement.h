@@ -8,7 +8,7 @@
 #include "variable_type.h"
 #include "expression.h"
 
-class Statement
+class Statement : public Token
 {
 public:
 	virtual ~Statement() = default;
@@ -19,14 +19,14 @@ public:
 class StatementDefinition : public Statement
 {
 public:
-	StatementDefinition(VariableType* type_, const Token& id_, Expression* value_ = nullptr);
+	StatementDefinition(VariableType* type_, Token* id_, Expression* value_ = nullptr);
 	~StatementDefinition();
 
 	std::string toString() const override;
 
 private:
     VariableType* type;
-    Token id;
+    Token* id;
     Expression* value;
 };
 

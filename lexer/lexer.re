@@ -65,12 +65,11 @@ public:
 			 	CRLF = CR?LF;
 
 			 	INT			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								Parse(pParser, LEX_LITERAL_INTEGER, _module->insertToken({this->getTokenValue()}), _module);
+								Parse(pParser, LEX_LITERAL_INTEGER, _module->createToken<Token>(this->getTokenValue()), _module);
 		 						continue;
 		 					}
 			 	FLOAT		{
-								Parse(pParser, LEX_LITERAL_FLOAT, _module->insertToken({this->getTokenValue()}), _module);
+								Parse(pParser, LEX_LITERAL_FLOAT, _module->createToken<Token>(this->getTokenValue()), _module);
 								continue;
 							}
 				QS			{	goto string_loop; }
@@ -78,22 +77,18 @@ public:
 			 					// if getTokenID is at global map of types -  create token Type else create token ID
 								std::vector<std::string>& mp = GlobalTypeMap::getInstance().types;
 								if (std::find(mp.begin(), mp.end(), this->getTokenValue()) != mp.end()) {
-									// auto lex = _module->createToken(this->getTokenValue());
-									Parse(pParser, LEX_TYPE, _module->insertToken({this->getTokenValue()}), _module);
+									Parse(pParser, LEX_TYPE, _module->createToken<Token>(this->getTokenValue()), _module);
 					 			} else {
-									// auto lex = _module->createToken(this->getTokenValue());
-									Parse(pParser, LEX_ID, _module->insertToken({this->getTokenValue()}), _module);
+									Parse(pParser, LEX_ID, _module->createToken<Token>(this->getTokenValue()), _module);
 					 			}
 					 			continue;
 			 	 			}
 				";"			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								Parse(pParser, LEX_SEMICOLON, _module->insertToken({this->getTokenValue()}), _module);
+								Parse(pParser, LEX_SEMICOLON, _module->createToken<Token>(this->getTokenValue()), _module);
 								continue;
 							}
 				"="			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								Parse(pParser, LEX_ASSIGN, _module->insertToken({this->getTokenValue()}), _module);
+								Parse(pParser, LEX_ASSIGN, _module->createToken<Token>(this->getTokenValue()), _module);
 								continue;
 							}
 			 	[^]			{   continue; }
@@ -102,8 +97,7 @@ public:
 		string_loop:
 			/*!re2c
 			 	QS			{
-								// auto lex = _module->createToken(this->getTokenValue());
-								Parse(pParser, LEX_LITERAL_STRING, _module->insertToken({this->getTokenValue()}), _module);
+								Parse(pParser, LEX_LITERAL_STRING, _module->createToken<Token>(this->getTokenValue()), _module);
 								continue;
 							}
 			 	[^]			{	goto string_loop; }
