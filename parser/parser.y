@@ -89,6 +89,12 @@ expression(left) ::= expression_literal(el) . {
 	expression_literal(left) ::= literal(l) . {
 		left = module->createToken<ExpressionLiteral>(module->getToken<Literal>(l));
 	}
+	expression_literal(left) ::= literal_one_param(lop) . {
+		left = module->createToken<ExpressionLiteral>(module->getToken<LiteralOneParam>(lop));
+	}
+expression(left) ::= . {
+	left = 0;
+}
 expression(left) ::= expression_id(ei) . {
 	left = ei;
 }
@@ -145,12 +151,7 @@ literal(left) ::= literal_string(ls) . {
 		auto t = module->getToken<Token>(LS);
 		left = module->createToken<LiteralString>(t);
 	}
-/* literal(left) ::= literal_one_param(lop) . {
-	left = lop;
+literal_one_param(left) ::= variable_type_complex(vtc) LSB expression RSB . {
+	auto t_vtc = module->getToken<VariableType>(vtc);
+	left = module->createToken<LiteralOneParam>(t_vtc, std::vector<Expression*>{});
 }
-	literal_one_param(left) ::= variable_type(vt) LRB variable_type(sub_vt) RRB . {
-		auto type = module->getToken<VariableType>(vt);
-		auto sub_type = module->getToken<VariableType>(sub_vt);
-		type->addSubType(sub_type);
-		left = vt;
-	} */
