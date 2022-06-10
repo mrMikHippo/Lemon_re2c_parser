@@ -67,6 +67,7 @@ statement(left) ::= statement_definition(sd) SEMICOLON. {
 						  << " ID(\"" << vid->value << "\") ASSIGN " << expr->toString();
 				  left = module->createToken<StatementDefinition>(vtype, vid, expr);
 		}
+	/* statement_definition(left) ::=  */
 /* StatementExpression */
 statement(left) ::= statement_expression(se) SEMICOLON . {
 	left = se;
@@ -96,11 +97,28 @@ expression(left) ::= expression_id(ei) . {
 	}
 
 /* VeriableTypes */
-variable_type(left) ::= TYPE(T) . {
-	auto t = module->getToken<Token>(T);
-	std::vector<VariableType*> vec;
-	left = module->createToken<VariableType>(t, vec);
+variable_type(left) ::= variable_type_simple(vts) . {
+	left = vts;
 }
+	variable_type_simple(left) ::= TYPE(T) . {
+		auto t = module->getToken<Token>(T);
+		std::vector<VariableType*> vec;
+		left = module->createToken<VariableType>(t, vec);
+	}
+variable_type(left) ::= variable_type_complex(vtx) . {
+	left = vtx;
+}
+	variable_type_complex(left) ::= TYPE(T) LRB variable_type(vt) RRB . {
+		auto sub_type = module->getToken<VariableType>(vt);
+		auto t = module->getToken<Token>(T);
+		left = module->createToken<VariableType>(t, std::vector<VariableType*>{sub_type});
+	}
+	variable_type_complex(left) ::= TYPE(T) LRB variable_type(vt1) COMMA variable_type(vt2) RRB . {
+		auto sub_type1 = module->getToken<VariableType>(vt1);
+		auto sub_type2 = module->getToken<VariableType>(vt2);
+		auto t = module->getToken<Token>(T);
+		left = module->createToken<VariableType>(t, std::vector<VariableType*>{sub_type1, sub_type2});
+	}
 variable_id(left) ::= ID(I) . {
 	left = I;
 }
@@ -127,3 +145,12 @@ literal(left) ::= literal_string(ls) . {
 		auto t = module->getToken<Token>(LS);
 		left = module->createToken<LiteralString>(t);
 	}
+/* literal(left) ::= literal_one_param(lop) . {
+	left = lop;
+}
+	literal_one_param(left) ::= variable_type(vt) LRB variable_type(sub_vt) RRB . {
+		auto type = module->getToken<VariableType>(vt);
+		auto sub_type = module->getToken<VariableType>(sub_vt);
+		type->addSubType(sub_type);
+		left = vt;
+	} */

@@ -90,6 +90,18 @@ public:
 								Parse(pParser, LEX_ASSIGN, _module->createToken<Token>(this->getTokenValue()), _module);
 								continue;
 							}
+				"("			{
+								Parse(pParser, LEX_LRB, _module->createToken<Token>(this->getTokenValue()), _module);
+								continue;
+							}
+				")"			{
+								Parse(pParser, LEX_RRB, _module->createToken<Token>(this->getTokenValue()), _module);
+								continue;
+							}
+				","			{
+								Parse(pParser, LEX_COMMA, _module->createToken<Token>(this->getTokenValue()), _module);
+								continue;
+							}
 			 	[^]			{   continue; }
 				$			{ 	break; }
 			 */
