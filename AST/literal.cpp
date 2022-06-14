@@ -27,7 +27,7 @@ LiteralString::LiteralString(Token* value_)
 }
 
 std::string LiteralString::toString() const {
-	return value->value;
+	return "STRING(\"" + value->value + "\")";
 }
 
 // LiteralType
@@ -37,7 +37,7 @@ LiteralType::LiteralType(VariableType* type_)
 }
 
 std::string LiteralType::toString() const {
-	return type->toString();
+	return "TYPE(\"" + type->toString() + "\")";
 }
 
 // LiteralOneParam
