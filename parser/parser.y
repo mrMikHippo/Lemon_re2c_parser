@@ -90,32 +90,25 @@ statement(left) ::= statement_expression(se) SEMICOLON . {
 expression(left) ::= . {
 	left = 0;
 }
-expression(left) ::= expression_literal(el) . {
-	left = el;
+expression(left) ::= expression_id_or_literal(eiol) . {
+	left = eiol;
 }
-	expression_literal(left) ::= literal(l) . {
-		std::cout << "EXPRESSION_LITERAL";
-		auto t_l = module->getToken<Literal>(l);
-		std::cout << ": " << t_l->toString() << std::endl;
-		left = module->createToken<ExpressionLiteral>(t_l);
-		/* left = module->createToken<ExpressionLiteral>(module->getToken<Literal>(l)); */
+	expression_id_or_literal(left) ::= expression_literal(el) . {
+		left = el;
 	}
-expression(left) ::= expression_literal_oneparam(elop) . {
-	left = elop;
-}
-	expression_literal_oneparam(left) ::= literal_one_param(lop) . {
-		left = module->createToken<ExpressionLiteral>(module->getToken<LiteralOneParam>(lop));
+		expression_literal(left) ::= literal(l) . {
+			std::cout << "EXPRESSION_LITERAL";
+			auto t_l = module->getToken<Literal>(l);
+			std::cout << ": " << t_l->toString() << std::endl;
+			left = module->createToken<ExpressionLiteral>(t_l);
+			/* left = module->createToken<ExpressionLiteral>(module->getToken<Literal>(l)); */
+		}
+	expression_id_or_literal(left) ::= expression_id(ei) . {
+		left = ei;
 	}
-	/* expression_literal(left) ::= expression_with_comma(ewc) . {
-		left = ewc;
-	} */
-		/* expression_with_comma(left) */
-expression(left) ::= expression_id(ei) . {
-	left = ei;
-}
-	expression_id(left) ::= variable_id(vi) . {
-		left = module->createToken<ExpressionId>(module->getToken<Token>(vi));
-	}
+		expression_id(left) ::= variable_id(vi) . {
+			left = module->createToken<ExpressionId>(module->getToken<Token>(vi));
+		}
 
 /* VeriableTypes */
 variable_type(left) ::= variable_type_simple(vts) . {
@@ -166,33 +159,60 @@ literal(left) ::= literal_string(ls) . {
 		auto t = module->getToken<Token>(LS);
 		left = module->createToken<LiteralString>(t);
 	}
-literal_one_param(left) ::= variable_type_complex(vtc) LSB literal_oneparam_content(loc) RSB . {
-	auto t_vtc = module->getToken<VariableType>(vtc);
-	auto t_loc = module->getToken<OneParamContent>(loc);
-	std::vector<Expression*> vec;
-	std::cout << "LiteralOneParam content: " << std::endl;
-	for (auto& el : t_loc->getElements()) {
-		std::cout <<  el->toString() << " ";
-		vec.push_back(el);
-	}
-	std::cout << std::endl;
-	left = module->createToken<LiteralOneParam>(t_vtc, vec);
+literal(left) ::= literal_one_param(lop) . {
+	left = lop;
 }
-	literal_oneparam_content(left) ::= literal_oneparam_body(lob) . {
-		left = lob;
-	}
-		literal_oneparam_body(left) ::= . {
-			left = module->createToken<OneParamContent>();
+	literal_one_param(left) ::= variable_type_complex(vtc) LSB literal_oneparam_content(loc) RSB . {
+		auto t_vtc = module->getToken<VariableType>(vtc);
+		auto t_loc = module->getToken<OneParamContent>(loc);
+		std::vector<Expression*> vec;
+		std::cout << "LiteralOneParam content: " << std::endl;
+		for (auto& el : t_loc->getElements()) {
+			std::cout <<  el->toString() << " ";
+			vec.push_back(el);
 		}
-		literal_oneparam_body(left) ::= literal_oneparam_body(lob) expression_id(ei) COMMA . {
+		std::cout << std::endl;
+		left = module->createToken<LiteralOneParam>(t_vtc, vec);
+	}
+		literal_oneparam_content(left) ::= literal_oneparam_body(lob) . {
+			left = lob;
+		}
+			literal_oneparam_body(left) ::= . {
+				left = module->createToken<OneParamContent>();
+			}
+			literal_oneparam_body(left) ::= literal_oneparam_body(lob) expression_id_or_literal(eiol) COMMA . {
+				auto t_lob = module->getToken<OneParamContent>(lob);
+				auto t_eiol = module->getToken<ExpressionId>(eiol);
+				t_lob->addElement(t_eiol);
+				left = lob;
+			}
+			/* literal_oneparam_body(left) ::= literal_oneparam_body(lob) expression_id(ei) COMMA . {
+				auto t_lob = module->getToken<OneParamContent>(lob);
+				auto t_ei = module->getToken<ExpressionId>(ei);
+				t_lob->addElement(t_ei);
+				left = lob;
+			}
+			literal_oneparam_body(left) ::= literal_oneparam_body(lob) expression_literal(el) COMMA . {
+				auto t_lob = module->getToken<OneParamContent>(lob);
+				auto t_el = module->getToken<ExpressionLiteral>(el);
+				t_lob->addElement(t_el);
+				left = lob;
+			}			 */
+		literal_oneparam_content(left) ::= literal_oneparam_body(lob) expression_id_or_literal(eiol) . {
+			auto t_lob = module->getToken<OneParamContent>(lob);
+			auto t_eiol = module->getToken<ExpressionId>(eiol);
+			t_lob->addElement(t_eiol);
+			left = lob;
+		}
+		/* literal_oneparam_content(left) ::= literal_oneparam_body(lob) expression_id(ei) . {
 			auto t_lob = module->getToken<OneParamContent>(lob);
 			auto t_ei = module->getToken<ExpressionId>(ei);
 			t_lob->addElement(t_ei);
 			left = lob;
 		}
-	literal_oneparam_content(left) ::= literal_oneparam_body(lob) expression_id(ei) . {
-		auto t_lob = module->getToken<OneParamContent>(lob);
-		auto t_ei = module->getToken<ExpressionId>(ei);
-		t_lob->addElement(t_ei);
-		left = lob;
-	}
+		literal_oneparam_content(left) ::= literal_oneparam_body(lob) expression_literal(el) . {
+			auto t_lob = module->getToken<OneParamContent>(lob);
+			auto t_el = module->getToken<ExpressionLiteral>(el);
+			t_lob->addElement(t_el);
+			left = lob;
+		} */
