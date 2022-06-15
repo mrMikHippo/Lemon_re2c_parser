@@ -6,7 +6,7 @@ LEXER_PATH=lexer
 CXXFLAGS =
 #-std=c++11
 
-CXXFILES = main.cpp AST/variable_type.cpp AST/literal.cpp AST/expression.cpp AST/statement.cpp AST/content.cpp module.cpp tests/test_all.cpp
+CXXFILES = main.cpp AST/variable_type.cpp AST/literal.cpp AST/expression.cpp AST/statement.cpp AST/content.cpp module.cpp tests/test_all.cpp tests/test_parser.cpp
 # AST/token.cpp
 
 OBJF=lre_test
