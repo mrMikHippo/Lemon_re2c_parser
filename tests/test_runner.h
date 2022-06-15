@@ -26,8 +26,9 @@ public:
 		} catch(std::runtime_error &e) {
 			++fail_count;
 			std::cerr << name << " fail: " << e.what() << std::endl;
-		} catch(...) {
-			std::cerr << name << " Unknown error" << std::endl;
+		} catch(std::exception& ex) {
+			++fail_count;
+			std::cerr << name << " Unknown fail: " << ex.what() << std::endl;
 		}
 	}
 

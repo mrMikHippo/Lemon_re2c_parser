@@ -4,10 +4,11 @@
 #include "../AST/literal.h"
 #include "../AST/expression.h"
 #include "../AST/statement.h"
+#include "test_runner.h"
+#include "test_parser.h"
+#include <iostream>
 #include <string>
 #include <vector>
-#include "test_runner.h"
-#include <iostream>
 
 #define FULL_TEST 0
 
@@ -634,6 +635,7 @@ void TestAll() {
 	TestRunner tr;
 	TestBase(tr);
 	TestExtended(tr);
+	TestParser(tr);
 	cout << "..................." << "\n";
 	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << "\n";
 	if (tr.getFailCount())

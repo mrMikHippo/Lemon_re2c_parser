@@ -22,6 +22,7 @@ public:
 	void run(const std::string& source);
 
 	void setRootNode(Statement* node);
+	Statement* getRootNode() const;
 
 	template<typename T>
 	T* getToken(uint64_t _id)
