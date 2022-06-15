@@ -28,7 +28,7 @@ public:
 			std::cerr << name << " fail: " << e.what() << std::endl;
 		} catch(std::exception& ex) {
 			++fail_count;
-			std::cerr << name << " Unknown fail: " << ex.what() << std::endl;
+			std::cerr << name << " Fail: " << ex.what() << std::endl;
 		}
 	}
 
