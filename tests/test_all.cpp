@@ -44,21 +44,24 @@ static Log log(verbose);
 
 void Test_LiteralInteger() {
 	// 10
-	LiteralInteger lint(new Token{"10"});
+	Token token_int("10");
+	LiteralInteger lint(&token_int);
 	AssertEqual(lint.toString(), "10", " literal integer test");
 	log << arrow_end << lint.toString() << "\n";
 }
 
 void Test_LiteralFloat() {
 	// 10.5
-	LiteralFloat lint(new Token{"10.5"});
+	Token token_float("10.5");
+	LiteralFloat lint(&token_float);
 	AssertEqual(lint.toString(), "10.5", " literal float test");
 	log << arrow_end << lint.toString() << "\n";
 }
 
 void Test_LiteralString() {
 	// "some testing string"
-	LiteralString lint(new Token{"some testing string"});
+	Token token_str("some testing string");
+	LiteralString lint(&token_str);
 	AssertEqual(lint.toString(), "some testing string", " literal string test");
 	log << arrow_end << lint.toString() << "\n";
 }
@@ -66,20 +69,24 @@ void Test_LiteralString() {
 void Test_VariableType() {
 	{
 		// Vector(Integer)
-		VariableType* sub_type = new VariableType(new Token{"Integer"}, {});
-		VariableType* type = new VariableType(new Token{"Vector"}, {sub_type});
-		// AssertEqual(type->toString(), "Vector(Integer)", " VariableType test"s);
-		// log << arrow_end << type->toString() << "\n";
-		delete type;
+		Token token_type("Vector");
+		Token token_sub_type("Integer");
+		VariableType sub_type(&token_sub_type, {});
+		VariableType type(&token_type, {&sub_type});
+		AssertEqual(type.toString(), "Vector(Integer)", " VariableType test"s);
+		log << arrow_end << type.toString() << "\n";
 	}
 	{
 		// Map(Integer, Integer)
-		VariableType* sub_type_1 = new VariableType(new Token{"Integer"}, {});
-		VariableType* sub_type_2 = new VariableType(new Token{"String"}, {});
-		VariableType* type = new VariableType(new Token{"Map"}, {sub_type_1, sub_type_2});
-		AssertEqual(type->toString(), "Map(Integer, String)", " VariableType test"s);
-		log << arrow_bet << type->toString() << "\n";
-		delete type;
+		Token token_type("Map");
+		Token token_sub_type_1("Integer");
+		Token token_sub_type_2("String");
+
+		VariableType sub_type_1(&token_sub_type_1, {});
+		VariableType sub_type_2(&token_sub_type_2, {});
+		VariableType type(&token_type, {&sub_type_1, &sub_type_2});
+		AssertEqual(type.toString(), "Map(Integer, String)", " VariableType test"s);
+		log << arrow_bet << type.toString() << "\n";
 	}
 	{
 		// Map(Integer, Map(Integer, String))
@@ -105,7 +112,6 @@ void Test_ExpressionLiteral() {
 		log << arrow_end << expr_literal->toString() << "\n";
 		delete expr_literal;
 	}
-#if 1
 	{
 		// Vector(Integer)[100500]
 		LiteralInteger* lit_int = new LiteralInteger(new Token{"100500"});
@@ -122,25 +128,23 @@ void Test_ExpressionLiteral() {
 		// delete type;
 		// delete expr1;
 	}
-#endif
 }
 
-#if FULL_TEST
 void TestExpressionId() {
 	// id
-	ExpressionId expr({"id"});
+	ExpressionId expr(new Token{"id"});
 	AssertEqual(expr.toString(), "id", " test for id");
 	log << arrow_end << expr.toString() << "\n";
 }
 
 void TestLiteralOneParam() {
 	// Vector(Integer)[100500, id]
-	LiteralInteger lit_int({"100500"});
+	LiteralInteger lit_int(new Token{"100500"});
 	ExpressionLiteral expr_lit(&lit_int);
-	ExpressionId expr_id({"id"});
+	ExpressionId expr_id(new Token{"id"});
 
-	VariableType sub_type({"Integer"}, {});
-	VariableType type({"Vector"}, {&sub_type});
+	VariableType sub_type(new Token{"Integer"}, {});
+	VariableType type(new Token{"Vector"}, {&sub_type});
 
 	LiteralOneParam lvec(&type, {&expr_lit, &expr_id});
 	AssertEqual(lvec.toString(), "Vector(Integer)[100500, id]");
@@ -149,17 +153,17 @@ void TestLiteralOneParam() {
 
 void TestLiteralTwoParam() {
 	// Map(Integer, Integer)[100500 : id, 42 : id2]
-	LiteralInteger lit_int_1({"100500"});
+	LiteralInteger lit_int_1(new Token{"100500"});
 	ExpressionLiteral key1(&lit_int_1);
-	ExpressionId value1({"id"});
+	ExpressionId value1(new Token{"id"});
 
-	LiteralInteger lit_int_2({"42"});
+	LiteralInteger lit_int_2(new Token{"42"});
 	ExpressionLiteral key2(&lit_int_2);
-	ExpressionId value2({"id2"});
+	ExpressionId value2(new Token{"id2"});
 
-	VariableType sub_type1({"Integer"}, {});
-	VariableType sub_type2({"Integer"}, {});
-	VariableType type({"Map"}, {&sub_type1, &sub_type2});
+	VariableType sub_type1(new Token{"Integer"}, {});
+	VariableType sub_type2(new Token{"Integer"}, {});
+	VariableType type(new Token{"Map"}, {&sub_type1, &sub_type2});
 
 	LiteralTwoParam lmap(&type, {{&key1, &value1}, {&key2, &value2}});
 
@@ -169,23 +173,23 @@ void TestLiteralTwoParam() {
 
 void TestExpressionDot() {
 	// id.some_method
-	ExpressionId caller({"id"});
-	Token func_name({"some_method"});
+	ExpressionId caller(new Token{"id"});
+	Token func_name("some_method");
 
-	ExpressionDot expr_dot(func_name, &caller);
+	ExpressionDot expr_dot(&func_name, &caller);
 	AssertEqual(expr_dot.toString(), "id.some_method");
 	log << arrow_end << expr_dot.toString() << "\n";
 }
 
 void TestExpressionCallOrdered() {
 	// id.some_method(arg1, arg2)
-	ExpressionId caller({"id"});
-	Token func_name({"some_method"});
+	ExpressionId caller(new Token{"id"});
+	Token func_name("some_method");
 
-	ExpressionId arg1({"arg1"});
-	ExpressionId arg2({"arg2"});
+	ExpressionId arg1(new Token{"arg1"});
+	ExpressionId arg2(new Token{"arg2"});
 
-	ExpressionDot expr_dot(func_name, &caller);
+	ExpressionDot expr_dot(&func_name, &caller);
 
 	ExpressionCallOrdered expr_co(&expr_dot, {&arg1, &arg2});
 	AssertEqual(expr_co.toString(), "id.some_method(arg1, arg2)");
@@ -196,17 +200,17 @@ void TestExpressionCallNamed() {
 
 	//id.some(key = arg1, key2 = arg2)
 
-	ExpressionId caller({"id"});
-	Token func_name({"some_method"});
+	ExpressionId caller(new Token{"id"});
+	Token func_name("some_method");
 
 	// Expression* callee
-	ExpressionDot expr_dot(func_name, &caller);
+	ExpressionDot expr_dot(&func_name, &caller);
 
 	// std::vector<std::pair<Token*, Expression*>>
-	Token key1({"key1"});
-	Token key2({"key2"});
-	ExpressionId val1({"arg1"});
-	ExpressionId val2({"arg2"});
+	Token key1("key1");
+	Token key2("key2");
+	ExpressionId val1(new Token{"arg1"});
+	ExpressionId val2(new Token{"arg2"});
 
 	ExpressionCallNamed expr_cn(&expr_dot, {
 			make_pair<Token*, Expression*>(&key1, &val1),
@@ -220,8 +224,8 @@ void TestExpressionCallNamed() {
 
 void TestExpressionAt() {
 	// id[key]
-	ExpressionId caller({"id"});
-	ExpressionId key({"key"});
+	ExpressionId caller(new Token{"id"});
+	ExpressionId key(new Token{"key"});
 
 	ExpressionAt expr(&caller, &key);
 	AssertEqual(expr.toString(), "id[key]");
@@ -232,9 +236,9 @@ void TestStatementDefinition() {
 
 	//Integer a
 	{
-		VariableType vt({"Integer"}, {});
-		Token id({"a"});
-		StatementDefinition st(&vt, id);
+		VariableType vt(new Token{"Integer"}, {});
+		Token id("a");
+		StatementDefinition st(&vt, &id);
 
 		AssertEqual(st.toString(), "Integer a");
 		log << arrow_end << st.toString() << "\n";
@@ -242,12 +246,12 @@ void TestStatementDefinition() {
 
 	//Integer a = 100500
 	{
-		VariableType vt({"Integer"}, {});
-		Token id({"a"});
-		LiteralInteger lit_int({"12345"});
+		VariableType vt(new Token{"Integer"}, {});
+		Token id("a");
+		LiteralInteger lit_int(new Token{"12345"});
 		ExpressionLiteral exp_lit(&lit_int);
 
-		StatementDefinition st(&vt, id, &exp_lit);
+		StatementDefinition st(&vt, &id, &exp_lit);
 		AssertEqual(st.toString(), "Integer a = 12345");
 		log << arrow_bet << st.toString() << "\n";
 	}
@@ -255,23 +259,23 @@ void TestStatementDefinition() {
 	// Vector(Integer) vec = Vector(Integer)[10, 20];
 	{
 		// Vector(Integer) vec
-		VariableType vt_sub({"Integer"}, {});
-		VariableType vt({"Vector"}, {&vt_sub});
-		Token id({"vec"});
+		VariableType vt_sub(new Token{"Integer"}, {});
+		VariableType vt(new Token{"Vector"}, {&vt_sub});
+		Token id("vec");
 
 		// Vector(Integer)[10, 20]
-		VariableType vt_sub_2({"Integer"}, {});
-		VariableType vt_2({"Vector"}, {&vt_sub});
+		VariableType vt_sub_2(new Token{"Integer"}, {});
+		VariableType vt_2(new Token{"Vector"}, {&vt_sub});
 
-		LiteralInteger l_int_1({"10"});
-		LiteralInteger l_int_2({"20"});
+		LiteralInteger l_int_1(new Token{"10"});
+		LiteralInteger l_int_2(new Token{"20"});
 		ExpressionLiteral exp_l_1(&l_int_1);
 		ExpressionLiteral exp_l_2(&l_int_2);
 
 		LiteralOneParam lit_one_param(&vt_2, {&exp_l_1, &exp_l_2});
 		ExpressionLiteral expr_lit(&lit_one_param);
 
-		StatementDefinition st(&vt, id, &expr_lit);
+		StatementDefinition st(&vt, &id, &expr_lit);
 
 		AssertEqual(st.toString(), "Vector(Integer) vec = Vector(Integer)[10, 20]");
 		log << arrow_bet << st.toString() << "\n";
@@ -280,8 +284,10 @@ void TestStatementDefinition() {
 
 void TestStatementExpression() {
 	// id == key
-	ExpressionId left({"id"});
-	ExpressionId right({"key"});
+	Token token_id("id");
+	Token token_key("key");
+	ExpressionId left(&token_id);
+	ExpressionId right(&token_key);
 
 	ExpressionEqual expr(&left, &right);
 
@@ -293,29 +299,35 @@ void TestStatementExpression() {
 
 void TestStatementList() {
 	// First statement: Integer a
-	VariableType vt_first({"Integer"}, {});
-	Token id_first({"a"});
-	StatementDefinition st_first(&vt_first, id_first);
+	Token token_type_first("Integer");
+	VariableType vt_first(&token_type_first, {});
+	Token id_first("a");
+	StatementDefinition st_first(&vt_first, &id_first);
 
 	//Second Statement: Vector(Integer)
-	VariableType vt_sub({"Integer"}, {});
-	VariableType vt({"Vector"}, {&vt_sub});
-	Token id({"vec"});
+	Token token_sub_type("Integer");
+	Token token_type("Vector");
+	VariableType vt_sub(&token_sub_type, {});
+	VariableType vt(&token_type, {&vt_sub});
+	Token id("vec");
 
 	// Vector(Integer) vec = Vector(Integer)[10, 20]
-	VariableType vt_sub_2({"Integer"}, {});
-	VariableType vt_2({"Vector"}, {&vt_sub});
+	Token token_sub_type_2("Integer");
+	VariableType vt_sub_2(&token_sub_type_2, {});
+	VariableType vt_2(&token_type, {&vt_sub});
 
 	// Vector(Integer)[10,20]
-	LiteralInteger l_int_1({"10"});
-	LiteralInteger l_int_2({"20"});
+	Token token_literal_1("10");
+	Token token_literal_2("20");
+	LiteralInteger l_int_1(&token_literal_1);
+	LiteralInteger l_int_2(&token_literal_2);
 	ExpressionLiteral exp_l_1(&l_int_1);
 	ExpressionLiteral exp_l_2(&l_int_2);
 
 	LiteralOneParam lit_one_param(&vt_2, {&exp_l_1, &exp_l_2});
 	ExpressionLiteral expr_lit(&lit_one_param);
 
-	StatementDefinition st_sec(&vt, id, &expr_lit);
+	StatementDefinition st_sec(&vt, &id, &expr_lit);
 
 	StatementList st_list({&st_first, &st_sec});
 
@@ -324,6 +336,37 @@ void TestStatementList() {
 }
 
 
+void TestExpressionAssign_IdAssignmentLiteral() {
+	// i_1 = 2;
+	//ID("i_1") ASSIGN INTEGER("2") SEMICOLON
+	Token token_id("i_1");
+	ExpressionId id(&token_id);
+
+	Token token_literal("2");
+	LiteralInteger lit_int(&token_literal);
+	ExpressionLiteral elit(&lit_int);
+
+	// i_1 = 2
+	ExpressionAssign exprA = ExpressionAssign(&id, &elit);
+	AssertEqual(exprA.toString(), "i_1 = 2");
+	log << arrow_end << exprA.toString() << "\n";
+}
+
+void TestExpressionAssign_IdAssignmentExpression() {
+	// i_2 = a_1;
+	//ID("i_2") ASSIGN ID("a_1") SEMICOLON
+
+	Token token_id_1("i_2");
+	Token token_id_2("a_1");
+	ExpressionId id_left(&token_id_1);
+	ExpressionId id_right(&token_id_2);
+
+	ExpressionAssign exprA(&id_left, &id_right);
+	AssertEqual(exprA.toString(), "i_2 = a_1");
+	log << arrow_end << exprA.toString() << "\n";
+}
+
+#if FULL_TEST
 void TestDefinitionInitialization() {
 	// Integer i_2 = 1;
 	//ID("Integer") ID("i_2") ASSIGN INTEGER("1") SEMICOLON
@@ -333,37 +376,10 @@ void TestDefinitionInitialization() {
 	LiteralInteger lit_int({"1"});
 	ExpressionLiteral expr(&lit_int);
 
-	StatementDefinition st(&vt, id, &expr);
+	StatementDefinition st(&vt, &id, &expr);
 	AssertEqual(st.toString(), "Integer i_2 = 1");
 	log << arrow_end << st.toString() << "\n";
 }
-
-void TestExpressionAssignIdAssignmentLiteral() {
-	// i_1 = 2;
-	//ID("i_1") ASSIGN INTEGER("2") SEMICOLON
-	ExpressionId id(Token{"i_1"});
-
-	LiteralInteger lit_int(Token{"2"});
-	ExpressionLiteral elit(&lit_int);
-
-	// i_1 = 2
-	ExpressionAssign exprA = ExpressionAssign(&id, &elit);
-	AssertEqual(exprA.toString(), "i_1 = 2");
-	log << arrow_end << exprA.toString() << "\n";
-}
-
-void TestExpressionAssignIdAssignmentId() {
-	// i_2 = a_1;
-	//ID("i_2") ASSIGN ID("a_1") SEMICOLON
-
-	ExpressionId id_left(Token{"i_2"});
-	ExpressionId id_right(Token{"a_1"});
-
-	ExpressionAssign exprA(&id_left, &id_right);
-	AssertEqual(exprA.toString(), "i_2 = a_1");
-	log << arrow_end << exprA.toString() << "\n";
-}
-
 
 void TestVTypeOneParamInitialization() {
 	// Vector(Integer) vc_1 = Vector(Integer)[];
@@ -579,14 +595,12 @@ void TestExprDotStatementExpressionVarType() {
 }
 
 #endif
-void TestAll() {
-	TestRunner tr;
+void TestBase(TestRunner& tr) {
 	tr.RunTest(Test_LiteralInteger, "Test_LiteralInteger");
 	tr.RunTest(Test_LiteralFloat, "Test_LiteralFloat");
 	tr.RunTest(Test_LiteralString, "Test_LiteralString");
 	tr.RunTest(Test_VariableType, "Test_VariableType");
 	tr.RunTest(Test_ExpressionLiteral, "Test_ExpressionLiteral");
-#if FULL_TEST
 	tr.RunTest(TestExpressionId, "TestExpressionId");
 	tr.RunTest(TestLiteralOneParam, "TestLiteralOneParam");
 	tr.RunTest(TestLiteralTwoParam, "TestLiteralTwoParam");
@@ -599,6 +613,10 @@ void TestAll() {
 	tr.RunTest(TestStatementDefinition, "TestStatementDefinition");
 	tr.RunTest(TestStatementExpression, "TestStatementExpression");
 	tr.RunTest(TestStatementList, "TestStatementList");
+}
+
+void TestExtended(TestRunner& tr) {
+#if FULL_TEST
 	tr.RunTest(TestDefinitionInitialization, "TestDefinitionInitialization");
 	tr.RunTest(TestIdAssignmentId, "TestIdAssignmentId");
 	tr.RunTest(TestVTypeOneParamInitialization, "TestVTypeOneParamInitialization");
@@ -611,6 +629,11 @@ void TestAll() {
 	tr.RunTest(TestTypeInitialization, "TestTypeInitialization");
 	tr.RunTest(TestExprDotStatementExpressionVarType, "TestExprDotStatementExpressionVarType");
 #endif
+}
+void TestAll() {
+	TestRunner tr;
+	TestBase(tr);
+	TestExtended(tr);
 	cout << "..................." << "\n";
 	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << "\n";
 	if (tr.getFailCount())
