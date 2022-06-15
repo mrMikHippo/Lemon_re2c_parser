@@ -1,8 +1,5 @@
 #include "content.h"
 
-#include <iostream>
-#include <exception>
-
 OneParamContent::OneParamContent()
     : elements({})
 {
@@ -13,6 +10,20 @@ const OneParamContent::Elements& OneParamContent::getElements() const
 }
 
 void OneParamContent::addElement(Expression* el_)
+{
+    elements.push_back(el_);
+}
+
+TwoParamContent::TwoParamContent()
+    : elements({})
+{
+}
+const TwoParamContent::Elements& TwoParamContent::getElements() const
+{
+    return elements;
+}
+
+void TwoParamContent::addElement(std::pair<Expression*, Expression*> el_)
 {
     elements.push_back(el_);
 }
