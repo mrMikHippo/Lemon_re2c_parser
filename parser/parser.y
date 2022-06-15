@@ -143,94 +143,91 @@ variable_id(left) ::= ID(I) . {
 }
 
 /* Literals */
-literal(left) ::= literal_integer(li) . {
-	left = li;
+literal(left) ::= literal_simple(ls) . {
+	left = ls;
 }
-	literal_integer(left) ::= LITERAL_INTEGER(LI) . {
+	literal_simple(left) ::= LITERAL_INTEGER(LI) . {
 		auto t = module->getToken<Token>(LI);
 		left = module->createToken<LiteralInteger>(t);
 	}
-literal(left) ::= literal_float(lf) . {
-	left = lf;
-}
-	literal_float(left) ::= LITERAL_FLOAT(LF) . {
+	literal_simple(left) ::= LITERAL_FLOAT(LF) . {
 		auto t = module->getToken<Token>(LF);
 		left = module->createToken<LiteralFloat>(t);
 	}
-literal(left) ::= literal_string(ls) . {
-	left = ls;
-}
-	literal_string(left) ::= LITERAL_STRING(LS) . {
+	literal_simple(left) ::= LITERAL_STRING(LS) . {
 		auto t = module->getToken<Token>(LS);
 		left = module->createToken<LiteralString>(t);
 	}
-literal(left) ::= literal_one_param(lop) . {
-	left = lop;
+literal(left) ::= literal_with_params(lwp) . {
+	left = lwp;
 }
-	literal_one_param(left) ::= variable_type_oneparam(vtc) LSB literal_oneparam_content(loc) RSB . {
-		auto t_vtc = module->getToken<VariableType>(vtc);
-		auto t_loc = module->getToken<OneParamContent>(loc);
-		std::vector<Expression*> vec;
-		std::cout << "LiteralOneParam content: " << std::endl;
-		for (auto& el : t_loc->getElements()) {
-			std::cout <<  el->toString() << " ";
-			vec.push_back(el);
-		}
-		std::cout << std::endl;
-		left = module->createToken<LiteralOneParam>(t_vtc, vec);
+	literal_with_params(left) ::= literal_one_param(lop) . {
+		left = lop;
 	}
-		literal_oneparam_content(left) ::= literal_oneparam_body(lob) . {
-			left = lob;
-		}
-			literal_oneparam_body(left) ::= . {
-				left = module->createToken<OneParamContent>();
+		literal_one_param(left) ::= variable_type_oneparam(vtc) LSB literal_oneparam_content(loc) RSB . {
+			auto t_vtc = module->getToken<VariableType>(vtc);
+			auto t_loc = module->getToken<OneParamContent>(loc);
+			std::vector<Expression*> vec;
+			std::cout << "LiteralOneParam content: " << std::endl;
+			for (auto& el : t_loc->getElements()) {
+				std::cout <<  el->toString() << " ";
+				vec.push_back(el);
 			}
-			literal_oneparam_body(left) ::= literal_oneparam_body(lob) expression_id_or_literal(eiol) COMMA . {
+			std::cout << std::endl;
+			left = module->createToken<LiteralOneParam>(t_vtc, vec);
+		}
+			literal_oneparam_content(left) ::= literal_oneparam_body(lob) . {
+				left = lob;
+			}
+				literal_oneparam_body(left) ::= . {
+					left = module->createToken<OneParamContent>();
+				}
+				literal_oneparam_body(left) ::= literal_oneparam_body(lob) expression_id_or_literal(eiol) COMMA . {
+					auto t_lob = module->getToken<OneParamContent>(lob);
+					auto t_eiol = module->getToken<Expression>(eiol);
+					t_lob->addElement(t_eiol);
+					left = lob;
+				}
+			literal_oneparam_content(left) ::= literal_oneparam_body(lob) expression_id_or_literal(eiol) . {
 				auto t_lob = module->getToken<OneParamContent>(lob);
 				auto t_eiol = module->getToken<Expression>(eiol);
 				t_lob->addElement(t_eiol);
 				left = lob;
 			}
-		literal_oneparam_content(left) ::= literal_oneparam_body(lob) expression_id_or_literal(eiol) . {
-			auto t_lob = module->getToken<OneParamContent>(lob);
-			auto t_eiol = module->getToken<Expression>(eiol);
-			t_lob->addElement(t_eiol);
-			left = lob;
-		}
-literal(left) ::= literal_two_param(ltp) . {
-	left = ltp;
-}
-	literal_two_param(left) ::= variable_type_twoparam(vtc) LSB literal_twoparam_content(ltc) RSB . {
-		auto t_vtc = module->getToken<VariableType>(vtc);
-		auto t_ltc = module->getToken<TwoParamContent>(ltc);
-		std::vector<std::pair<Expression*, Expression*>> vec;
-		std::cout << "LiteralTwoParam content: " << std::endl;
-		bool first = true;
-		for (auto& el : t_ltc->getElements()) {
-			std::cout << (first ? "" : ", ") << el.first->toString() << " : " << el.second->toString();
-			vec.push_back(el);
-			first = false;
-		}
-		std::cout << std::endl;
-		left = module->createToken<LiteralTwoParam>(t_vtc, vec);
+	literal_with_params(left) ::= literal_two_param(ltp) . {
+		left = ltp;
 	}
-		literal_twoparam_content(left) ::= literal_twoparam_body(ltb) . {
-			left = ltb;
-		}
-			literal_twoparam_body(left) ::= . {
-				left = module->createToken<TwoParamContent>();
+		literal_two_param(left) ::= variable_type_twoparam(vtc) LSB literal_twoparam_content(ltc) RSB . {
+			auto t_vtc = module->getToken<VariableType>(vtc);
+			auto t_ltc = module->getToken<TwoParamContent>(ltc);
+			std::vector<std::pair<Expression*, Expression*>> vec;
+			std::cout << "LiteralTwoParam content: " << std::endl;
+			bool first = true;
+			for (auto& el : t_ltc->getElements()) {
+				std::cout << (first ? "" : ", ") << el.first->toString() << " : " << el.second->toString();
+				vec.push_back(el);
+				first = false;
 			}
-			literal_twoparam_body(left) ::= literal_twoparam_body(ltb) expression_id_or_literal(eiol1) COLON expression_id_or_literal(eiol2) COMMA . {
+			std::cout << std::endl;
+			left = module->createToken<LiteralTwoParam>(t_vtc, vec);
+		}
+			literal_twoparam_content(left) ::= literal_twoparam_body(ltb) . {
+				left = ltb;
+			}
+				literal_twoparam_body(left) ::= . {
+					left = module->createToken<TwoParamContent>();
+				}
+				literal_twoparam_body(left) ::= literal_twoparam_body(ltb) expression_id_or_literal(eiol1) COLON expression_id_or_literal(eiol2) COMMA . {
+					auto t_ltb = module->getToken<TwoParamContent>(ltb);
+					auto t_eiol1 = module->getToken<Expression>(eiol1);
+					auto t_eiol2 = module->getToken<Expression>(eiol2);
+					t_ltb->addElement(std::make_pair(t_eiol1, t_eiol2));
+					left = ltb;
+				}
+			literal_twoparam_content(left) ::= literal_twoparam_body(ltb) expression_id_or_literal(eiol1) COLON expression_id_or_literal(eiol2) . {
 				auto t_ltb = module->getToken<TwoParamContent>(ltb);
 				auto t_eiol1 = module->getToken<Expression>(eiol1);
 				auto t_eiol2 = module->getToken<Expression>(eiol2);
 				t_ltb->addElement(std::make_pair(t_eiol1, t_eiol2));
 				left = ltb;
 			}
-		literal_twoparam_content(left) ::= literal_twoparam_body(ltb) expression_id_or_literal(eiol1) COLON expression_id_or_literal(eiol2) . {
-			auto t_ltb = module->getToken<TwoParamContent>(ltb);
-			auto t_eiol1 = module->getToken<Expression>(eiol1);
-			auto t_eiol2 = module->getToken<Expression>(eiol2);
-			t_ltb->addElement(std::make_pair(t_eiol1, t_eiol2));
-			left = ltb;
-		}
