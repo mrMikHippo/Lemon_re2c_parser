@@ -114,6 +114,10 @@ public:
 								Parse(pParser, LEX_COLON, _module->createToken<Token>(this->getTokenValue()), _module);
 								continue;
 							}
+				"."			{
+								Parse(pParser, LEX_DOT, _module->createToken<Token>(this->getTokenValue()), _module);
+								continue;
+							}
 			 	[^]			{   continue; }
 				$			{ 	break; }
 			 */

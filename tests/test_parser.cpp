@@ -88,6 +88,62 @@ void Test_Statement_Assign_Definition_TwoParam()
     // AssertEqual(module.getRootNode()->toString(), "");
 }
 
+void Test_StatementExpression_Simple()
+{
+    Module module;
+    module.run("i_1 = 2;");
+    AssertEqual(module.getRootNode()->toString(), "i_1 = 2");
+    module.run("str_1 = \"some string\";");
+    AssertEqual(module.getRootNode()->toString(), "str_1 = \"some string\"");
+    module.run("f_1 = 2.0;");
+    AssertEqual(module.getRootNode()->toString(), "f_1 = 2.0");
+
+    module.run("i_2 = a_1;");
+    AssertEqual(module.getRootNode()->toString(), "i_2 = a_1");
+}
+void Test_StatementExpression_OneParam()
+{
+    Module module;
+
+    module.run("vc_1 = Vector(Integer)[100, i_2];");
+    AssertEqual(module.getRootNode()->toString(), "vc_1 = Vector(Integer)[100, i_2]");
+    module.run("vc_1 = Vector(String)[\"some string\", str_var];");
+    AssertEqual(module.getRootNode()->toString(), "vc_1 = Vector(String)[\"some string\", str_var]");
+    module.run("vc_1 = Vector(Float)[100.5, i_2];");
+    AssertEqual(module.getRootNode()->toString(), "vc_1 = Vector(Float)[100.5, i_2]");
+}
+void Test_StatementExpression_TwoParam()
+{
+    Module module;
+
+    module.run("m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];");
+    AssertEqual(module.getRootNode()->toString(), "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]");
+    module.run("m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];");
+    AssertEqual(module.getRootNode()->toString(), "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]");
+    module.run("m_1 = Map(Integer, Map(Integer, String))[i_1: mp1, 100: i_2];");
+    AssertEqual(module.getRootNode()->toString(), "m_1 = Map(Integer, Map(Integer, String))[i_1 : mp1, 100 : i_2]");
+    // module.run("");
+    // AssertEqual(module.getRootNode()->toString(), "");
+}
+
+void Test_ExpressionCallOrdered()
+{
+    Module module;
+    module.run("id.some();");
+    AssertEqual(module.getRootNode()->toString(), "id.some()");
+    module.run("id.some(arg1);");
+    AssertEqual(module.getRootNode()->toString(), "id.some(arg1)");
+    module.run("id.some(arg1, arg2);");
+    AssertEqual(module.getRootNode()->toString(), "id.some(arg1, arg2)");
+}
+
+void Test_StatementExpression_Types()
+{
+    Module module;
+    module.run("Type t = Integer;");
+    AssertEqual(module.getRootNode()->toString(), "Type t = Integer");
+}
+
 void TestParser(TestRunner& tr)
 {
     tr.RunTest(Test_StatementDefinition_SimpleTypes, "Parser: Test_StatementDefinition_SimpleTypes");
@@ -95,4 +151,9 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_Statement_Assign_Definition_Simple, "Parser: Test_Statement_Assign_Definition_Simple");
     tr.RunTest(Test_Statement_Assign_Definition_OneParam, "Parser: Test_Statement_Assign_Definition_OneParam");
     tr.RunTest(Test_Statement_Assign_Definition_TwoParam, "Parser: Test_Statement_Assign_Definition_TwoParam");
+    tr.RunTest(Test_StatementExpression_Simple, "Parser: Test_StatementExpression_Simple");
+    tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");
+    tr.RunTest(Test_StatementExpression_TwoParam, "Parser: Test_StatementExpression_TwoParam");
+    tr.RunTest(Test_ExpressionCallOrdered, "Parser: Test_ExpressionCallOrdered");
+    // tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
 }
