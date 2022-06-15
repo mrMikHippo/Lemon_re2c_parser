@@ -18,3 +18,16 @@ public:
 private:
     Elements elements;
 };
+
+class TwoParamContent : public Token
+{
+public:
+    using Elements = std::vector<std::pair<Expression*, Expression*>>;
+    TwoParamContent();
+
+    void addElement(std::pair<Expression*, Expression*> el_);
+    const Elements& getElements() const;
+
+public:
+    Elements elements;
+};
