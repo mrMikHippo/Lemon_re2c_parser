@@ -22,7 +22,7 @@ lexer.h: $(LEXER_PATH)/lexer.re
 	re2c $(LEXER_PATH)/lexer.re -i --case-ranges -o $(LEXER_PATH)/lexer.h
 
 parser.c: $(PARSER_PATH)/parser.y
-	lemon $(PARSER_PATH)/parser.y
+	lemon -c -s $(PARSER_PATH)/parser.y
 
 clean:
 	rm -rf $(OBJF) *.o $(LEXER_PATH)/lexer.{cpp,h} $(PARSER_PATH)/parser.{h,out,c}

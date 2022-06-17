@@ -1,6 +1,7 @@
 #include "expression.h"
 
 #include "literal.h"
+#include "variable_type.h"
 
 #include <iostream>
 
@@ -137,7 +138,19 @@ std::string ExpressionLiteral::toString() const
 	return literal->toString();
 }
 
-// ExpressionLiteral
+// ExpressionType
+ExpressionType::ExpressionType(VariableType* type_)
+	: type(type_)
+{
+	// Do nothing
+}
+
+std::string ExpressionType::toString() const
+{
+	return type->toString();
+}
+
+// ExpressionEqual
 ExpressionEqual::ExpressionEqual(Expression* left_, Expression* right_)
 	: left(left_), right(right_)
 {

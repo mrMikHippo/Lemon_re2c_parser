@@ -450,23 +450,6 @@ void TestIdAssignmentExpression() {
 	log << arrow_end << exprA.toString() << "\n";
 }
 
-void TestExpressionCallPushBack() {
-	// vc_1.pushBack(i_1);
-	//ID("vc_1") DOT ID("pushBack") LRB ID("i_1") RRB SEMICOLON
-
-	ExpressionId callee(Token{"vc_1"});
-	ExpressionId id_to_push(Token{"i_1"});
-
-	Token method_name({"pushBack"});
-
-	ExpressionDot expr(method_name, &callee);
-
-	ExpressionCallOrdered expr_co(&expr, {&id_to_push});
-
-	AssertEqual(expr_co.toString(), "vc_1.pushBack(i_1)");
-	log << arrow_end << expr_co.toString() << "\n";
-}
-
 void TestStatementTwoParamInitializationEmpty() {
 	// Map(Integer, Integer) m_1 = Map(Integer, Integer)[];
 	//ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB ID("m_1") ASSIGN ID("Map") LRB ID("Integer") COMMA ID("Integer") RRB LSB RSB SEMICOLON
@@ -530,6 +513,22 @@ void TestIdAssignmentExpressionTwoParam() {
 
 	AssertEqual(exprA.toString(), "m_1 = Map(Integer, Integer)[i_1 : j_1, i_2 : j_2]");
 	log << arrow_end << exprA.toString() << "\n";
+}
+
+void TestExpressionCallOrdered() {
+	// vc_1.pushBack(i_1);
+	//ID("vc_1") DOT ID("pushBack") LRB ID("i_1") RRB SEMICOLON
+
+	ExpressionId callee(Token{"vc_1"});
+	Token method_name({"pushBack"});
+
+	ExpressionDot expr(method_name, &callee);
+
+	ExpressionId id_to_push(Token{"i_1"});
+	ExpressionCallOrdered expr_co(&expr, {&id_to_push});
+
+	AssertEqual(expr_co.toString(), "vc_1.pushBack(i_1)");
+	log << arrow_end << expr_co.toString() << "\n";
 }
 
 void TestExpressionDotCallNamed() {
@@ -622,7 +621,7 @@ void TestExtended(TestRunner& tr) {
 	tr.RunTest(TestIdAssignmentId, "TestIdAssignmentId");
 	tr.RunTest(TestVTypeOneParamInitialization, "TestVTypeOneParamInitialization");
 	tr.RunTest(TestVTypeVTypeOneParamInitialization, "TestVTypeVTypeOneParamInitialization");
-	tr.RunTest(TestExpressionCallPushBack, "TestExpressionCallPushBack");
+	tr.RunTest(TestExpressionCallOrdered, "TestExpressionCallOrdered");
 	tr.RunTest(TestStatementTwoParamInitializationEmpty, "TestStatementTwoParamInitializationEmpty");
 	tr.RunTest(TestStatementTwoParamInitializationWithValue, "TestStatementTwoParamInitializationWithValue");
 	tr.RunTest(TestIdAssignmentExpressionTwoParam, "TestIdAssignmentExpressionTwoParam");
@@ -633,8 +632,8 @@ void TestExtended(TestRunner& tr) {
 }
 void TestAll() {
 	TestRunner tr;
-	TestBase(tr);
-	TestExtended(tr);
+	// TestBase(tr);
+	// TestExtended(tr);
 	TestParser(tr);
 	cout << "..................." << "\n";
 	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << "\n";

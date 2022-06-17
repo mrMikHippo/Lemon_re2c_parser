@@ -6,17 +6,18 @@
 
 class GlobalTypeMap {
 public:
-	static GlobalTypeMap& getInstance() {	 
+	static GlobalTypeMap& getInstance() {
 		static GlobalTypeMap instance;
 		return instance;
 	}
 
 	std::vector<std::string> types = {
 		"Integer",
-		"Float", 
+		"Float",
 		"String",
 		"Vector",
-		"Map"
+		"Map",
+		"Type"
 	};
 
 	GlobalTypeMap(GlobalTypeMap const&) = delete;

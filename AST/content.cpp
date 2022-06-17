@@ -23,7 +23,7 @@ const TwoParamContent::Elements& TwoParamContent::getElements() const
     return elements;
 }
 
-void TwoParamContent::addElement(std::pair<Expression*, Expression*> el_)
+void TwoParamContent::addElement(TwoParamContent::ElementPair el_)
 {
     elements.push_back(el_);
 }

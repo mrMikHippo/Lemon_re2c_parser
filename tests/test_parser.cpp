@@ -4,144 +4,154 @@
 #include "test_runner.h"
 
 #include <iostream>
+#include <map>
+#include <string>
 
 using namespace std;
 
-void Test_StatementDefinition_SimpleTypes()
+void RunTests(map<string, string> tests)
 {
     Module module;
-    module.run("Integer a;");
-    AssertEqual(module.getRootNode()->toString(), "Integer a");
-    module.run("String b;");
-    AssertEqual(module.getRootNode()->toString(), "String b");
-    module.run("Float c;");
-    AssertEqual(module.getRootNode()->toString(), "Float c");
+    int cnt = 1;
+    int size = tests.size();
+    for (const auto& t : tests) {
+        cout << warn << "[" << cnt << "/" << size << "]: " << reset;
+        try {
+            module.run(t.first);
+            AssertEqual(module.getRootNode()->toString(), t.second);
+            cnt++;
+        } catch(const std::runtime_error& ex) {
+            cout << warn << "[" << ++cnt << "/" << size << "]: " << reset << ex.what() << endl;
+            throw;
+        } catch(const std::exception& ex) {
+            cout << reset << ex.what() << endl;
+            throw;
+        }
+    }
+}
+
+void Test_StatementDefinition_SimpleTypes()
+{
+    map<string, string> tests = {
+        {"Integer a;",                "Integer a"},
+        {"String b;",                "String b"},
+        {"Float c;",                "Float c"},
+    };
+    RunTests(tests);
 }
 
 void Test_StatementDefinition_ComplexTypes()
 {
-    Module module;
-
-    module.run("Vector(Integer) vc_1;");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1");
-    module.run("Vector(String) vc_2;");
-    AssertEqual(module.getRootNode()->toString(), "Vector(String) vc_2");
-    module.run("Vector(Float) vc_3;");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Float) vc_3");
-
-    module.run("Map(Integer, Integer) m_1;");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, Integer) m_1");
-    module.run("Map(Integer, String) m_2;");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, String) m_2");
-
-    module.run("Vector(Vector(Integer)) vc_4;");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Vector(Integer)) vc_4");
-    module.run("Map(Integer, Map(Integer, Integer)) m_3;");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, Map(Integer, Integer)) m_3");
+    map<string, string> tests = {
+        {"Vector(Integer) vc_1;",                "Vector(Integer) vc_1"},
+        {"Vector(String) vc_2;",                "Vector(String) vc_2"},
+        {"Vector(Float) vc_3;",                "Vector(Float) vc_3"},
+        {"Map(Integer, Integer) m_1;",                "Map(Integer, Integer) m_1"},
+        {"Map(Integer, String) m_2;",                "Map(Integer, String) m_2"},
+        {"Vector(Vector(Integer)) vc_4;",                "Vector(Vector(Integer)) vc_4"},
+        {"Map(Integer, Map(Integer, Integer)) m_3;",                "Map(Integer, Map(Integer, Integer)) m_3"},
+    };
+    RunTests(tests);
 }
 void Test_Statement_Assign_Definition_Simple()
 {
-    Module module;
-    module.run("Integer i_2 = 1;");
-    AssertEqual(module.getRootNode()->toString(), "Integer i_2 = 1");
-    module.run("String str = \"some string\";");
-    AssertEqual(module.getRootNode()->toString(), "String str = \"some string\"");
-    module.run("Float f_1 = 10.5;");
-    AssertEqual(module.getRootNode()->toString(), "Float f_1 = 10.5");
+    map<string, string> tests = {
+        {"Integer i_2 = 1;",                "Integer i_2 = 1"},
+        {"String str = \"some string\";",   "String str = \"some string\""},
+        {"Float f_1 = 10.5;",               "Float f_1 = 10.5"},
+    };
+    RunTests(tests);
+
 }
 void Test_Statement_Assign_Definition_OneParam()
 {
-    Module module;
-
-    module.run("Vector(Integer) vc_1 = Vector(Integer)[];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1 = Vector(Integer)[]");
-    module.run("Vector(Integer) vc_1 = Vector(Integer)[100];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1 = Vector(Integer)[100]");
-    module.run("Vector(Integer) vc_1 = Vector(Integer)[100, 500];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1 = Vector(Integer)[100, 500]");
-    module.run("Vector(Integer) vc_1 = Vector(Integer)[abc];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1 = Vector(Integer)[abc]");
-    module.run("Vector(Integer) vc_1 = Vector(Integer)[100, abc, 500];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1 = Vector(Integer)[100, abc, 500]");
-    module.run("Vector(Integer) vc_1 = Vector(Integer)[100,];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Integer) vc_1 = Vector(Integer)[100]");
-    module.run("Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1];");
-    AssertEqual(module.getRootNode()->toString(), "Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1]");
+    map<string, string> tests = {
+        {"Vector(Integer) vc_1 = Vector(Integer)[];",           "Vector(Integer) vc_1 = Vector(Integer)[]"},
+        {"Vector(Integer) vc_1 = Vector(Integer)[100];",        "Vector(Integer) vc_1 = Vector(Integer)[100]"},
+        {"Vector(Integer) vc_1 = Vector(Integer)[100, 500];",   "Vector(Integer) vc_1 = Vector(Integer)[100, 500]"},
+        {"Vector(Integer) vc_1 = Vector(Integer)[abc];",        "Vector(Integer) vc_1 = Vector(Integer)[abc]"},
+        {"Vector(Integer) vc_1 = Vector(Integer)[100, abc, 500];",          "Vector(Integer) vc_1 = Vector(Integer)[100, abc, 500]"},
+        {"Vector(String) vc_1 = Vector(String)[\"some string\",];",         "Vector(String) vc_1 = Vector(String)[\"some string\"]"},
+        {"Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1];",   "Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1]"},
+    };
+    RunTests(tests);
 }
 
 void Test_Statement_Assign_Definition_TwoParam()
 {
-    Module module;
-    module.run("Map(Integer, Integer) m_1 = Map(Integer, Integer)[];");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, Integer) m_1 = Map(Integer, Integer)[]");
-    module.run("Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300];");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]");
-    module.run("Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300,];");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]");
-    module.run("Map(Integer, String) m_1 = Map(Integer, String)[100 : \"abc\", yoyo : \"300\"];");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, String) m_1 = Map(Integer, String)[100 : \"abc\", yoyo : \"300\"]");
-    module.run("Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1];");
-    AssertEqual(module.getRootNode()->toString(), "Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1]");
-    // module.run("");
-    // AssertEqual(module.getRootNode()->toString(), "");
-    // module.run("");
-    // AssertEqual(module.getRootNode()->toString(), "");
+    map<string, string> tests = {
+        {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[];",                        "Map(Integer, Integer) m_1 = Map(Integer, Integer)[]"},
+        {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300];",   "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]"},
+        {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300,];",  "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]"},
+        {"Map(Integer, String) m_1 = Map(Integer, String)[100 : \"abc\", yoyo : \"300\"];", "Map(Integer, String) m_1 = Map(Integer, String)[100 : \"abc\", yoyo : \"300\"]"},
+        {"Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1];", "Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1]"},
+    };
+    RunTests(tests);
 }
 
 void Test_StatementExpression_Simple()
 {
-    Module module;
-    module.run("i_1 = 2;");
-    AssertEqual(module.getRootNode()->toString(), "i_1 = 2");
-    module.run("str_1 = \"some string\";");
-    AssertEqual(module.getRootNode()->toString(), "str_1 = \"some string\"");
-    module.run("f_1 = 2.0;");
-    AssertEqual(module.getRootNode()->toString(), "f_1 = 2.0");
-
-    module.run("i_2 = a_1;");
-    AssertEqual(module.getRootNode()->toString(), "i_2 = a_1");
+    map<string, string> tests = {
+        {"i_1 = 2;",                 "i_1 = 2"},
+        {"str_1 = \"some string\";", "str_1 = \"some string\""},
+        {"f_1 = 2.0;",               "f_1 = 2.0"},
+        {"i_2 = a_1;",               "i_2 = a_1"},
+    };
+    RunTests(tests);
 }
 void Test_StatementExpression_OneParam()
 {
-    Module module;
-
-    module.run("vc_1 = Vector(Integer)[100, i_2];");
-    AssertEqual(module.getRootNode()->toString(), "vc_1 = Vector(Integer)[100, i_2]");
-    module.run("vc_1 = Vector(String)[\"some string\", str_var];");
-    AssertEqual(module.getRootNode()->toString(), "vc_1 = Vector(String)[\"some string\", str_var]");
-    module.run("vc_1 = Vector(Float)[100.5, i_2];");
-    AssertEqual(module.getRootNode()->toString(), "vc_1 = Vector(Float)[100.5, i_2]");
+    map<string, string> tests = {
+        {"vc_1 = Vector(Integer)[100, i_2];",                "vc_1 = Vector(Integer)[100, i_2]"},
+        {"vc_1 = Vector(String)[\"some string\", str_var];", "vc_1 = Vector(String)[\"some string\", str_var]"},
+        {"vc_1 = Vector(Float)[100.5, i_2];",                "vc_1 = Vector(Float)[100.5, i_2]"},
+    };
+    RunTests(tests);
 }
 void Test_StatementExpression_TwoParam()
 {
-    Module module;
-
-    module.run("m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];");
-    AssertEqual(module.getRootNode()->toString(), "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]");
-    module.run("m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];");
-    AssertEqual(module.getRootNode()->toString(), "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]");
-    module.run("m_1 = Map(Integer, Map(Integer, String))[i_1: mp1, 100: i_2];");
-    AssertEqual(module.getRootNode()->toString(), "m_1 = Map(Integer, Map(Integer, String))[i_1 : mp1, 100 : i_2]");
-    // module.run("");
-    // AssertEqual(module.getRootNode()->toString(), "");
+    map<string, string> tests = {
+        {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
+        {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
+        {"m_1 = Map(Integer, Map(Integer, String))[i_1: mp1, 100: i_2];",   "m_1 = Map(Integer, Map(Integer, String))[i_1 : mp1, 100 : i_2]"},
+    };
+    RunTests(tests);
 }
 
 void Test_ExpressionCallOrdered()
 {
-    Module module;
-    module.run("id.some();");
-    AssertEqual(module.getRootNode()->toString(), "id.some()");
-    module.run("id.some(arg1);");
-    AssertEqual(module.getRootNode()->toString(), "id.some(arg1)");
-    module.run("id.some(arg1, arg2);");
-    AssertEqual(module.getRootNode()->toString(), "id.some(arg1, arg2)");
+    map<string, string> tests = {
+        {"id.some();",                "id.some()"},
+        {"id.some(arg1);",  "id.some(arg1)"},
+        {"id.some(arg1, arg2);",  "id.some(arg1, arg2)"},
+    };
+    RunTests(tests);
 }
 
-void Test_StatementExpression_Types()
+void Test_ExpressionCallNamed()
 {
-    Module module;
-    module.run("Type t = Integer;");
-    AssertEqual(module.getRootNode()->toString(), "Type t = Integer");
+    map<string, string> tests = {
+        {"m_1.insert(first = i_1);",                "m_1.insert(first = i_1)"},
+        {"m_2.insert(first = i_2, second = i_3);",  "m_2.insert(first = i_2, second = i_3)"}
+    };
+
+    RunTests(tests);
+}
+
+void Test_StatementDefinition_Types()
+{
+    map<string, string> tests = {
+        {"Type t = Integer;",                "Type t = Integer"},
+    };
+    RunTests(tests);
+}
+
+void Test_StatementExpression_Equal()
+{
+    map<string, string> tests = {
+        {"a == b;",                "a == b"},
+    };
+    RunTests(tests);
 }
 
 void TestParser(TestRunner& tr)
@@ -155,5 +165,7 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");
     tr.RunTest(Test_StatementExpression_TwoParam, "Parser: Test_StatementExpression_TwoParam");
     tr.RunTest(Test_ExpressionCallOrdered, "Parser: Test_ExpressionCallOrdered");
-    // tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
+    tr.RunTest(Test_ExpressionCallNamed, "Parser: Test_ExpressionCallNamed");
+    tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
+    tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
 }

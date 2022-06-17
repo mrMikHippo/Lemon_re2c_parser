@@ -22,10 +22,11 @@ private:
 class TwoParamContent : public Token
 {
 public:
-    using Elements = std::vector<std::pair<Expression*, Expression*>>;
+    using ElementPair = std::pair<Token*, Expression*>;
+    using Elements = std::vector<ElementPair>;
     TwoParamContent();
 
-    void addElement(std::pair<Expression*, Expression*> el_);
+    void addElement(ElementPair el_);
     const Elements& getElements() const;
 
 public:
