@@ -8,6 +8,7 @@
 
 
 class Literal;
+class VariableType;
 
 class Expression : public Token
 {
@@ -57,6 +58,18 @@ private:
     Expression* caller;
     Token* id;
 };
+
+// class ExpressionCall : public Expression
+// {
+// public:
+// 	ExpressionCall(Expression* caller_, Expression* arguments_);
+//
+// 	std::toString() const override;
+//
+// private:
+// 	Expression* caller;
+// 	Expression* Arguments;
+// };
 
 //id.some(arg1, arg2)
 class ExpressionCallOrdered : public Expression
@@ -112,6 +125,17 @@ public:
 
 private:
     Literal* literal;
+};
+
+class ExpressionType : public Expression
+{
+public:
+	ExpressionType(VariableType* type_);
+
+	std::string toString() const override;
+
+private:
+    VariableType* type;
 };
 
 // a == b

@@ -86,11 +86,13 @@ private:
 class LiteralTwoParam : public Literal
 {
 public:
-	LiteralTwoParam(VariableType* type_, std::vector<std::pair<Expression*, Expression*>> content_);
+	using ContentType = std::vector<std::pair<Token*, Expression*>>;
+	// using ContentType = std::vector<std::pair<Expression*, Expression*>>;
+	LiteralTwoParam(VariableType* type_, ContentType content_);
 
 	std::string toString() const override;
 
 private:
     VariableType* type;
-    std::vector<std::pair<Expression*, Expression*> > content;
+    ContentType content;
 };

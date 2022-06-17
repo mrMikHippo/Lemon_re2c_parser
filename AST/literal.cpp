@@ -64,7 +64,7 @@ std::string LiteralOneParam::toString() const {
 }
 
 // LiteralTwoParam
-LiteralTwoParam::LiteralTwoParam(VariableType* type_, std::vector<std::pair<Expression*, Expression*> > content_)
+LiteralTwoParam::LiteralTwoParam(VariableType* type_, LiteralTwoParam::ContentType content_)
 	: type(type_), content(content_) {}
 
 
@@ -77,9 +77,13 @@ std::string LiteralTwoParam::toString() const {
 			first = false;
 		else
 			res += ", ";
-		res += el.first->toString();
+		auto key = static_cast<Expression*>(el.first);
+		auto& val = el.second;
+		res += key->toString();
+		// res += el.first->toString();
 		res += " : ";
-		res += el.second->toString();
+		res += val->toString();
+		// res += el.second->toString();
 	}
 	res += "]";
 	return res;
