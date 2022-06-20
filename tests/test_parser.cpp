@@ -9,19 +9,17 @@
 
 using namespace std;
 
-void RunTests(map<string, string> tests)
+void RunTests(vector<pair<string, string>> tests)
 {
     Module module;
-    int cnt = 1;
     int size = tests.size();
-    for (const auto& t : tests) {
-        cout << warn << "[" << cnt << "/" << size << "]: " << reset;
+    for (size_t i = 0; i < size; ++i) {
+        cout << warn << "[" << i+1 << "/" << size << "]: " << reset;
         try {
-            module.run(t.first);
-            AssertEqual(module.getRootNode()->toString(), t.second);
-            cnt++;
+            module.run(tests.at(i).first);
+            AssertEqual(module.getRootNode()->toString(), tests.at(i).second);
         } catch(const std::runtime_error& ex) {
-            cout << warn << "[" << ++cnt << "/" << size << "]: " << reset << ex.what() << endl;
+            cout << warn << "[" << i+1 << "/" << size << "]: " << reset << ex.what() << endl;
             throw;
         } catch(const std::exception& ex) {
             cout << reset << ex.what() << endl;
@@ -32,7 +30,7 @@ void RunTests(map<string, string> tests)
 
 void Test_StatementDefinition_SimpleTypes()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"Integer a;",                "Integer a"},
         {"String b;",                "String b"},
         {"Float c;",                "Float c"},
@@ -42,7 +40,7 @@ void Test_StatementDefinition_SimpleTypes()
 
 void Test_StatementDefinition_ComplexTypes()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"Vector(Integer) vc_1;",                "Vector(Integer) vc_1"},
         {"Vector(String) vc_2;",                "Vector(String) vc_2"},
         {"Vector(Float) vc_3;",                "Vector(Float) vc_3"},
@@ -55,7 +53,7 @@ void Test_StatementDefinition_ComplexTypes()
 }
 void Test_Statement_Assign_Definition_Simple()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"Integer i_2 = 1;",                "Integer i_2 = 1"},
         {"String str = \"some string\";",   "String str = \"some string\""},
         {"Float f_1 = 10.5;",               "Float f_1 = 10.5"},
@@ -65,7 +63,7 @@ void Test_Statement_Assign_Definition_Simple()
 }
 void Test_Statement_Assign_Definition_OneParam()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"Vector(Integer) vc_1 = Vector(Integer)[];",           "Vector(Integer) vc_1 = Vector(Integer)[]"},
         {"Vector(Integer) vc_1 = Vector(Integer)[100];",        "Vector(Integer) vc_1 = Vector(Integer)[100]"},
         {"Vector(Integer) vc_1 = Vector(Integer)[100, 500];",   "Vector(Integer) vc_1 = Vector(Integer)[100, 500]"},
@@ -79,7 +77,7 @@ void Test_Statement_Assign_Definition_OneParam()
 
 void Test_Statement_Assign_Definition_TwoParam()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[];",                        "Map(Integer, Integer) m_1 = Map(Integer, Integer)[]"},
         {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300];",   "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]"},
         {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300,];",  "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]"},
@@ -91,7 +89,7 @@ void Test_Statement_Assign_Definition_TwoParam()
 
 void Test_StatementExpression_Simple()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"i_1 = 2;",                 "i_1 = 2"},
         {"str_1 = \"some string\";", "str_1 = \"some string\""},
         {"f_1 = 2.0;",               "f_1 = 2.0"},
@@ -101,7 +99,7 @@ void Test_StatementExpression_Simple()
 }
 void Test_StatementExpression_OneParam()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"vc_1 = Vector(Integer)[100, i_2];",                "vc_1 = Vector(Integer)[100, i_2]"},
         {"vc_1 = Vector(String)[\"some string\", str_var];", "vc_1 = Vector(String)[\"some string\", str_var]"},
         {"vc_1 = Vector(Float)[100.5, i_2];",                "vc_1 = Vector(Float)[100.5, i_2]"},
@@ -110,7 +108,7 @@ void Test_StatementExpression_OneParam()
 }
 void Test_StatementExpression_TwoParam()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
         {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
         {"m_1 = Map(Integer, Map(Integer, String))[i_1: mp1, 100: i_2];",   "m_1 = Map(Integer, Map(Integer, String))[i_1 : mp1, 100 : i_2]"},
@@ -120,7 +118,7 @@ void Test_StatementExpression_TwoParam()
 
 void Test_ExpressionCallOrdered()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"id.some();",                  "id.some()"},
         {"id.some(arg1);",              "id.some(arg1)"},
         {"id.some(arg1, arg2);",        "id.some(arg1, arg2)"},
@@ -135,7 +133,7 @@ void Test_ExpressionCallOrdered()
 
 void Test_ExpressionCallNamed()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"m_1.insert(first = i_1);",                "m_1.insert(first = i_1)"},
         {"m_2.insert(first = i_1, second = i_2);",  "m_2.insert(first = i_1, second = i_2)"},
         {"m_2.insert(first = i_1, second = i_2, third = i_3);",  "m_2.insert(first = i_1, second = i_2, third = i_3)"},
@@ -148,7 +146,7 @@ void Test_ExpressionCallNamed()
 
 void Test_StatementExpression_Complex()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"i_1 = id.some(blabla.method());",     "i_1 = id.some(blabla.method())"},
         {"i_1 = id.some(arg1, blabla.method());",     "i_1 = id.some(arg1, blabla.method())"},
         {"i_1 = id.some(key = blabla.method());",     "i_1 = id.some(key = blabla.method())"},
@@ -159,7 +157,7 @@ void Test_StatementExpression_Complex()
 
 void Test_StatementDefinition_Types()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"Type t = Integer;",           "Type t = Integer"},
         {"Type t = Vector(String);",    "Type t = Vector(String)"},
         {"Type t = Map(Integer, Map(String, Float));",    "Type t = Map(Integer, Map(String, Float))"},
@@ -169,7 +167,7 @@ void Test_StatementDefinition_Types()
 
 void Test_StatementExpression_Types()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"t = Integer;",           "t = Integer"},
         {"t = Vector(String);",    "t = Vector(String)"},
         {"t = Map(Integer, Map(String, Float));",    "t = Map(Integer, Map(String, Float))"},
@@ -177,9 +175,20 @@ void Test_StatementExpression_Types()
     RunTests(tests);
 }
 
+void Test_StatementExpression_At()
+{
+    vector<pair<string, string>> tests = {
+        {"id[10];",    "id[10]"},
+        {"id[key];",    "id[key]"},
+        {"id[vec.at(0)];", "id[vec.at(0)]"},
+        // {"id.some()[key];", "id.some()[key]"}
+    };
+    RunTests(tests);
+}
+
 void Test_StatementExpression_Equal()
 {
-    map<string, string> tests = {
+    vector<pair<string, string>> tests = {
         {"a == b;",                "a == b"},
         {"a == 10;",                "a == 10"},
         {"a == \"string\";",                "a == \"string\""},
@@ -203,5 +212,6 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementExpression_Complex, "Parser: Test_StatementExpression_Complex");
     tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
     tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
+    tr.RunTest(Test_StatementExpression_At, "Parser: Test_StatementExpression_At");
     tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
 }

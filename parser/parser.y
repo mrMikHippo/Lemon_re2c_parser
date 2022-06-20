@@ -34,7 +34,7 @@
 
 main ::= expr(B) . {
 	module->setRootNode(module->getToken<Statement>(B));
-	std::cout << "End of parser.yy";
+	std::cout << "End of parser.y";
 	if (module->getToken<Statement>(B))
 		std::cout << " | statement: '" << module->getToken<Statement>(B)->toString() << "'";
 	std::cout << std::endl;
@@ -99,11 +99,23 @@ statement(left) ::= statement_expression(se) SEMICOLON . {
         auto t_ec = module->getToken<Expression>(ec);
         left = module->createToken<StatementExpression>(t_ec);
     }
+	statement_expression(left) ::= expression_at(ea) . {
+		auto t_ea = module->getToken<Expression>(ea);
+		left = module->createToken<StatementExpression>(t_ea);
+	}
+		expression_at(left) ::= expression_id(vi) LSB expression(e) RSB . {
+			auto t_vi = module->getToken<Expression>(vi);
+			auto t_e = module->getToken<Expression>(e);
+			left = module->createToken<ExpressionAt>(t_vi, t_e);
+		}
 
 /* StatementList */
 /* statement(left) ::= statement_list(sl) . {
 	left = sl;
-} */
+}
+	statement_list(left) ::= statement_body(sb) . {
+
+	} */
 
 /* Expressions */
 expression(left) ::= expression_id(ei) . {
@@ -140,7 +152,7 @@ expression(left) ::= expression_call(ec) . {
 	left = ec;
 }
 	expression_call(left) ::= expression(e) LRB arguments_call(ac) RRB . {
-	    auto t_e = module->getToken<ExpressionDot>(e);
+	    auto t_e = module->getToken<Expression>(e);
 	    auto t_ac = module->getToken<Expression>(ac);
 	    left = module->createToken<ExpressionCall>(t_e, t_ac);
 	}
