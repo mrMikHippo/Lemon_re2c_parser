@@ -8,6 +8,7 @@ class OneParamContent : public Token
 {
 public:
     using Elements = std::vector<Expression*>;
+    OneParamContent();
     OneParamContent(Expression* expr);
 
     void addElement(Expression* el_);
@@ -23,6 +24,7 @@ class TwoParamContent : public Token
 public:
     using ElementPair = std::pair<Token*, Expression*>;
     using Elements = std::vector<ElementPair>;
+    TwoParamContent();
     TwoParamContent(std::pair<Token*, Expression*> el_);
 
     void addElement(ElementPair el_);
