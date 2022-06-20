@@ -150,7 +150,9 @@ void Test_StatementExpression_Complex()
 {
     map<string, string> tests = {
         {"i_1 = id.some(blabla.method());",     "i_1 = id.some(blabla.method())"},
-        // {"i_1 = id.some(abc);",                 "i_1 = id.some(abc)"},
+        {"i_1 = id.some(arg1, blabla.method());",     "i_1 = id.some(arg1, blabla.method())"},
+        {"i_1 = id.some(key = blabla.method());",     "i_1 = id.some(key = blabla.method())"},
+        {"i_1 = id.some(key = blabla.method(), key2 = 9999);",     "i_1 = id.some(key = blabla.method(), key2 = 9999)"},
     };
     RunTests(tests);
 }
