@@ -118,22 +118,17 @@ void Test_StatementExpression_TwoParam()
     RunTests(tests);
 }
 
-void Test_StatementExpression_Complex()
-{
-    map<string, string> tests = {
-        {"i_1 = id.some();",                 "i_1 = id.some()"},
-        {"i_1 = id.some(abc);",                 "i_1 = id.some(abc)"},
-    };
-    RunTests(tests);
-}
-
 void Test_ExpressionCallOrdered()
 {
     map<string, string> tests = {
-        {"id.some();",                "id.some()"},
-        {"id.some(arg1);",  "id.some(arg1)"},
-        {"id.some(arg1, arg2);",  "id.some(arg1, arg2)"},
-        {"id.some(arg1, arg2, arg3,);",  "id.some(arg1, arg2, arg3)"},
+        {"id.some();",                  "id.some()"},
+        {"id.some(arg1);",              "id.some(arg1)"},
+        {"id.some(arg1, arg2);",        "id.some(arg1, arg2)"},
+        {"id.some(arg1, arg2, arg3,);", "id.some(arg1, arg2, arg3)"},
+        {"id.some(10, 20);",            "id.some(10, 20)"},
+        {"id.some(\"some string\", 20);",   "id.some(\"some string\", 20)"},
+        {"id.some(\"some string\", arg2, 100500, 10.5,);",  "id.some(\"some string\", arg2, 100500, 10.5)"},
+        {"id.some();",                  "id.some()"},
     };
     RunTests(tests);
 }
@@ -144,9 +139,19 @@ void Test_ExpressionCallNamed()
         {"m_1.insert(first = i_1);",                "m_1.insert(first = i_1)"},
         {"m_2.insert(first = i_1, second = i_2);",  "m_2.insert(first = i_1, second = i_2)"},
         {"m_2.insert(first = i_1, second = i_2, third = i_3);",  "m_2.insert(first = i_1, second = i_2, third = i_3)"},
-        {"m_2.insert(first = i_1, second = i_2, third = i_3,);",  "m_2.insert(first = i_1, second = i_2, third = i_3)"}
+        {"m_2.insert(first = i_1, second = i_2, third = i_3,);",  "m_2.insert(first = i_1, second = i_2, third = i_3)"},
+        {"m_2.insert(first = i_1, second = 100500, third = \"Some String\",);",  "m_2.insert(first = i_1, second = 100500, third = \"Some String\")"},
     };
 
+    RunTests(tests);
+}
+
+void Test_StatementExpression_Complex()
+{
+    map<string, string> tests = {
+        {"i_1 = id.some(blabla.method());",     "i_1 = id.some(blabla.method())"},
+        // {"i_1 = id.some(abc);",                 "i_1 = id.some(abc)"},
+    };
     RunTests(tests);
 }
 
@@ -174,11 +179,11 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_Statement_Assign_Definition_OneParam, "Parser: Test_Statement_Assign_Definition_OneParam");
     tr.RunTest(Test_Statement_Assign_Definition_TwoParam, "Parser: Test_Statement_Assign_Definition_TwoParam");
     tr.RunTest(Test_StatementExpression_Simple, "Parser: Test_StatementExpression_Simple");
-    // tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");
-    // tr.RunTest(Test_StatementExpression_TwoParam, "Parser: Test_StatementExpression_TwoParam");
-    tr.RunTest(Test_StatementExpression_Complex, "Parser: Test_StatementExpression_Complex");
+    tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");
+    tr.RunTest(Test_StatementExpression_TwoParam, "Parser: Test_StatementExpression_TwoParam");
     tr.RunTest(Test_ExpressionCallOrdered, "Parser: Test_ExpressionCallOrdered");
     tr.RunTest(Test_ExpressionCallNamed, "Parser: Test_ExpressionCallNamed");
-    // tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
-    // tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
+    tr.RunTest(Test_StatementExpression_Complex, "Parser: Test_StatementExpression_Complex");
+    tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
+    tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
 }
