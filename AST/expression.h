@@ -15,6 +15,7 @@ class Expression : public Token
 public:
 	Expression() {}
 	virtual ~Expression() = default;
+	virtual void setCallee(Expression* callee_) {}
 
 	virtual std::string toString() const = 0;
 };
@@ -59,17 +60,21 @@ private:
     Token* id;
 };
 
-// class ExpressionCall : public Expression
-// {
-// public:
-// 	ExpressionCall(Expression* caller_, Expression* arguments_);
-//
-// 	std::toString() const override;
-//
-// private:
-// 	Expression* caller;
-// 	Expression* Arguments;
-// };
+class ExpressionCall : public Expression
+{
+public:
+	ExpressionCall(Expression* caller_, Expression* args_);
+
+	// virtual void setCallee(Expression* callee_) {
+	// 	callee = callee_;
+	// }
+
+	std::string toString() const override;
+
+private:
+	Expression* callee;
+	Expression* args;
+};
 
 //id.some(arg1, arg2)
 class ExpressionCallOrdered : public Expression
@@ -78,7 +83,6 @@ public:
 	ExpressionCallOrdered(Expression* callee_, std::vector<Expression*> args_);
 
 	void addArg(Expression* arg_);
-
 	std::string toString() const override;
 
 private:
@@ -91,7 +95,7 @@ class ExpressionCallNamed : public Expression
 {
 public:
 	using ArgsType = std::vector<std::pair<Token*, Expression*>>;
-	ExpressionCallNamed(Expression* callee_, ArgsType args_) ;
+	ExpressionCallNamed(Expression* callee_, ArgsType args_);
 
 	std::string toString() const override;
 

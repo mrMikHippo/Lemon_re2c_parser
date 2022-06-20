@@ -56,6 +56,33 @@ std::string ExpressionDot::toString() const
 	return caller->toString() + "." + id->value;
 }
 
+// ExpressionCall
+ExpressionCall::ExpressionCall(Expression* callee_, Expression* args_)
+	: callee(callee_), args(args_)
+{
+	// Do nothing
+}
+
+std::string ExpressionCall::toString() const
+{
+	std::string res;
+	if (callee)
+		res += callee->toString();
+	// };
+	res += args->toString();
+	// res += "(";
+	// bool first = true;
+	// for (const auto& el : args) {
+	// 	if (first) {
+	// 		first = false;
+	// 	} else
+	// 		res += ", ";
+	// 	res += el->toString();
+	// }
+	// res += ")";
+	return res;
+}
+
 // ExpressionCallOrdered
 ExpressionCallOrdered::ExpressionCallOrdered(Expression* callee_, std::vector<Expression*> args_)
 	: callee(callee_), args(args_)
@@ -70,7 +97,9 @@ void ExpressionCallOrdered::addArg(Expression* arg_)
 
 std::string ExpressionCallOrdered::toString() const
 {
-	std::string res = callee->toString();
+	std::string res;
+	if (callee)
+		res += callee->toString();
 	res += "(";
 	bool first = true;
 	for (const auto& el : args) {
@@ -93,7 +122,9 @@ ExpressionCallNamed::ExpressionCallNamed(Expression* callee_, ArgsType args_)
 
 std::string ExpressionCallNamed::toString() const
 {
-	std::string res = callee->toString();
+	std::string res;
+	if (callee)
+		res += callee->toString();
 	res += "(";
 	bool first = true;
 	for (const auto& el : args) {
