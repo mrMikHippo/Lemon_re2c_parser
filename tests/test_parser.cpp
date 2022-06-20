@@ -181,7 +181,8 @@ void Test_StatementExpression_At()
         {"id[10];",    "id[10]"},
         {"id[key];",    "id[key]"},
         {"id[vec.at(0)];", "id[vec.at(0)]"},
-        // {"id.some()[key];", "id.some()[key]"}
+        {"id.some[key];", "id.some[key]"},
+        // {"id.some()[key];", "id.some()[key]"},
     };
     RunTests(tests);
 }

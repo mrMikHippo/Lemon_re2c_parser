@@ -103,10 +103,15 @@ statement(left) ::= statement_expression(se) SEMICOLON . {
 		auto t_ea = module->getToken<Expression>(ea);
 		left = module->createToken<StatementExpression>(t_ea);
 	}
-		expression_at(left) ::= expression_id(vi) LSB expression(e) RSB . {
-			auto t_vi = module->getToken<Expression>(vi);
+		expression_at(left) ::= expression_id(ei) LSB expression(e) RSB . {
+			auto t_ei = module->getToken<Expression>(ei);
 			auto t_e = module->getToken<Expression>(e);
-			left = module->createToken<ExpressionAt>(t_vi, t_e);
+			left = module->createToken<ExpressionAt>(t_ei, t_e);
+		}
+		expression_at(left) ::= expression_dot(ed) LSB expression(e) RSB . {
+			auto t_ed = module->getToken<Expression>(ed);
+			auto t_e = module->getToken<Expression>(e);
+			left = module->createToken<ExpressionAt>(t_ed, t_e);
 		}
 
 /* StatementList */
