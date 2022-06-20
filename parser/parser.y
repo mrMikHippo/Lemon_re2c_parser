@@ -1,7 +1,11 @@
 %token_prefix LEX_
 
-%left COMMA LRB RRB DOT COLON LSB RSB TYPE.
-%left ASSIGN.
+%left TYPE .
+%left LRB RRB EQUAL.
+/* %left EQUAL . */
+/* %left COMMA . */
+/* %left COMMA LRB RRB DOT COLON LSB RSB TYPE. */
+%left ASSIGN .
 
 %token_type { uint64_t }
 %extra_argument { Module* module}
@@ -77,6 +81,20 @@ statement(left) ::= statement_expression(se) SEMICOLON . {
         auto t_e = module->getToken<ExpressionAssign>(e);
 		left = module->createToken<StatementExpression>(t_e);
     }
+		expression_assign(left) ::= expression(ei) ASSIGN expression(e) . {
+			auto eid = module->getToken<Expression>(ei);
+			auto expr = module->getToken<Expression>(e);
+			left = module->createToken<ExpressionAssign>(eid, expr);
+		}
+	statement_expression(left) ::= expression_equal(ee) . {
+		auto t_ee = module->getToken<Expression>(ee);
+		left = module->createToken<StatementExpression>(t_ee);
+	}
+		expression_equal(left) ::= expression(e1) EQUAL expression(e2) . {
+			auto t_e1 = module->getToken<Expression>(e1);
+			auto t_e2 = module->getToken<Expression>(e2);
+			left = module->createToken<ExpressionEqual>(t_e1, t_e2);
+		}
     statement_expression(left) ::= expression_call(ec) . {
         auto t_ec = module->getToken<Expression>(ec);
         left = module->createToken<StatementExpression>(t_ec);
@@ -86,8 +104,6 @@ statement(left) ::= statement_expression(se) SEMICOLON . {
 /* statement(left) ::= statement_list(sl) . {
 	left = sl;
 } */
-
-
 
 /* Expressions */
 expression(left) ::= expression_id(ei) . {
@@ -112,26 +128,14 @@ expression(left) ::= expression_dot(ed) . {
 		auto t_vi = module->getToken<Token>(vi);
 		left = module->createToken<ExpressionDot>(t_vi, t_e);
 	}
-/* expression(left) ::= expression_type(et) . {
+expression(left) ::= expression_type(et) . {
 	left = et;
 }
 	expression_type(left) ::= variable_type(vt) . {
 		auto t_vt = module->getToken<VariableType>(vt);
 		left = module->createToken<ExpressionType>(t_vt);
-	} */
-/* expression(left) ::= expression_assign(ea) . {
-	left = ea;
-} */
-expression_assign(left) ::= expression(ei) ASSIGN expression(e) . {
-	auto eid = module->getToken<Expression>(ei);
-	auto expr = module->getToken<Expression>(e);
-	left = module->createToken<ExpressionAssign>(eid, expr);
-}
-/* May be */
-/* id.some(); */
-/* id.some(arg, arg2); */
-/* id.some(key1 = value1, key2 = value2); */
-/* id.some(id.func(arg)); */
+	}
+
 expression(left) ::= expression_call(ec) . {
 	left = ec;
 }

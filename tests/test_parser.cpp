@@ -160,7 +160,19 @@ void Test_StatementExpression_Complex()
 void Test_StatementDefinition_Types()
 {
     map<string, string> tests = {
-        {"Type t = Integer;",                "Type t = Integer"},
+        {"Type t = Integer;",           "Type t = Integer"},
+        {"Type t = Vector(String);",    "Type t = Vector(String)"},
+        {"Type t = Map(Integer, Map(String, Float));",    "Type t = Map(Integer, Map(String, Float))"},
+    };
+    RunTests(tests);
+}
+
+void Test_StatementExpression_Types()
+{
+    map<string, string> tests = {
+        {"t = Integer;",           "t = Integer"},
+        {"t = Vector(String);",    "t = Vector(String)"},
+        {"t = Map(Integer, Map(String, Float));",    "t = Map(Integer, Map(String, Float))"},
     };
     RunTests(tests);
 }
@@ -169,6 +181,9 @@ void Test_StatementExpression_Equal()
 {
     map<string, string> tests = {
         {"a == b;",                "a == b"},
+        {"a == 10;",                "a == 10"},
+        {"a == \"string\";",                "a == \"string\""},
+        {"vc_1.type() == Vector(Integer);", "vc_1.type() == Vector(Integer)"},
     };
     RunTests(tests);
 }
@@ -187,5 +202,6 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_ExpressionCallNamed, "Parser: Test_ExpressionCallNamed");
     tr.RunTest(Test_StatementExpression_Complex, "Parser: Test_StatementExpression_Complex");
     tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
+    tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
     tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
 }
