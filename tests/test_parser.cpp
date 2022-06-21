@@ -198,6 +198,50 @@ void Test_StatementExpression_Equal()
     RunTests(tests);
 }
 
+void Test_StatementList()
+{
+    vector<pair<string, string>> tests = {
+        {
+            "Integer abc; abc = 10;",
+            "Integer abc | abc = 10"
+        },
+        {
+            "Integer abc;\n"
+            "abc = 10;",
+            "Integer abc | "
+            "abc = 10"
+        },
+        {
+            "Integer abc = 10; Vector(Integer) v1 = Vector(Integer)[100500, abc];",
+            "Integer abc = 10 | Vector(Integer) v1 = Vector(Integer)[100500, abc]"
+        },
+        {
+            "Integer abc = 10;"
+            "Vector(Integer) v1 = Vector(Integer)[100500, abc];"
+            "Vector(Integer) v2 = Vector(Integer)[100, 500];",
+            "Integer abc = 10 | "
+            "Vector(Integer) v1 = Vector(Integer)[100500, abc] | "
+            "Vector(Integer) v2 = Vector(Integer)[100, 500]",
+        },
+        {
+            "Integer abc = 10;"
+            "Vector(Integer) v1 = Vector(Integer)[100500, abc];"
+            "Vector(Integer) v2 = Vector(Integer)[100, 500];"
+            "Map(Integer, Vector(Integer)) mp1;"
+            "mp1 = Map(Integer, Vector(Integer))["
+            "   10 : v1,"
+            "   15 : v2"
+            "];",
+            "Integer abc = 10 | "
+            "Vector(Integer) v1 = Vector(Integer)[100500, abc] | "
+            "Vector(Integer) v2 = Vector(Integer)[100, 500] | "
+            "Map(Integer, Vector(Integer)) mp1 | "
+            "mp1 = Map(Integer, Vector(Integer))[10 : v1, 15 : v2]"
+        },
+    };
+    RunTests(tests);
+}
+
 void TestParser(TestRunner& tr)
 {
     tr.RunTest(Test_StatementDefinition_SimpleTypes, "Parser: Test_StatementDefinition_SimpleTypes");
@@ -215,4 +259,5 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
     tr.RunTest(Test_StatementExpression_At, "Parser: Test_StatementExpression_At");
     tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
+    tr.RunTest(Test_StatementList, "Parser: Test_StatementList");
 }

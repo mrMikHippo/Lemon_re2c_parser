@@ -45,16 +45,27 @@ expr(left) ::= statement(s) . {
 }
 
 /** Statements **/
+/* StatementList */
+statement(left) ::= statement_list(sl) . {
+	left = sl;
+}
+	statement_list(left) ::= statement_list_body(slb) . {
+		left = slb;
+	}
+		statement_list_body(left) ::= . {
+			left = module->createToken<StatementList>();
+		}
+		statement_list_body(left) ::= statement_list_body(slb) statement_content(sc) . {
+			auto t_slb = module->getToken<StatementList>(slb);
+			auto t_sc = module->getToken<Statement>(sc);
+			t_slb->addStatement(t_sc);
+			left = slb;
+		}
+
 /* 	StatementDefinition */
-statement(left) ::= statement_definition(sd) SEMICOLON. {
+statement_content(left) ::= statement_definition(sd) SEMICOLON. {
 	left = sd;
 }
-	/* statement_definition(left) ::= statement_simple_definition(ss) . {
-		left = ss;
-	} */
-		/* statement_simple_definition(left) ::= . {
-			left = 0;
-		} */
 		statement_definition(left) ::= statement_type_definition(std) . {
 			left = std;
 		}
@@ -74,7 +85,7 @@ statement(left) ::= statement_definition(sd) SEMICOLON. {
 			}
 
 /* StatementExpression */
-statement(left) ::= statement_expression(se) SEMICOLON . {
+statement_content(left) ::= statement_expression(se) SEMICOLON . {
     left = se;
 }
     statement_expression(left) ::= expression_assign(e) . {
@@ -113,14 +124,6 @@ statement(left) ::= statement_expression(se) SEMICOLON . {
 			auto t_e = module->getToken<Expression>(e);
 			left = module->createToken<ExpressionAt>(t_ed, t_e);
 		}
-
-/* StatementList */
-/* statement(left) ::= statement_list(sl) . {
-	left = sl;
-}
-	statement_list(left) ::= statement_body(sb) . {
-
-	} */
 
 /* Expressions */
 expression(left) ::= expression_id(ei) . {

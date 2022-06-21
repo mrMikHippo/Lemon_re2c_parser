@@ -36,6 +36,10 @@ std::string StatementExpression::toString() const
 
 
 // StatementList
+StatementList::StatementList()
+{
+	// Do nothing
+}
 StatementList::StatementList(std::vector<Statement*> statements_)
 	: statements(statements_)
 {
@@ -55,7 +59,7 @@ std::string StatementList::toString() const
 		if (first) {
 			first = false;
 		} else
-			res += ", ";
+			res += " | ";
 		res += st->toString();
 	}
 	return res;

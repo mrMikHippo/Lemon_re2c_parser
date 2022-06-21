@@ -44,6 +44,7 @@ private:
 class StatementList : public Statement
 {
 public:
+	StatementList();
 	StatementList(std::vector<Statement*> statements_);
 
 	void addStatement(Statement* statement_);
