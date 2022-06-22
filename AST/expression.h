@@ -80,13 +80,12 @@ private:
 class ExpressionCallOrdered : public Expression
 {
 public:
-	ExpressionCallOrdered(Expression* callee_, std::vector<Expression*> args_);
+	ExpressionCallOrdered(std::vector<Expression*> args_);
 
 	void addArg(Expression* arg_);
 	std::string toString() const override;
 
 private:
-    Expression* callee;
     std::vector<Expression*> args;
 };
 
@@ -95,12 +94,11 @@ class ExpressionCallNamed : public Expression
 {
 public:
 	using ArgsType = std::vector<std::pair<Token*, Expression*>>;
-	ExpressionCallNamed(Expression* callee_, ArgsType args_);
+	ExpressionCallNamed(ArgsType args_);
 
 	std::string toString() const override;
 
 private:
-	Expression* callee;
     ArgsType args;
 };
 

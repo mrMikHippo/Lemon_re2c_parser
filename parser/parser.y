@@ -165,7 +165,7 @@ expression(left) ::= expression_call(ec) . {
 	}
 		arguments_call(left) ::= . {
 			std::vector<Expression*> t_params;
-			left = module->createToken<ExpressionCallOrdered>(nullptr, t_params);
+			left = module->createToken<ExpressionCallOrdered>(t_params);
 		}
 		/* TODO Remove Expression* from ExpressionCallOrdered and ExpressionCallNamed */
 		arguments_call(left) ::= arguments_call_ordered_content(acoc) . {
@@ -173,7 +173,7 @@ expression(left) ::= expression_call(ec) . {
 			std::vector<Expression*> params;
 			for (auto& el : t_acoc->getElements())
 				params.push_back(el);
-			left = module->createToken<ExpressionCallOrdered>(nullptr, params);
+			left = module->createToken<ExpressionCallOrdered>(params);
 		}
 			arguments_call_ordered_content(left) ::= arguments_call_ordered_body(acob) . {
 				left = acob;
@@ -196,7 +196,7 @@ expression(left) ::= expression_call(ec) . {
 			std::vector<std::pair<Token*, Expression*>> params;
 			for (auto& el : t_acnc->getElements())
 				params.push_back(el);
-			left = module->createToken<ExpressionCallNamed>(nullptr, params);
+			left = module->createToken<ExpressionCallNamed>(params);
 		}
 			arguments_call_named_content(left) ::= arguments_call_named_body(acnb) . {
 				left = acnb;

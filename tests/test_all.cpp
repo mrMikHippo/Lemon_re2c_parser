@@ -183,44 +183,77 @@ void TestExpressionDot() {
 }
 
 void TestExpressionCallOrdered() {
-	// id.some_method(arg1, arg2)
-	ExpressionId caller(new Token{"id"});
-	Token func_name("some_method");
-
+	// id.some_method (arg1, arg2)
 	ExpressionId arg1(new Token{"arg1"});
 	ExpressionId arg2(new Token{"arg2"});
 
-	ExpressionDot expr_dot(&func_name, &caller);
-
-	ExpressionCallOrdered expr_co(&expr_dot, {&arg1, &arg2});
-	AssertEqual(expr_co.toString(), "id.some_method(arg1, arg2)");
+	ExpressionCallOrdered expr_co({&arg1, &arg2});
+	AssertEqual(expr_co.toString(), "(arg1, arg2)");
 	log << arrow_end << expr_co.toString() << "\n";
 }
 
 void TestExpressionCallNamed() {
 
-	//id.some(key = arg1, key2 = arg2)
+	//id.some (key = arg1, key2 = arg2)
 
-	ExpressionId caller(new Token{"id"});
-	Token func_name("some_method");
-
-	// Expression* callee
-	ExpressionDot expr_dot(&func_name, &caller);
-
-	// std::vector<std::pair<Token*, Expression*>>
 	Token key1("key1");
 	Token key2("key2");
 	ExpressionId val1(new Token{"arg1"});
 	ExpressionId val2(new Token{"arg2"});
 
-	ExpressionCallNamed expr_cn(&expr_dot, {
+	ExpressionCallNamed expr_cn({
 			make_pair<Token*, Expression*>(&key1, &val1),
 			make_pair<Token*, Expression*>(&key2, &val2)
 		}
 	);
 
-	AssertEqual(expr_cn.toString(), "id.some_method(key1 = arg1, key2 = arg2)");
+	AssertEqual(expr_cn.toString(), "(key1 = arg1, key2 = arg2)");
 	log << arrow_end << expr_cn.toString() << "\n";
+}
+
+void TestExpressionCall()
+{
+	// CallOrdered
+	{
+		//id.some_method(key = arg1, key2 = arg2)
+		ExpressionId caller(new Token{"id"});
+		Token func_name("some_method");
+
+		ExpressionId arg1(new Token{"arg1"});
+		ExpressionId arg2(new Token{"arg2"});
+
+		ExpressionDot expr_dot(&func_name, &caller);
+		ExpressionCallOrdered expr_co({&arg1, &arg2});
+		ExpressionCall expr_call(&expr_dot, &expr_co);
+		AssertEqual(expr_call.toString(), "id.some_method(arg1, arg2)");
+		log << arrow_end << expr_call.toString() << "\n";
+	}
+	//CallNamed
+	{
+		//id.some_method(key = arg1, key2 = arg2)
+		ExpressionId caller(new Token{"id"});
+		Token func_name("some_method");
+
+		// Expression* callee
+		ExpressionDot expr_dot(&func_name, &caller);
+
+		// std::vector<std::pair<Token*, Expression*>>
+		Token key1("key1");
+		Token key2("key2");
+		ExpressionId val1(new Token{"arg1"});
+		ExpressionId val2(new Token{"arg2"});
+
+		ExpressionCallNamed expr_cn({
+				make_pair<Token*, Expression*>(&key1, &val1),
+				make_pair<Token*, Expression*>(&key2, &val2)
+			}
+		);
+
+		ExpressionCall expr_call(&expr_dot, &expr_cn);
+
+		AssertEqual(expr_call.toString(), "id.some_method(key1 = arg1, key2 = arg2)");
+		log << arrow_end << expr_call.toString() << "\n";
+	}
 }
 
 void TestExpressionAt() {
@@ -332,7 +365,7 @@ void TestStatementList() {
 
 	StatementList st_list({&st_first, &st_sec});
 
-	AssertEqual(st_list.toString(), "Integer a, Vector(Integer) vec = Vector(Integer)[10, 20]");
+	AssertEqual(st_list.toString(), "Integer a | Vector(Integer) vec = Vector(Integer)[10, 20]");
 	log << arrow_end << st_list.toString() << "\n";
 }
 
@@ -367,20 +400,22 @@ void TestExpressionAssign_IdAssignmentExpression() {
 	log << arrow_end << exprA.toString() << "\n";
 }
 
-#if FULL_TEST
 void TestDefinitionInitialization() {
 	// Integer i_2 = 1;
 	//ID("Integer") ID("i_2") ASSIGN INTEGER("1") SEMICOLON
-	VariableType vt({"Integer"}, {});
-	Token id({"i_2"});
+	Token token_type("Integer");
+	VariableType vt(&token_type, {});
+	Token id("i_2");
 
-	LiteralInteger lit_int({"1"});
+	Token token_int("1");
+	LiteralInteger lit_int(&token_int);
 	ExpressionLiteral expr(&lit_int);
 
 	StatementDefinition st(&vt, &id, &expr);
 	AssertEqual(st.toString(), "Integer i_2 = 1");
 	log << arrow_end << st.toString() << "\n";
 }
+#if FULL_TEST
 
 void TestVTypeOneParamInitialization() {
 	// Vector(Integer) vc_1 = Vector(Integer)[];
@@ -515,42 +550,6 @@ void TestIdAssignmentExpressionTwoParam() {
 	log << arrow_end << exprA.toString() << "\n";
 }
 
-void TestExpressionCallOrdered() {
-	// vc_1.pushBack(i_1);
-	//ID("vc_1") DOT ID("pushBack") LRB ID("i_1") RRB SEMICOLON
-
-	ExpressionId callee(Token{"vc_1"});
-	Token method_name({"pushBack"});
-
-	ExpressionDot expr(method_name, &callee);
-
-	ExpressionId id_to_push(Token{"i_1"});
-	ExpressionCallOrdered expr_co(&expr, {&id_to_push});
-
-	AssertEqual(expr_co.toString(), "vc_1.pushBack(i_1)");
-	log << arrow_end << expr_co.toString() << "\n";
-}
-
-void TestExpressionDotCallNamed() {
-	// m_1.insert(first = i_1, second = i_2);
-	//ID("m_1") DOT ID("insert") LRB ID("first") ASSIGN ID("i_1") COMMA ID("second") ASSIGN ID("i_2") RRB SEMICOLON
-
-	ExpressionId callee(Token{"m_1"});
-	Token method_name({"insert"});
-
-	ExpressionDot expr_dot(method_name, &callee);
-
-	Token first({"first"});
-	ExpressionId first_val({"i_1"});
-	Token second({"second"});
-	ExpressionId second_val({"i_2"});
-
-	ExpressionCallNamed expr_cn(&expr_dot, {{&first, &first_val}, {&second, &second_val}});
-
-	AssertEqual(expr_cn.toString(), "m_1.insert(first = i_1, second = i_2)");
-	log << arrow_end << expr_cn.toString() << "\n";
-}
-
 void TestTypeInitialization() {
 	// Type type_var = Integer;
 	//ID("ID") ID("IDD") ASSIGN ID("ID") SEMICOLON
@@ -607,6 +606,7 @@ void TestBase(TestRunner& tr) {
 	tr.RunTest(TestExpressionDot, "TestExpressionDot");
 	tr.RunTest(TestExpressionCallOrdered, "TestExpressionCallOrdered");
 	tr.RunTest(TestExpressionCallNamed, "TestExpressionCallNamed");
+	tr.RunTest(TestExpressionCall, "TestExpressionCall");
 	tr.RunTest(TestExpressionAt, "TestExpressionAt");
 	tr.RunTest(TestExpressionAssign_IdAssignmentLiteral, "TestExpressionAssign_IdAssignmentLiteral");
 	tr.RunTest(TestExpressionAssign_IdAssignmentExpression, "TestExpressionAssign_IdAssignmentExpression");
@@ -616,8 +616,8 @@ void TestBase(TestRunner& tr) {
 }
 
 void TestExtended(TestRunner& tr) {
-#if FULL_TEST
 	tr.RunTest(TestDefinitionInitialization, "TestDefinitionInitialization");
+#if FULL_TEST
 	tr.RunTest(TestIdAssignmentId, "TestIdAssignmentId");
 	tr.RunTest(TestVTypeOneParamInitialization, "TestVTypeOneParamInitialization");
 	tr.RunTest(TestVTypeVTypeOneParamInitialization, "TestVTypeVTypeOneParamInitialization");
@@ -625,15 +625,14 @@ void TestExtended(TestRunner& tr) {
 	tr.RunTest(TestStatementTwoParamInitializationEmpty, "TestStatementTwoParamInitializationEmpty");
 	tr.RunTest(TestStatementTwoParamInitializationWithValue, "TestStatementTwoParamInitializationWithValue");
 	tr.RunTest(TestIdAssignmentExpressionTwoParam, "TestIdAssignmentExpressionTwoParam");
-	tr.RunTest(TestExpressionDotCallNamed, "TestExpressionDotCallNamed");
 	tr.RunTest(TestTypeInitialization, "TestTypeInitialization");
 	tr.RunTest(TestExprDotStatementExpressionVarType, "TestExprDotStatementExpressionVarType");
 #endif
 }
 void TestAll() {
 	TestRunner tr;
-	// TestBase(tr);
-	// TestExtended(tr);
+	TestBase(tr);
+	TestExtended(tr);
 	TestParser(tr);
 	cout << "..................." << "\n";
 	cout << "Tests: " << tr.getSuccessCount() << "/" << tr.getTotalCount() << "\n";
