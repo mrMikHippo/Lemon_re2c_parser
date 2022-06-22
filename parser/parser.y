@@ -164,16 +164,12 @@ expression(left) ::= expression_call(ec) . {
 	    left = module->createToken<ExpressionCall>(t_e, t_ac);
 	}
 		arguments_call(left) ::= . {
-			std::vector<Expression*> t_params;
-			left = module->createToken<ExpressionCallOrdered>(t_params);
+			left = module->createToken<ExpressionCallOrdered>(std::vector<Expression*>{});
 		}
 		/* TODO Remove Expression* from ExpressionCallOrdered and ExpressionCallNamed */
 		arguments_call(left) ::= arguments_call_ordered_content(acoc) . {
 			auto t_acoc = module->getToken<OneParamContent>(acoc);
-			std::vector<Expression*> params;
-			for (auto& el : t_acoc->getElements())
-				params.push_back(el);
-			left = module->createToken<ExpressionCallOrdered>(params);
+			left = module->createToken<ExpressionCallOrdered>(t_acoc->getElements());
 		}
 			arguments_call_ordered_content(left) ::= arguments_call_ordered_body(acob) . {
 				left = acob;
@@ -193,10 +189,7 @@ expression(left) ::= expression_call(ec) . {
 				}
 		arguments_call(left) ::= arguments_call_named_content(acnc) . {
 			auto t_acnc = module->getToken<TwoParamContent>(acnc);
-			std::vector<std::pair<Token*, Expression*>> params;
-			for (auto& el : t_acnc->getElements())
-				params.push_back(el);
-			left = module->createToken<ExpressionCallNamed>(params);
+			left = module->createToken<ExpressionCallNamed>(t_acnc->getElements());
 		}
 			arguments_call_named_content(left) ::= arguments_call_named_body(acnb) . {
 				left = acnb;
@@ -224,8 +217,7 @@ variable_type(left) ::= variable_type_simple(vts) . {
 	variable_type_simple(left) ::= TYPE(T) . {
 		/* std::cout << orange << "TYPE" << reset << std::endl; */
 		auto t = module->getToken<Token>(T);
-		std::vector<VariableType*> vec;
-		left = module->createToken<VariableType>(t, vec);
+		left = module->createToken<VariableType>(t, std::vector<VariableType*>{});
 	}
 variable_type(left) ::= variable_type_complex(vtc) . {
 	left = vtc;
@@ -283,11 +275,7 @@ literal(left) ::= literal_with_params(lwp) . {
 			/* std::cout << magenta << "literal_one_param" << reset << std::endl; */
 			auto t_vtc = module->getToken<VariableType>(vtc);
 			auto t_loc = module->getToken<OneParamContent>(loc);
-			std::vector<Expression*> vec;
-			for (auto& el : t_loc->getElements()) {
-				vec.push_back(el);
-			}
-			left = module->createToken<LiteralOneParam>(t_vtc, vec);
+			left = module->createToken<LiteralOneParam>(t_vtc, t_loc->getElements());
 		}
 			literal_oneparam_content(left) ::= literal_oneparam_body(lob) . {
 				left = lob;
@@ -307,6 +295,15 @@ literal(left) ::= literal_with_params(lwp) . {
 				t_lob->addElement(t_e);
 				left = lob;
 			}
+		literal_one_param(left) ::= literal_simple_one_param(lcop) . {
+			left = lcop;
+		}
+			literal_simple_one_param(left) ::= variable_type_simple(vts) LSB literal_oneparam_content(loc) RSB . {
+				/* std::cout << magenta << "literal_simple_one_param" << reset << std::endl; */
+				auto t_vts = module->getToken<VariableType>(vts);
+				auto t_loc = module->getToken<OneParamContent>(loc);
+				left = module->createToken<LiteralOneParam>(t_vts, t_loc->getElements());
+			}
 	literal_with_params(left) ::= literal_two_param(ltp) . {
 		left = ltp;
 	}
@@ -314,11 +311,7 @@ literal(left) ::= literal_with_params(lwp) . {
 			/* std::cout << magenta << "literal_two_param" << reset << std::endl; */
 			auto t_vtc = module->getToken<VariableType>(vtc);
 			auto t_ltc = module->getToken<TwoParamContent>(ltc);
-			std::vector<std::pair<Token*, Expression*>> vec;
-			for (auto& el : t_ltc->getElements()) {
-				vec.push_back(el);
-			}
-			left = module->createToken<LiteralTwoParam>(t_vtc, vec);
+			left = module->createToken<LiteralTwoParam>(t_vtc, t_ltc->getElements());
 		}
 			literal_twoparam_content(left) ::= literal_twoparam_body(ltb) . {
 				left = ltb;
@@ -340,4 +333,3 @@ literal(left) ::= literal_with_params(lwp) . {
 				t_ltb->addElement(std::make_pair(t_e_left, t_e_right));
 				left = ltb;
 			}
-/* TODO Add SimpleLiteralContent  */

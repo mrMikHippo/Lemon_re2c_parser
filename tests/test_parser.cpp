@@ -51,6 +51,7 @@ void Test_StatementDefinition_ComplexTypes()
     };
     RunTests(tests);
 }
+
 void Test_Statement_Assign_Definition_Simple()
 {
     vector<pair<string, string>> tests = {
@@ -71,6 +72,17 @@ void Test_Statement_Assign_Definition_OneParam()
         {"Vector(Integer) vc_1 = Vector(Integer)[100, abc, 500];",          "Vector(Integer) vc_1 = Vector(Integer)[100, abc, 500]"},
         {"Vector(String) vc_1 = Vector(String)[\"some string\",];",         "Vector(String) vc_1 = Vector(String)[\"some string\"]"},
         {"Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1];",   "Vector(Vector(Integer)) vc_2 = Vector(Vector(Integer))[vc_1]"},
+    };
+    RunTests(tests);
+}
+
+void Test_Statement_Assign_Definition_Simple_OneParam()
+{
+    vector<pair<string, string>> tests = {
+        {"Buffer b_1 = Buffer[];",           "Buffer b_1 = Buffer[]"},
+        {"Buffer b2 = Buffer[some_var];",        "Buffer b2 = Buffer[some_var]"},
+        {"Buffer b2 = Buffer[some_var1, some_var2];",        "Buffer b2 = Buffer[some_var1, some_var2]"},
+        {"Buffer b2 = Buffer[var1, var2,];",        "Buffer b2 = Buffer[var1, var2]"},
     };
     RunTests(tests);
 }
@@ -253,6 +265,7 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementDefinition_ComplexTypes, "Parser: Test_StatementDefinition_ComplexTypes");
     tr.RunTest(Test_Statement_Assign_Definition_Simple, "Parser: Test_Statement_Assign_Definition_Simple");
     tr.RunTest(Test_Statement_Assign_Definition_OneParam, "Parser: Test_Statement_Assign_Definition_OneParam");
+    tr.RunTest(Test_Statement_Assign_Definition_Simple_OneParam, "Parser: Test_Statement_Assign_Definition_Simple_OneParam");
     tr.RunTest(Test_Statement_Assign_Definition_TwoParam, "Parser: Test_Statement_Assign_Definition_TwoParam");
     tr.RunTest(Test_StatementExpression_Simple, "Parser: Test_StatementExpression_Simple");
     tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");

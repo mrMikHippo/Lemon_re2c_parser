@@ -17,7 +17,9 @@ public:
 		"String",
 		"Vector",
 		"Map",
-		"Type"
+		"Type",
+		"Buffer",
+		"Mutex"
 	};
 
 	GlobalTypeMap(GlobalTypeMap const&) = delete;
