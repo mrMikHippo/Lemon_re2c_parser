@@ -1,11 +1,14 @@
 %token_prefix LEX_
 
-%left TYPE .
-%left LRB RRB EQUAL.
-/* %left EQUAL . */
+%left ASSIGN .
+%left EQUAL DOT.
+/* %left LRB RRB . */
+/* %left LRB RRB EQUAL DOT . */
+/* %left COMMA . */
 /* %left COMMA . */
 /* %left COMMA LRB RRB DOT COLON LSB RSB TYPE. */
-%left ASSIGN .
+/* %right ID . */
+/* %left TYPE . */
 
 %token_type { uint64_t }
 %extra_argument { Module* module}
@@ -18,6 +21,7 @@
 #include "../AST/statement.h"
 #include "../AST/variable_type.h"
 #include "../AST/content.h"
+#include "../colored_o.h"
 }
 
 %syntax_error {
@@ -32,16 +36,12 @@
 
 %start_symbol main
 
-main ::= expr(B) . {
-	module->setRootNode(module->getToken<Statement>(B));
+main ::= statement(S) . {
+	module->setRootNode(module->getToken<Statement>(S));
 	std::cout << "End of parser.y";
-	if (module->getToken<Statement>(B))
-		std::cout << " | statement: '" << module->getToken<Statement>(B)->toString() << "'";
+	if (module->getToken<Statement>(S))
+		std::cout << " | statement: '" << module->getToken<Statement>(S)->toString() << "'";
 	std::cout << std::endl;
-}
-
-expr(left) ::= statement(s) . {
-	left = s;
 }
 
 /** Statements **/
@@ -49,18 +49,17 @@ expr(left) ::= statement(s) . {
 statement(left) ::= statement_list(sl) . {
 	left = sl;
 }
-	statement_list(left) ::= statement_list_body(slb) . {
+	statement_list(left) ::= . {
+		left = module->createToken<StatementList>();
+	}
+	statement_list(left) ::= statement_list(slb) statement_content(sc) . {
+		auto t_slb = module->getToken<StatementList>(slb);
+		auto t_sc = module->getToken<Statement>(sc);
+		t_slb->addStatement(t_sc);
 		left = slb;
 	}
-		statement_list_body(left) ::= . {
-			left = module->createToken<StatementList>();
-		}
-		statement_list_body(left) ::= statement_list_body(slb) statement_content(sc) . {
-			auto t_slb = module->getToken<StatementList>(slb);
-			auto t_sc = module->getToken<Statement>(sc);
-			t_slb->addStatement(t_sc);
-			left = slb;
-		}
+	/* For statement lists in statement lists */
+	/* LCB statement_list RCB . */
 
 /* 	StatementDefinition */
 statement_content(left) ::= statement_definition(sd) SEMICOLON. {
@@ -70,6 +69,7 @@ statement_content(left) ::= statement_definition(sd) SEMICOLON. {
 			left = std;
 		}
 			statement_type_definition(left) ::= variable_type(vt) variable_id(vi) . {
+				/* std::cout << green << "statement_type_definition" << reset << std::endl; */
 				auto t_vt = module->getToken<VariableType>(vt);
 				auto t_vi = module->getToken<Token>(vi);
 				left = module->createToken<StatementDefinition>(t_vt, t_vi);
@@ -78,59 +78,29 @@ statement_content(left) ::= statement_definition(sd) SEMICOLON. {
 			left = sad;
 		}
 			statement_assign_definition(left) ::= variable_type(vt) variable_id(vi) ASSIGN expression(e) . {
+				/* std::cout << green << "statement_assign_definition" << reset << std::endl; */
 				auto t_vt = module->getToken<VariableType>(vt);
 				auto t_vi = module->getToken<Token>(vi);
 				auto t_e = module->getToken<Expression>(e);
 				left = module->createToken<StatementDefinition>(t_vt, t_vi, t_e);
 			}
-
 /* StatementExpression */
 statement_content(left) ::= statement_expression(se) SEMICOLON . {
     left = se;
 }
-    statement_expression(left) ::= expression_assign(e) . {
-        auto t_e = module->getToken<ExpressionAssign>(e);
+	statement_expression(left) ::= expression(e) . {
+		/* std::cout << green << "statement_expression = expression" << reset << std::endl; */
+		auto t_e = module->getToken<Expression>(e);
 		left = module->createToken<StatementExpression>(t_e);
-    }
-		expression_assign(left) ::= expression(ei) ASSIGN expression(e) . {
-			auto eid = module->getToken<Expression>(ei);
-			auto expr = module->getToken<Expression>(e);
-			left = module->createToken<ExpressionAssign>(eid, expr);
-		}
-	statement_expression(left) ::= expression_equal(ee) . {
-		auto t_ee = module->getToken<Expression>(ee);
-		left = module->createToken<StatementExpression>(t_ee);
 	}
-		expression_equal(left) ::= expression(e1) EQUAL expression(e2) . {
-			auto t_e1 = module->getToken<Expression>(e1);
-			auto t_e2 = module->getToken<Expression>(e2);
-			left = module->createToken<ExpressionEqual>(t_e1, t_e2);
-		}
-    statement_expression(left) ::= expression_call(ec) . {
-        auto t_ec = module->getToken<Expression>(ec);
-        left = module->createToken<StatementExpression>(t_ec);
-    }
-	statement_expression(left) ::= expression_at(ea) . {
-		auto t_ea = module->getToken<Expression>(ea);
-		left = module->createToken<StatementExpression>(t_ea);
-	}
-		expression_at(left) ::= expression_id(ei) LSB expression(e) RSB . {
-			auto t_ei = module->getToken<Expression>(ei);
-			auto t_e = module->getToken<Expression>(e);
-			left = module->createToken<ExpressionAt>(t_ei, t_e);
-		}
-		expression_at(left) ::= expression_dot(ed) LSB expression(e) RSB . {
-			auto t_ed = module->getToken<Expression>(ed);
-			auto t_e = module->getToken<Expression>(e);
-			left = module->createToken<ExpressionAt>(t_ed, t_e);
-		}
 
-/* Expressions */
+/** Expressions **/
 expression(left) ::= expression_id(ei) . {
     left = ei;
 }
     expression_id(left) ::= variable_id(vi) . {
         auto t_ei = module->getToken<Token>(vi);
+		/* std::cout << green << "expression_id = variable_id (\"" << t_ei->value << "\")" << reset << std::endl; */
         left = module->createToken<ExpressionId>(t_ei);
     }
 expression(left) ::= expression_literal(el) . {
@@ -140,26 +110,55 @@ expression(left) ::= expression_literal(el) . {
         auto t_l = module->getToken<Literal>(l);
         left = module->createToken<ExpressionLiteral>(t_l);
     }
+
+expression(left) ::= expression_type(et) . {
+	left = et;
+}
+	expression_type(left) ::= variable_type(vt) . {
+		/* std::cout << green << "expression type" << reset << std::endl; */
+		auto t_vt = module->getToken<VariableType>(vt);
+		left = module->createToken<ExpressionType>(t_vt);
+	}
+expression(left) ::= expression_assign(e) . {
+	left = e;
+}
+	expression_assign(left) ::= expression(ei) ASSIGN expression(e) . {
+		/* std::cout << green << "expression_assign" << reset << std::endl; */
+		auto eid = module->getToken<Expression>(ei);
+		auto expr = module->getToken<Expression>(e);
+		left = module->createToken<ExpressionAssign>(eid, expr);
+	}
+expression(left) ::= expression_equal(ee) . {
+	left = ee;
+}
+	expression_equal(left) ::= expression(e1) EQUAL expression(e2) . {
+		auto t_e1 = module->getToken<Expression>(e1);
+		auto t_e2 = module->getToken<Expression>(e2);
+		left = module->createToken<ExpressionEqual>(t_e1, t_e2);
+	}
+expression(left) ::= expression_at(ea) . {
+	left = ea;
+}
+	expression_at(left) ::= expression(ei) LSB expression(e) RSB . {
+		auto t_ei = module->getToken<Expression>(ei);
+		auto t_e = module->getToken<Expression>(e);
+		/* std::cout << green << "expression_at [ expression ] : " << t_ei->toString() << "[ " << t_e->toString() << " ]" << reset << std::endl; */
+		left = module->createToken<ExpressionAt>(t_ei, t_e);
+	}
 expression(left) ::= expression_dot(ed) . {
 	left = ed;
 }
 	expression_dot(left) ::= expression(e) DOT variable_id(vi) . {
 		auto t_e = module->getToken<Expression>(e);
 		auto t_vi = module->getToken<Token>(vi);
+		/* std::cout << green << "expression DOT '" << t_e->toString() << "." << t_vi->value << "'" << reset << std::endl; */
 		left = module->createToken<ExpressionDot>(t_vi, t_e);
 	}
-expression(left) ::= expression_type(et) . {
-	left = et;
-}
-	expression_type(left) ::= variable_type(vt) . {
-		auto t_vt = module->getToken<VariableType>(vt);
-		left = module->createToken<ExpressionType>(t_vt);
-	}
-
 expression(left) ::= expression_call(ec) . {
 	left = ec;
 }
 	expression_call(left) ::= expression(e) LRB arguments_call(ac) RRB . {
+		/* std::cout << green << "expression ( arguments_call )" << reset << std::endl; */
 	    auto t_e = module->getToken<Expression>(e);
 	    auto t_ac = module->getToken<Expression>(ac);
 	    left = module->createToken<ExpressionCall>(t_e, t_ac);
@@ -168,6 +167,7 @@ expression(left) ::= expression_call(ec) . {
 			std::vector<Expression*> t_params;
 			left = module->createToken<ExpressionCallOrdered>(nullptr, t_params);
 		}
+		/* TODO Remove Expression* from ExpressionCallOrdered and ExpressionCallNamed */
 		arguments_call(left) ::= arguments_call_ordered_content(acoc) . {
 			auto t_acoc = module->getToken<OneParamContent>(acoc);
 			std::vector<Expression*> params;
@@ -222,6 +222,7 @@ variable_type(left) ::= variable_type_simple(vts) . {
 	left = vts;
 }
 	variable_type_simple(left) ::= TYPE(T) . {
+		/* std::cout << orange << "TYPE" << reset << std::endl; */
 		auto t = module->getToken<Token>(T);
 		std::vector<VariableType*> vec;
 		left = module->createToken<VariableType>(t, vec);
@@ -233,6 +234,7 @@ variable_type(left) ::= variable_type_complex(vtc) . {
 		left = vtop;
 	}
 		variable_type_oneparam(left) ::= TYPE(T) LRB variable_type(vt) RRB . {
+			/* std::cout << orange << "variable_type_oneparam: TYPE ( variable_type )" << reset << std::endl; */
 			auto sub_type = module->getToken<VariableType>(vt);
 			auto t = module->getToken<Token>(T);
 			left = module->createToken<VariableType>(t, std::vector<VariableType*>{sub_type});
@@ -241,17 +243,22 @@ variable_type(left) ::= variable_type_complex(vtc) . {
 		left = vttp;
 	}
 		variable_type_twoparam(left) ::= TYPE(T) LRB variable_type(vt1) COMMA variable_type(vt2) RRB . {
+			/* std::cout << orange << "variable_type_twoparam: TYPE ( variable_type, variable_type )" << reset << std::endl; */
 			auto sub_type1 = module->getToken<VariableType>(vt1);
 			auto sub_type2 = module->getToken<VariableType>(vt2);
 			auto t = module->getToken<Token>(T);
 			left = module->createToken<VariableType>(t, std::vector<VariableType*>{sub_type1, sub_type2});
 		}
+
+/* Variable ID */
 variable_id(left) ::= ID(I) . {
+	/* std::cout << green << "ID(\"" << module->getToken<Token>(I)->value << "\")" << reset << std::endl; */
 	left = I;
 }
 
 /* Literals */
 literal(left) ::= literal_simple(ls) . {
+	/* std::cout << green << "literal simple" << reset << std::endl; */
 	left = ls;
 }
 	literal_simple(left) ::= LITERAL_INTEGER(LI) . {
@@ -273,6 +280,7 @@ literal(left) ::= literal_with_params(lwp) . {
 		left = lop;
 	}
 		literal_one_param(left) ::= variable_type_oneparam(vtc) LSB literal_oneparam_content(loc) RSB . {
+			/* std::cout << magenta << "literal_one_param" << reset << std::endl; */
 			auto t_vtc = module->getToken<VariableType>(vtc);
 			auto t_loc = module->getToken<OneParamContent>(loc);
 			std::vector<Expression*> vec;
@@ -303,6 +311,7 @@ literal(left) ::= literal_with_params(lwp) . {
 		left = ltp;
 	}
 		literal_two_param(left) ::= variable_type_twoparam(vtc) LSB literal_twoparam_content(ltc) RSB . {
+			/* std::cout << magenta << "literal_two_param" << reset << std::endl; */
 			auto t_vtc = module->getToken<VariableType>(vtc);
 			auto t_ltc = module->getToken<TwoParamContent>(ltc);
 			std::vector<std::pair<Token*, Expression*>> vec;
@@ -331,3 +340,4 @@ literal(left) ::= literal_with_params(lwp) . {
 				t_ltb->addElement(std::make_pair(t_e_left, t_e_right));
 				left = ltb;
 			}
+/* TODO Add SimpleLiteralContent  */

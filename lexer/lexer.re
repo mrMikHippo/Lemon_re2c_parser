@@ -27,15 +27,17 @@ public:
 	// 	_limit = _content + strlen(_content);
 	// }
 
-	void scan(const std::string& source) {
+	void scan(const std::string& source, bool verbose) {
 		_content = source.c_str();
 		_start = _cursor = _content;
 		_limit = _content + strlen(_content);
 
 		void* pParser = ParseAlloc(malloc);
-#if 0
-		ParseTrace(stderr, (char*)"[Parser] >> ");
-#endif
+		if (verbose) {
+			ParseTrace(stderr, (char*)"[Parser] >> ");
+		} else {
+			ParseTrace(NULL, (char*)"");
+		}
 
 		for (;;) {
 			_start = _cursor;

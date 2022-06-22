@@ -126,7 +126,6 @@ void Test_ExpressionCallOrdered()
         {"id.some(10, 20);",            "id.some(10, 20)"},
         {"id.some(\"some string\", 20);",   "id.some(\"some string\", 20)"},
         {"id.some(\"some string\", arg2, 100500, 10.5,);",  "id.some(\"some string\", arg2, 100500, 10.5)"},
-        {"id.some();",                  "id.some()"},
     };
     RunTests(tests);
 }
@@ -147,9 +146,13 @@ void Test_ExpressionCallNamed()
 void Test_StatementExpression_Complex()
 {
     vector<pair<string, string>> tests = {
+        {"id.some(method.blabla());",                  "id.some(method.blabla())"},
+        {"id.some(method.blabla(100));",                  "id.some(method.blabla(100))"},
+        {"id.some(method.blabla(100), abc);",                  "id.some(method.blabla(100), abc)"},
         {"i_1 = id.some(blabla.method());",     "i_1 = id.some(blabla.method())"},
         {"i_1 = id.some(arg1, blabla.method());",     "i_1 = id.some(arg1, blabla.method())"},
         {"i_1 = id.some(key = blabla.method());",     "i_1 = id.some(key = blabla.method())"},
+        {"i_1 = id.some(key = blabla.method(abc, 100), key2 = 500);",     "i_1 = id.some(key = blabla.method(abc, 100), key2 = 500)"},
         {"i_1 = id.some(key = blabla.method(), key2 = 9999);",     "i_1 = id.some(key = blabla.method(), key2 = 9999)"},
     };
     RunTests(tests);
@@ -182,7 +185,9 @@ void Test_StatementExpression_At()
         {"id[key];",    "id[key]"},
         {"id[vec.at(0)];", "id[vec.at(0)]"},
         {"id.some[key];", "id.some[key]"},
-        // {"id.some()[key];", "id.some()[key]"},
+        {"id.some()[key];", "id.some()[key]"},
+        {"id.some(abc)[key];", "id.some(abc)[key]"},
+        {"id.some(abc = val)[key];", "id.some(abc = val)[key]"},
     };
     RunTests(tests);
 }

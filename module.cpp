@@ -6,7 +6,8 @@
 
 using namespace std;
 
-Module::Module()
+Module::Module() :
+	verbose(false)
 {
 	// cout << "Registered types = [" << endl;
 	// for (const auto& t : GlobalTypeMap::getInstance().types)
@@ -18,10 +19,16 @@ Module::~Module()
 {
 }
 
+void Module::toggleVerbose()
+{
+	verbose = !verbose;
+	cout << "Verbose set to: " << boolalpha << verbose << endl;
+}
+
 void Module::run(const string& source)
 {
 	Lexer lex(this);
-	lex.scan(source);
+	lex.scan(source, verbose);
 
 	// bool first = true;
 	// cout << "Tokens: [";

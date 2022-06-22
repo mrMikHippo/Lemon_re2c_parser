@@ -68,6 +68,10 @@ private:
 	VariableType* type;
 };
 
+// class LiteralSimple : public Literal
+// {
+// 	p
+// }
 
 // Vector(Integer)[100500, id]
 class LiteralOneParam : public Literal

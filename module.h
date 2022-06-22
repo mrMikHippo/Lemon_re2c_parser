@@ -19,6 +19,8 @@ class Module
 public:
 	Module();
 	~Module();
+
+	void toggleVerbose();
 	void run(const std::string& source);
 
 	void setRootNode(Statement* node);
@@ -38,6 +40,7 @@ public:
 	}
 
 private:
+	bool verbose;
 	Statement* root;
 	std::vector<Token*> tokens;
 };
