@@ -25,7 +25,7 @@ public:
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override {
-		std::string res = std::string(level, '\t') + "StatementDefinition\n";
+		std::string res = std::string(level, '\t') + "StatementDefinition(\"" + this->toString() + "\")\n";
 		res += type->print(level+1);
 		res += std::string(level+1, '\t') + "ID(\"" + id->value + "\")\n";
 		if (value)
@@ -46,7 +46,7 @@ public:
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override {
-		std::string res = std::string(level, '\t') + "StatementExpression\n";
+		std::string res = std::string(level, '\t') + "StatementExpression(\"" + this->toString() + "\")\n";
 		res += expr->print(level+1);
 		return res;
 	}

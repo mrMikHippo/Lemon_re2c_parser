@@ -53,7 +53,7 @@ std::string LiteralType::toString() const {
 	// return "TYPE(\"" + type->toString() + "\")";
 }
 std::string LiteralType::print(int level) const {
-	std::string res = std::string(level, '\t') + "LiteralType\n";
+	std::string res = std::string(level, '\t') + "LiteralType(\"" + this->toString() + "\")\n";
 	res += type->print(level+1);
 	return res;
 }
@@ -81,7 +81,7 @@ std::string LiteralOneParam::toString() const {
 }
 
 std::string LiteralOneParam::print(int level) const {
-	std::string res = std::string(level, '\t') + "LiteralOneParam\n";
+	std::string res = std::string(level, '\t') + "LiteralOneParam(\"" + this->toString() + "\")\n";
 	res += type->print(level+1);
 	for (const auto& el : content)
 		res += el->print(level+2);
@@ -115,7 +115,7 @@ std::string LiteralTwoParam::toString() const {
 }
 
 std::string LiteralTwoParam::print(int level) const {
-	std::string res = std::string(level, '\t') + "LiteralTwoParam\n";
+	std::string res = std::string(level, '\t') + "LiteralTwoParam(\"" + this->toString() + "\")\n";
 	res += type->print(level+1);
 	for (const auto& el : content) {
 		res += el.first->print(level+2);

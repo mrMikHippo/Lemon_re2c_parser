@@ -23,7 +23,7 @@ std::string ExpressionId::toString() const
 }
 
 std::string ExpressionId::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionId\n";
+	std::string res = std::string(level, '\t') + "ExpressionId(\"" + this->toString() + "\")\n";
 	res += std::string(level+1, '\t') + "ID(\"" + id->value + "\")\n";
 	return res;
 }
@@ -41,7 +41,7 @@ std::string ExpressionAssign::toString() const
 }
 
 std::string ExpressionAssign::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionAssign\n";
+	std::string res = std::string(level, '\t') + "ExpressionAssign(\"" + this->toString() + "\")\n";
 	res += left->print(level+1);
 	res += right->print(level+1);
 	return res;
@@ -70,7 +70,7 @@ std::string ExpressionDot::toString() const
 }
 
 std::string ExpressionDot::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionDot\n";
+	std::string res = std::string(level, '\t') + "ExpressionDot(\"" + this->toString() + "\")\n";
 	res += caller->print(level+1);
 	res += std::string(level, '\t') + "ID(\"" + id->value + "\")\n";
 	return res;
@@ -104,7 +104,7 @@ std::string ExpressionCall::toString() const
 }
 
 std::string ExpressionCall::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionCall\n";
+	std::string res = std::string(level, '\t') + "ExpressionCall(\"" + this->toString() + "\")\n";
 	res += callee->print(level+1);
 	res += args->print(level+1);
 	return res;
@@ -138,7 +138,7 @@ std::string ExpressionCallOrdered::toString() const
 }
 
 std::string ExpressionCallOrdered::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionCallOrdered\n";
+	std::string res = std::string(level, '\t') + "ExpressionCallOrdered(\"" + this->toString() + "\")\n";
 	for (const auto& arg : args)
 		res += arg->print(level+1);
 	return res;
@@ -186,7 +186,7 @@ std::string ExpressionAt::toString() const
 }
 
 std::string ExpressionAt::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionAt\n";
+	std::string res = std::string(level, '\t') + "ExpressionAt(\"" + this->toString() + "\")\n";
 	res += caller->print(level+1);
 	res += key->print(level+1);
 	return res;
@@ -205,7 +205,7 @@ std::string ExpressionLiteral::toString() const
 }
 
 std::string ExpressionLiteral::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionLiteral\n";
+	std::string res = std::string(level, '\t') + "ExpressionLiteral(\"" + this->toString() + "\")\n";
 	res += literal->print(level+1);
 	return res;
 }
@@ -223,7 +223,7 @@ std::string ExpressionType::toString() const
 }
 
 std::string ExpressionType::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionType\n";
+	std::string res = std::string(level, '\t') + "ExpressionType(\"" + this->toString() + "\")\n";
 	res += type->print(level+1);
 	return res;
 }
@@ -241,7 +241,7 @@ std::string ExpressionEqual::toString() const
 }
 
 std::string ExpressionEqual::print(int level) const {
-	std::string res = std::string(level, '\t') + "ExpressionEqual\n";
+	std::string res = std::string(level, '\t') + "ExpressionEqual(\"" + this->toString() + "\")\n";
 	res += left->print(level+1);
 	res += right->print(level+1);
 	return res;
