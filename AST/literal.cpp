@@ -11,6 +11,10 @@ LiteralInteger::LiteralInteger(Token* value_)
 std::string LiteralInteger::toString() const {
 	return value->value;
 }
+std::string LiteralInteger::print(int level) const {
+	return std::string(level, '\t') + "INTEGER(\"" + value->print() + "\")\n";
+}
+
 // LiteralFloat
 LiteralFloat::LiteralFloat(Token* value_)
 	: value(value_)
@@ -20,6 +24,10 @@ LiteralFloat::LiteralFloat(Token* value_)
 std::string LiteralFloat::toString() const {
 	return value->value;
 }
+std::string LiteralFloat::print(int level) const {
+	return std::string(level, '\t') + "FLOAT(\"" + value->print() + "\")\n";
+}
+
 // LiteralString
 LiteralString::LiteralString(Token* value_)
 	: value(value_)
@@ -28,6 +36,10 @@ LiteralString::LiteralString(Token* value_)
 
 std::string LiteralString::toString() const {
 	return value->value;
+}
+
+std::string LiteralString::print(int level) const {
+	return std::string(level, '\t') + "STRING(\"" + value->print() + "\")\n";
 }
 
 // LiteralType
@@ -39,6 +51,11 @@ LiteralType::LiteralType(VariableType* type_)
 std::string LiteralType::toString() const {
 	return type->toString();
 	// return "TYPE(\"" + type->toString() + "\")";
+}
+std::string LiteralType::print(int level) const {
+	std::string res = std::string(level, '\t') + "LiteralType\n";
+	res += type->print(level+1);
+	return res;
 }
 
 // LiteralOneParam
@@ -61,6 +78,14 @@ std::string LiteralOneParam::toString() const {
 	}
 	result += "]";
 	return result;
+}
+
+std::string LiteralOneParam::print(int level) const {
+	std::string res = std::string(level, '\t') + "LiteralOneParam\n";
+	res += type->print(level+1);
+	for (const auto& el : content)
+		res += el->print(level+2);
+	return res;
 }
 
 // LiteralTwoParam
@@ -86,5 +111,15 @@ std::string LiteralTwoParam::toString() const {
 		// res += el.second->toString();
 	}
 	res += "]";
+	return res;
+}
+
+std::string LiteralTwoParam::print(int level) const {
+	std::string res = std::string(level, '\t') + "LiteralTwoParam\n";
+	res += type->print(level+1);
+	for (const auto& el : content) {
+		res += el.first->print(level+2);
+		res += el.second->print(level+2);
+	}
 	return res;
 }

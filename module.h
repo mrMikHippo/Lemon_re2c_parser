@@ -21,10 +21,12 @@ public:
 	~Module();
 
 	void toggleVerbose();
+	void togglePrint();
 	void run(const std::string& source);
 
 	void setRootNode(Statement* node);
 	Statement* getRootNode() const;
+	void printTree();
 
 	template<typename T>
 	T* getToken(uint64_t _id)
@@ -41,6 +43,7 @@ public:
 
 private:
 	bool verbose;
+	bool print;
 	Statement* root;
 	std::vector<Token*> tokens;
 };

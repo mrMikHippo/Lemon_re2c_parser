@@ -19,6 +19,15 @@ public:
 	void addSubType(VariableType* type_);
 
 	std::string toString();
+	std::string print(int level = 0) const override {
+		std::string res = std::string(level, '\t') + "TYPE(\"" + type->print() + "\")\n";
+		if (!types.empty()) {
+			for (const auto& t : types) {
+				res += t->print(level+1);
+			}
+		}
+		return res;
+	}
 
 private:
 	std::vector<VariableType*> types;

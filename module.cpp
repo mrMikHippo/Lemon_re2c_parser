@@ -7,7 +7,7 @@
 using namespace std;
 
 Module::Module() :
-	verbose(false)
+	verbose(false), print(false)
 {
 	// cout << "Registered types = [" << endl;
 	// for (const auto& t : GlobalTypeMap::getInstance().types)
@@ -23,6 +23,12 @@ void Module::toggleVerbose()
 {
 	verbose = !verbose;
 	cout << "Verbose set to: " << boolalpha << verbose << endl;
+}
+
+void Module::togglePrint()
+{
+	print = !print;
+	cout << "Print tree set to: " << boolalpha << print << endl;
 }
 
 void Module::run(const string& source)
@@ -51,3 +57,19 @@ Statement* Module::getRootNode() const
 {
 	return root;
 }
+
+void Module::printTree()
+{
+	if (print) {
+		cout << "Print tree:" << endl;
+		cout << root->print() << endl;
+	}
+}
+
+// void print(Token* tok, int level = 0)
+// {
+// 	if (tok) {
+// 		cout << "\t"*level << tok->toString();
+// 		print(tok, level+1);
+// 	}
+// }

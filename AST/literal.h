@@ -17,6 +17,7 @@ public:
 	virtual ~Literal() {};
 
 	virtual std::string toString() const = 0;
+	virtual std::string print(int level = 0) const override { return "LITERAL"; }
 };
 
 //100500
@@ -26,6 +27,7 @@ public:
 	LiteralInteger(Token* value_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	Token* value;
@@ -38,6 +40,7 @@ public:
 	LiteralFloat(Token* value_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	Token* value;
@@ -50,6 +53,7 @@ public:
 	LiteralString(Token* value_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	Token* value;
@@ -64,6 +68,7 @@ public:
 	LiteralType(VariableType* type_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 private:
 	VariableType* type;
 };
@@ -80,6 +85,7 @@ public:
 	LiteralOneParam(VariableType* type_, std::vector<Expression*> content_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	VariableType* type;
@@ -95,6 +101,7 @@ public:
 	LiteralTwoParam(VariableType* type_, ContentType content_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     VariableType* type;

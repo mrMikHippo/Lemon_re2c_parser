@@ -18,6 +18,7 @@ public:
 	virtual void setCallee(Expression* callee_) {}
 
 	virtual std::string toString() const = 0;
+	virtual std::string print(int level = 0) const override { return "Expression\n"; }
 };
 
 //id
@@ -27,6 +28,7 @@ public:
 	ExpressionId(Token* id_);
 	Token* getToken() const;
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     Token* id;
@@ -39,6 +41,7 @@ public:
 	ExpressionAssign(Expression* left_, Expression* right_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	Expression* left;
@@ -54,6 +57,7 @@ public:
 	Expression* getCaller() const;
 	Token* getId() const;
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     Expression* caller;
@@ -70,6 +74,7 @@ public:
 	// }
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	Expression* callee;
@@ -84,6 +89,7 @@ public:
 
 	void addArg(Expression* arg_);
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     std::vector<Expression*> args;
@@ -111,6 +117,7 @@ public:
 	Expression* getCaller();
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     Expression* caller;
@@ -124,6 +131,7 @@ public:
 	ExpressionLiteral(Literal* literal_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     Literal* literal;
@@ -135,6 +143,7 @@ public:
 	ExpressionType(VariableType* type_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     VariableType* type;
@@ -147,6 +156,7 @@ public:
 	ExpressionEqual(Expression* left_, Expression* right_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
 	Expression* left;

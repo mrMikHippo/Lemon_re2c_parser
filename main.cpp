@@ -26,11 +26,14 @@ int main() {
 			break;
 		else if (cmd.empty())
 			continue;
-		else if (cmd == "verbose") {
+		else if (cmd == "verbose")
 			module.toggleVerbose();
-		} else if (cmd == "help") {
+		else if (cmd == "tree")
+			module.togglePrint();
+		else if (cmd == "help") {
 			cout << "quit or q : for quit" << endl;
 			cout << "verbose   : toggle parser verbose mode" << endl;
+			cout << "tree      : toggle print tree mode" << endl;
 			cout << "[string]  : string to parse" << endl;
 		} else {
 			try {
