@@ -2,9 +2,9 @@
 
 %left ASSIGN .
 %left EQUAL .
+%left TYPE .
 %left LSB LRB .
 %left DOT .
-/* %left COMMA . */
 
 %token_type { uint64_t }
 %extra_argument { Module* module}
@@ -181,7 +181,7 @@ expression(left) ::= expression_call(ec) . {
 			arguments_call_named_content(left) ::= arguments_call_named_body(acnb) . {
 				left = acnb;
 			}
-				// нельзя использовать expression_assign (разделить по уровням)
+				// do not use expression_assign ()
 				arguments_call_named_body(left) ::= variable_id(vi) ASSIGN expression(ei) . {
 					auto t_vi = module->getToken<Token>(vi);
 					auto t_ei = module->getToken<Expression>(ei);
@@ -198,7 +198,6 @@ expression(left) ::= expression_call(ec) . {
 					left = acnb;
 				} */
 
-/* VariableTypes */
 variable_type(left) ::= variable_type_simple(vts) . {
 	left = vts;
 }
@@ -212,22 +211,19 @@ variable_type(left) ::= variable_type_complex(vtc) . {
 	variable_type_complex(left) ::= variable_type_oneparam(vtop) . {
 		left = vtop;
 	}
-		variable_type_oneparam(left) ::= variable_type_simple(vts) LRB variable_type(vt) RRB . {
-			auto t_vts = module->getToken<VariableType>(vts);
+		variable_type_oneparam(left) ::= TYPE(T) LRB variable_type(vt) RRB . {
 			auto t_vt = module->getToken<VariableType>(vt);
-			t_vts->addSubType(t_vt);
-			left = vts;
+			auto t_T = module->getToken<Token>(T);
+			left = module->createToken<VariableType>(t_T, std::vector<VariableType*>{t_vt});
 		}
 	variable_type_complex(left) ::= variable_type_twoparam(vttp) . {
 		left = vttp;
 	}
-		variable_type_twoparam(left) ::= variable_type_simple(vts) LRB variable_type(vt1) COMMA variable_type(vt2) RRB . {
-			auto t_vts = module->getToken<VariableType>(vts);
+		variable_type_twoparam(left) ::= TYPE(T) LRB variable_type(vt1) COMMA variable_type(vt2) RRB . {
 			auto t_vt1 = module->getToken<VariableType>(vt1);
 			auto t_vt2 = module->getToken<VariableType>(vt2);
-			t_vts->addSubType(t_vt1);
-			t_vts->addSubType(t_vt2);
-			left = vts;
+			auto t_T = module->getToken<Token>(T);
+			left = module->createToken<VariableType>(t_T, std::vector<VariableType*>{t_vt1, t_vt2});
 		}
 
 /* Variable ID */
@@ -257,8 +253,11 @@ literal(left) ::= literal_with_params(lwp) . {
 	literal_with_params(left) ::= literal_one_param(lop) . {
 		left = lop;
 	}
-		literal_one_param(left) ::= variable_type_oneparam(vtc) LSB literal_oneparam_content(loc) RSB . {
-			auto t_vtc = module->getToken<VariableType>(vtc);
+		literal_one_param(left) ::= TYPE(T) LRB variable_type(vt) RRB LSB literal_oneparam_content(loc) RSB . {
+			auto t_T = module->getToken<Token>(T);
+			auto t_vt = module->getToken<VariableType>(vt);
+			auto t_idx = module->createToken<VariableType>(t_T, std::vector<VariableType*>{t_vt});
+			auto t_vtc = module->getToken<VariableType>(t_idx);
 			auto t_loc = module->getToken<OneParamContent>(loc);
 			left = module->createToken<LiteralOneParam>(t_vtc, t_loc->getElements());
 		}
@@ -280,19 +279,26 @@ literal(left) ::= literal_with_params(lwp) . {
 				t_lob->addElement(t_e);
 				left = lob;
 			}
-		/* literal_one_param(left) ::= literal_simple_one_param(lcop) . {
+		literal_one_param(left) ::= literal_simple_one_param(lcop) . {
 			left = lcop;
 		}
-			literal_simple_one_param(left) ::= variable_type_simple(vts) LSB literal_oneparam_content(loc) RSB . {
-				auto t_vts = module->getToken<VariableType>(vts);
+			literal_simple_one_param(left) ::= TYPE(T) LSB literal_oneparam_content(loc) RSB . {
+				auto t_T = module->getToken<Token>(T);
+				auto t_idx = module->createToken<VariableType>(t_T, std::vector<VariableType*>{});
+				auto t_vts = module->getToken<VariableType>(t_idx);
 				auto t_loc = module->getToken<OneParamContent>(loc);
 				left = module->createToken<LiteralOneParam>(t_vts, t_loc->getElements());
-			} */
+			}
 	literal_with_params(left) ::= literal_two_param(ltp) . {
 		left = ltp;
 	}
-		literal_two_param(left) ::= variable_type_twoparam(vtc) LSB literal_twoparam_content(ltc) RSB . {
-			auto t_vtc = module->getToken<VariableType>(vtc);
+		literal_two_param(left) ::= TYPE(T) LRB variable_type(vt1) COMMA variable_type(vt2) RRB LSB literal_twoparam_content(ltc) RSB . {
+			auto t_T = module->getToken<Token>(T);
+			auto t_vt1 = module->getToken<VariableType>(vt1);
+			auto t_vt2 = module->getToken<VariableType>(vt2);
+			auto t_idx = module->createToken<VariableType>(t_T, std::vector<VariableType*>{t_vt1, t_vt2});
+			auto t_vtc = module->getToken<VariableType>(t_idx);
+
 			auto t_ltc = module->getToken<TwoParamContent>(ltc);
 			left = module->createToken<LiteralTwoParam>(t_vtc, t_ltc->getElements());
 		}

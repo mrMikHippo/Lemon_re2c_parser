@@ -72,7 +72,7 @@ std::string ExpressionDot::toString() const
 std::string ExpressionDot::print(int level) const {
 	std::string res = std::string(level, '\t') + "ExpressionDot(\"" + this->toString() + "\")\n";
 	res += caller->print(level+1);
-	res += std::string(level, '\t') + "ID(\"" + id->value + "\")\n";
+	res += std::string(level+1, '\t') + "ID(\"" + id->value + "\")\n";
 	return res;
 }
 

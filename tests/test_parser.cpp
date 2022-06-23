@@ -166,6 +166,7 @@ void Test_StatementExpression_Complex()
         {"i_1 = id.some(key = blabla.method());",     "i_1 = id.some(key = blabla.method())"},
         {"i_1 = id.some(key = blabla.method(abc, 100), key2 = 500);",     "i_1 = id.some(key = blabla.method(abc, 100), key2 = 500)"},
         {"i_1 = id.some(key = blabla.method(), key2 = 9999);",     "i_1 = id.some(key = blabla.method(), key2 = 9999)"},
+        {"i_1 = id.some(key = blabla.method(abc = 100), key2 = 500);",     "i_1 = id.some(key = blabla.method(abc = 100), key2 = 500)"},
     };
     RunTests(tests);
 }
