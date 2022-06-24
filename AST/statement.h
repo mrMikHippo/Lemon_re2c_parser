@@ -62,6 +62,7 @@ public:
 	StatementList(std::vector<Statement*> statements_);
 
 	void addStatement(Statement* statement_);
+	std::vector<Statement*> getStatements() const;
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override {

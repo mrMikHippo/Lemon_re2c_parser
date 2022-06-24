@@ -5,7 +5,7 @@
 %left TYPE .
 %left LSB LRB .
 %left DOT .
-/* %left ID . */
+%left ID .
 
 %token_type { uint64_t }
 %extra_argument { Module* module}
@@ -175,7 +175,7 @@ expression(left) ::= expression_call(ec) . {
 				arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA . {
 					left = acob;
 				}
-		/* arguments_call(left) ::= arguments_call_named_content(acnc) . {
+		arguments_call(left) ::= arguments_call_named_content(acnc) . {
 			auto t_acnc = module->getToken<TwoParamContent>(acnc);
 			left = module->createToken<ExpressionCallNamed>(t_acnc->getElements());
 		}
@@ -197,7 +197,7 @@ expression(left) ::= expression_call(ec) . {
 				}
 				arguments_call_named_body(left) ::= arguments_call_named_body(acnb) COMMA . {
 					left = acnb;
-				} */
+				}
 
 variable_type(left) ::= variable_type_simple(vts) . {
 	left = vts;

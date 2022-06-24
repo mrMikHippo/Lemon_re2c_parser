@@ -51,6 +51,11 @@ void StatementList::addStatement(Statement* statement_)
 	statements.push_back(statement_);
 }
 
+std::vector<Statement*> StatementList::getStatements() const
+{
+	return statements;
+}
+
 std::string StatementList::toString() const
 {
 	std::string res;
