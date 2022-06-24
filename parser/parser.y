@@ -5,6 +5,7 @@
 %left TYPE .
 %left LSB LRB .
 %left DOT .
+/* %left ID . */
 
 %token_type { uint64_t }
 %extra_argument { Module* module}
@@ -182,8 +183,8 @@ expression(left) ::= expression_call(ec) . {
 				left = acnb;
 			}
 				// do not use expression_assign ()
-				arguments_call_named_body(left) ::= variable_id(vi) ASSIGN expression(ei) . {
-					auto t_vi = module->getToken<Token>(vi);
+				arguments_call_named_body(left) ::= ID(I) ASSIGN expression(ei) . {
+					auto t_vi = module->getToken<Token>(I);
 					auto t_ei = module->getToken<Expression>(ei);
 					left = module->createToken<TwoParamContent>(std::make_pair(t_vi, t_ei));
 				}

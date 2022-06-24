@@ -168,6 +168,15 @@ std::string ExpressionCallNamed::toString() const
 	return res;
 }
 
+std::string ExpressionCallNamed::print(int level) const {
+	std::string res = std::string(level, '\t') + "ExpressionCallNamed(\"" + this->toString() + "\")\n";
+	for (const auto& arg : args) {
+		res += std::string(level+1, '\t') + "ID(\"" + arg.first->print() + "\")\n";
+		res += arg.second->print(level+1);
+	}
+	return res;
+}
+
 // ExpressionAt
 ExpressionAt::ExpressionAt(Expression* caller_, Expression* key_)
 	: caller(caller_), key(key_)

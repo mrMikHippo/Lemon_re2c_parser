@@ -85,6 +85,7 @@ private:
 class ExpressionCallOrdered : public Expression
 {
 public:
+	ExpressionCallOrdered() {}
 	ExpressionCallOrdered(std::vector<Expression*> args_);
 
 	void addArg(Expression* arg_);
@@ -103,6 +104,7 @@ public:
 	ExpressionCallNamed(ArgsType args_);
 
 	std::string toString() const override;
+	std::string print(int level = 0) const override;
 
 private:
     ArgsType args;
