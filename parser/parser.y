@@ -90,60 +90,40 @@ statement_content(left) ::= statement_expression(se) SEMICOLON . {
 	}
 
 /** Expressions **/
-expression(left) ::= expression_id(ei) . {
-    left = ei;
+expression(left) ::= expression_wo_assign(ewa) . {
+	left = ewa;
 }
-    expression_id(left) ::= variable_id(vi) . {
-        auto t_ei = module->getToken<Token>(vi);
-        left = module->createToken<ExpressionId>(t_ei);
-    }
-expression(left) ::= expression_literal(el) . {
-    left = el;
-}
-    expression_literal(left) ::= literal(l) . {
-        auto t_l = module->getToken<Literal>(l);
-        left = module->createToken<ExpressionLiteral>(t_l);
-    }
+	expression_wo_assign(left) ::= expression_id(ei) . {
+	    left = ei;
+	}
+	    expression_id(left) ::= variable_id(vi) . {
+	        auto t_ei = module->getToken<Token>(vi);
+	        left = module->createToken<ExpressionId>(t_ei);
+	    }
+	expression_wo_assign(left) ::= expression_literal(el) . {
+	    left = el;
+	}
+	    expression_literal(left) ::= literal(l) . {
+	        auto t_l = module->getToken<Literal>(l);
+	        left = module->createToken<ExpressionLiteral>(t_l);
+	    }
+	expression_wo_assign(left) ::= expression_at(ea) . {
+		left = ea;
+	}
+		expression_at(left) ::= expression_wo_assign(ei) LSB expression(e) RSB . {
+			auto t_ei = module->getToken<Expression>(ei);
+			auto t_e = module->getToken<Expression>(e);
+			left = module->createToken<ExpressionAt>(t_ei, t_e);
+		}
+	expression_wo_assign(left) ::= expression_dot(ed) . {
+		left = ed;
+	}
+		expression_dot(left) ::= expression_wo_assign(e) DOT variable_id(vi) . {
+			auto t_e = module->getToken<Expression>(e);
+			auto t_vi = module->getToken<Token>(vi);
+			left = module->createToken<ExpressionDot>(t_vi, t_e);
+		}
 
-expression(left) ::= expression_type(et) . {
-	left = et;
-}
-	expression_type(left) ::= variable_type(vt) . {
-		auto t_vt = module->getToken<VariableType>(vt);
-		left = module->createToken<ExpressionType>(t_vt);
-	}
-expression(left) ::= expression_assign(e) . {
-	left = e;
-}
-	expression_assign(left) ::= expression(ei) ASSIGN expression(e) . {
-		auto t_ei = module->getToken<Expression>(ei);
-		auto t_e = module->getToken<Expression>(e);
-		left = module->createToken<ExpressionAssign>(t_ei, t_e);
-	}
-expression(left) ::= expression_equal(ee) . {
-	left = ee;
-}
-	expression_equal(left) ::= expression(e1) EQUAL expression(e2) . {
-		auto t_e1 = module->getToken<Expression>(e1);
-		auto t_e2 = module->getToken<Expression>(e2);
-		left = module->createToken<ExpressionEqual>(t_e1, t_e2);
-	}
-expression(left) ::= expression_at(ea) . {
-	left = ea;
-}
-	expression_at(left) ::= expression(ei) LSB expression(e) RSB . {
-		auto t_ei = module->getToken<Expression>(ei);
-		auto t_e = module->getToken<Expression>(e);
-		left = module->createToken<ExpressionAt>(t_ei, t_e);
-	}
-expression(left) ::= expression_dot(ed) . {
-	left = ed;
-}
-	expression_dot(left) ::= expression(e) DOT variable_id(vi) . {
-		auto t_e = module->getToken<Expression>(e);
-		auto t_vi = module->getToken<Token>(vi);
-		left = module->createToken<ExpressionDot>(t_vi, t_e);
-	}
 expression(left) ::= expression_call(ec) . {
 	left = ec;
 }
@@ -162,11 +142,11 @@ expression(left) ::= expression_call(ec) . {
 			arguments_call_ordered_content(left) ::= arguments_call_ordered_body(acob) . {
 				left = acob;
 			}
-				arguments_call_ordered_body(left) ::= expression(e) . {
+				arguments_call_ordered_body(left) ::= expression_wo_assign(e) . {
 					auto t_e = module->getToken<Expression>(e);
 					left = module->createToken<OneParamContent>(t_e);
 				}
-				arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA expression(e) . {
+				arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA expression_wo_assign(e) . {
 					auto t_acob = module->getToken<OneParamContent>(acob);
 					auto t_e = module->getToken<Expression>(e);
 					t_acob->addElement(t_e);
@@ -183,7 +163,7 @@ expression(left) ::= expression_call(ec) . {
 				left = acnb;
 			}
 				// do not use expression_assign ()
-				arguments_call_named_body(left) ::= ID(I) ASSIGN expression(ei) . {
+				arguments_call_named_body(left) ::= ID(I) ASSIGN expression(ei) . [DOT] {
 					auto t_vi = module->getToken<Token>(I);
 					auto t_ei = module->getToken<Expression>(ei);
 					left = module->createToken<TwoParamContent>(std::make_pair(t_vi, t_ei));
@@ -198,6 +178,37 @@ expression(left) ::= expression_call(ec) . {
 				arguments_call_named_body(left) ::= arguments_call_named_body(acnb) COMMA . {
 					left = acnb;
 				}
+
+expression(left) ::= expression_equal(ee) . {
+	left = ee;
+}
+	expression_equal(left) ::= expression(e1) EQUAL expression(e2) . {
+		auto t_e1 = module->getToken<Expression>(e1);
+		auto t_e2 = module->getToken<Expression>(e2);
+		left = module->createToken<ExpressionEqual>(t_e1, t_e2);
+	}
+
+expression(left) ::= expression_type(et) . {
+	left = et;
+}
+	expression_type(left) ::= variable_type(vt) . {
+		auto t_vt = module->getToken<VariableType>(vt);
+		left = module->createToken<ExpressionType>(t_vt);
+	}
+expression(left) ::= expression_assign(e) . {
+	left = e;
+}
+	expression_assign(left) ::= expression(ei) ASSIGN expression(e) . {
+		auto t_ei = module->getToken<Expression>(ei);
+		auto t_e = module->getToken<Expression>(e);
+		left = module->createToken<ExpressionAssign>(t_ei, t_e);
+	}
+/* expression(left) ::= expression_assign_arguments(eaa) . {
+	left = eaa;
+}
+	expression_assign_arguments(left) ::= variable_id(vi) ASSIGN expression(ewa) . {
+
+	} */
 
 variable_type(left) ::= variable_type_simple(vts) . {
 	left = vts;
@@ -254,6 +265,16 @@ literal(left) ::= literal_with_params(lwp) . {
 	literal_with_params(left) ::= literal_one_param(lop) . {
 		left = lop;
 	}
+		literal_one_param(left) ::= literal_simple_one_param(lcop) . {
+			left = lcop;
+		}
+			literal_simple_one_param(left) ::= TYPE(T) LSB literal_oneparam_content(loc) RSB . {
+				auto t_T = module->getToken<Token>(T);
+				auto t_idx = module->createToken<VariableType>(t_T, std::vector<VariableType*>{});
+				auto t_vts = module->getToken<VariableType>(t_idx);
+				auto t_loc = module->getToken<OneParamContent>(loc);
+				left = module->createToken<LiteralOneParam>(t_vts, t_loc->getElements());
+			}
 		literal_one_param(left) ::= TYPE(T) LRB variable_type(vt) RRB LSB literal_oneparam_content(loc) RSB . {
 			auto t_T = module->getToken<Token>(T);
 			auto t_vt = module->getToken<VariableType>(vt);
@@ -279,16 +300,6 @@ literal(left) ::= literal_with_params(lwp) . {
 				auto t_e = module->getToken<Expression>(e);
 				t_lob->addElement(t_e);
 				left = lob;
-			}
-		literal_one_param(left) ::= literal_simple_one_param(lcop) . {
-			left = lcop;
-		}
-			literal_simple_one_param(left) ::= TYPE(T) LSB literal_oneparam_content(loc) RSB . {
-				auto t_T = module->getToken<Token>(T);
-				auto t_idx = module->createToken<VariableType>(t_T, std::vector<VariableType*>{});
-				auto t_vts = module->getToken<VariableType>(t_idx);
-				auto t_loc = module->getToken<OneParamContent>(loc);
-				left = module->createToken<LiteralOneParam>(t_vts, t_loc->getElements());
 			}
 	literal_with_params(left) ::= literal_two_param(ltp) . {
 		left = ltp;

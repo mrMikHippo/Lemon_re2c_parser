@@ -35,17 +35,17 @@ void RunTestsV2(vector<pair<string, Statement*>> tests)
     auto size = tests.size();
     for (auto i = 0; i < size; ++i) {
         cout << warn << "[" << i+1 << "/" << size << "]: " << reset;
+        auto& test_str = tests.at(i).first;
+        auto& statement = tests.at(i).second;
         try
         {
-            auto& test_str = tests.at(i).first;
-            auto& statement = tests.at(i).second;
             module.run(test_str);
             AssertEqual(module.getRootNode()->print(), statement->print());
         } catch(const std::runtime_error& ex) {
             cout << warn << "[" << i+1 << "/" << size << "]: " << reset << "Failed!" << endl;
             throw;
         } catch(const std::exception& ex) {
-            cout << reset << ex.what() << endl;
+            cout << reset << "'" << test_str << "' - " << ex.what() << endl;
             throw;
         }
     }
@@ -291,19 +291,34 @@ void Test_Statement_Assign_Definition_OneParam()
 
 void Test_Statement_Assign_Definition_Simple_OneParam()
 {
-    throw std::runtime_error(" DUMMY");
-    vector<pair<string, string>> tests = {
-        {"Buffer b_1 = Buffer[];",           "Buffer b_1 = Buffer[]"},
-        {"Buffer b2 = Buffer[some_var];",        "Buffer b2 = Buffer[some_var]"},
-        {"Buffer b2 = Buffer[some_var1, some_var2];",        "Buffer b2 = Buffer[some_var1, some_var2]"},
-        {"Buffer b2 = Buffer[var1, var2,];",        "Buffer b2 = Buffer[var1, var2]"},
-    };
-    RunTests(tests);
+    // throw std::runtime_error(" DUMMY");
+    // vector<pair<string, string>> tests = {
+    //     {"Buffer b_1 = Buffer[];",           "Buffer b_1 = Buffer[]"},
+    //     {"Buffer b2 = Buffer[some_var];",        "Buffer b2 = Buffer[some_var]"},
+    //     {"Buffer b2 = Buffer[some_var1, some_var2];",        "Buffer b2 = Buffer[some_var1, some_var2]"},
+    //     {"Buffer b2 = Buffer[var1, var2,];",        "Buffer b2 = Buffer[var1, var2]"},
+    // };
+    // RunTests(tests);
+
+    string t1 = "Buffer b1 = Buffer[];";
+    Token id("b1");
+
+    VariableType var_type_buf(new Token("Buffer"), {});
+
+    // Buffer[]
+    LiteralOneParam lit_op(&var_type_buf, {});
+    ExpressionLiteral expr_lit(&lit_op);
+
+    StatementDefinition st(&var_type_buf, &id, &expr_lit);
+    StatementList lst({&st});
+
+    RunTestsV2({
+        {t1, &lst},
+    });
 }
 
 void Test_Statement_Assign_Definition_TwoParam()
 {
-    throw std::runtime_error(" DUMMY");
     vector<pair<string, string>> tests = {
         {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[];",                        "Map(Integer, Integer) m_1 = Map(Integer, Integer)[]"},
         {"Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300];",   "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300]"},
@@ -311,7 +326,42 @@ void Test_Statement_Assign_Definition_TwoParam()
         {"Map(Integer, String) m_1 = Map(Integer, String)[100 : \"abc\", yoyo : \"300\"];", "Map(Integer, String) m_1 = Map(Integer, String)[100 : \"abc\", yoyo : \"300\"]"},
         {"Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1];", "Map(Integer, Map(Integer, Integer)) m_2 = Map(Integer, Map(Integer, Integer))[10 : m_1]"},
     };
-    RunTests(tests);
+    // RunTests(tests);
+
+    string t1 = "Map(Integer, Integer) m_1 = Map(Integer, Integer)[];";
+    string t2 = "Map(Integer, Integer) m_1 = Map(Integer, Integer)[100 : abc, yoyo : 300];";
+
+    VariableType var_type_int(new Token("Integer"), {});
+    VariableType var_type_map(new Token("Map"), {&var_type_int, &var_type_int});
+
+    // Map(Integer, Integer)[]
+    LiteralTwoParam lit_two_param(&var_type_map, {});
+    ExpressionLiteral expr_lit_1(&lit_two_param);
+
+    // Map(Integer, Integer)[100 : abc, yoyo : 300]
+    LiteralInteger lit_int_100(new Token("100"));
+    LiteralInteger lit_int_300(new Token("300"));
+    ExpressionLiteral expr_lit_int_100(&lit_int_100);
+    ExpressionLiteral expr_lit_int_300(&lit_int_300);
+    ExpressionId id_expr_abc(new Token("abc"));
+    ExpressionId id_expr_100(new Token("100"));
+    ExpressionId id_expr_yoyo(new Token("yoyo"));
+    // ExpressionId id_expr_300(new Token("300"));
+    LiteralTwoParam lit_two_param_w_params(&var_type_map, {
+        {&expr_lit_int_100, &id_expr_abc},
+        {&id_expr_yoyo, &expr_lit_int_300},
+    });
+    ExpressionLiteral expr_lit_2(&lit_two_param_w_params);
+
+    StatementDefinition st_1(&var_type_map, new Token("m_1"), &expr_lit_1);
+    StatementDefinition st_2(&var_type_map, new Token("m_1"), &expr_lit_2);
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+
+    RunTestsV2({
+        {t1, &lst_1},
+        // {t2, &lst_2},
+    });
 }
 
 void Test_StatementExpression_Simple()
@@ -366,17 +416,42 @@ void Test_StatementExpression_Simple()
 }
 void Test_StatementExpression_OneParam()
 {
-    throw std::runtime_error(" DUMMY");
-    vector<pair<string, string>> tests = {
-        {"vc_1 = Vector(Integer)[100, i_2];",                "vc_1 = Vector(Integer)[100, i_2]"},
-        {"vc_1 = Vector(String)[\"some string\", str_var];", "vc_1 = Vector(String)[\"some string\", str_var]"},
-        {"vc_1 = Vector(Float)[100.5, i_2];",                "vc_1 = Vector(Float)[100.5, i_2]"},
-    };
-    RunTests(tests);
+    // throw std::runtime_error(" DUMMY");
+    // vector<pair<string, string>> tests = {
+    //     {"vc_1 = Vector(Integer)[100, i_2];",                "vc_1 = Vector(Integer)[100, i_2]"},
+    //     {"vc_1 = Vector(String)[\"some string\", str_var];", "vc_1 = Vector(String)[\"some string\", str_var]"},
+    //     {"vc_1 = Vector(Float)[100.5, i_2];",                "vc_1 = Vector(Float)[100.5, i_2]"},
+    // };
+    // RunTests(tests);
+
+    string t1 = "vc_1 = Vector(Integer)[100, i_2];";
+
+    ExpressionId expr_left_id(new Token("vc_1"));
+
+    VariableType var_type_int(new Token("Integer"), {});
+    VariableType var_type_vector(new Token("Vector"), {&var_type_int});
+
+    // Vector(Integer)[100, i_2];
+    LiteralInteger lit_int(new Token("100"));
+    ExpressionLiteral expr_lit_100(&lit_int);
+    ExpressionId expr_id(new Token("i_2"));
+    LiteralOneParam lit_op(&var_type_vector, {&expr_lit_100, &expr_id});
+    ExpressionLiteral expr_lit_op(&lit_op);
+
+    ExpressionAssign expr_assign(&expr_left_id, &expr_lit_op);
+
+    StatementExpression st(&expr_assign);
+    StatementList lst({&st});
+
+    RunTestsV2({
+        {t1, &lst},
+    });
+
+
 }
 void Test_StatementExpression_TwoParam()
 {
-    throw std::runtime_error(" DUMMY");
+    // throw std::runtime_error(" DUMMY");
     vector<pair<string, string>> tests = {
         {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
         {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
@@ -402,6 +477,8 @@ void Test_ExpressionCallOrdered()
     string t2 = "id.some(arg1);";
     string t3 = "id.some(arg1, arg2);";
     string t4 = "id.some(arg1, arg2, arg3,);";
+    string t5 = "id.some(10);";
+    string t6 = "id.some(vec.size);";
 
     Token token_id("id");
     Token token_method("some");
@@ -440,22 +517,39 @@ void Test_ExpressionCallOrdered()
         &expr_arg_id_3
     });
     ExpressionCall expr_call_4(&expr_dot, &expr_co_4);
+    // id.some(10)
+    LiteralInteger lit_int(new Token("10"));
+    ExpressionLiteral lit_expr(&lit_int);
+    ExpressionCallOrdered expr_co_5({&lit_expr});
+    ExpressionCall expr_call_5(&expr_dot, &expr_co_5);
+
+    // id.some(vec.size)
+    ExpressionId vec_expr_id(new Token("vec"));
+    ExpressionDot vec_expr_dot(new Token("size"), &vec_expr_id);
+    ExpressionCallOrdered expr_co_6({&vec_expr_dot});
+    ExpressionCall expr_call_6(&expr_dot, &expr_co_6);
 
     StatementExpression st_expr_1(&expr_call_1);
     StatementExpression st_expr_2(&expr_call_2);
     StatementExpression st_expr_3(&expr_call_3);
     StatementExpression st_expr_4(&expr_call_4);
+    StatementExpression st_expr_5(&expr_call_5);
+    StatementExpression st_expr_6(&expr_call_6);
 
     StatementList st_lst_1({&st_expr_1});
     StatementList st_lst_2({&st_expr_2});
     StatementList st_lst_3({&st_expr_3});
     StatementList st_lst_4({&st_expr_4});
+    StatementList st_lst_5({&st_expr_5});
+    StatementList st_lst_6({&st_expr_6});
 
     RunTestsV2({
         {t1, &st_lst_1},
         {t2, &st_lst_2},
         {t3, &st_lst_3},
         {t4, &st_lst_4},
+        {t5, &st_lst_5},
+        {t6, &st_lst_6},
     });
 }
 
@@ -483,7 +577,7 @@ void Test_ExpressionCallNamed()
     Token token_key_2("second");
     Token token_val_2("100500");
     Token token_key_3("third");
-    Token token_val_3("Some String");
+    Token token_val_3("\"Some String\"");
 
     // m_1.some
     ExpressionId expr_id(&token_id);
@@ -533,15 +627,104 @@ void Test_ExpressionCallNamed()
     });
 }
 
-void Test_StatementExpression_Complex()
+void Test_StatementExpression_Complex_CallOrdered()
 {
-    throw std::runtime_error(" DUMMY");
     vector<pair<string, string>> tests = {
-        {"id.some(method.blabla());",                  "id.some(method.blabla())"},
-        {"id.some(method.blabla(100));",                  "id.some(method.blabla(100))"},
-        {"id.some(method.blabla(100), abc);",                  "id.some(method.blabla(100), abc)"},
-        {"i_1 = id.some(blabla.method());",     "i_1 = id.some(blabla.method())"},
-        {"i_1 = id.some(arg1, blabla.method());",     "i_1 = id.some(arg1, blabla.method())"},
+        {"id.some(a_1.method());",                  "id.some(a_1.method())"},
+        {"id.some(a_1.method(100));",                  "id.some(a_1.method(100))"},
+        {"id.some(a_1.method(100), abc);",                  "id.some(a_1.method(100), abc)"},
+        {"i_1 = id.some(a_1.method());",     "i_1 = id.some(a_1.method())"},
+        {"i_1 = id.some(arg1, a_1.method());",     "i_1 = id.some(arg1, a_1.method())"},
+    };
+    // RunTests(tests);
+
+    string t1 = "id.some(a_1.method());";
+    string t2 = "id.some(a_1.method(100));";
+    string t3 = "id.some(a_1.method(100), abc);";
+    string t4 = "i_1 = id.some(a_1.method(id_2[100]));";
+    string t5 = "i_1 = id.some(arg1, a_1.method());";
+    string t6 = "id.some(id_2[0]);";
+
+    Token tok_method_some("some");
+    Token tok_method_method("method");
+    ExpressionId id_expr(new Token("id"));
+    ExpressionId a_1_expr(new Token("a_1"));
+    ExpressionId id_2_expr(new Token("id_2"));
+
+    // id.some
+    ExpressionDot expr_dot(&tok_method_some, &id_expr);
+    // id.some()
+    ExpressionCallOrdered expr_co_1, expr_co_2, expr_co_6;//, expr_co_3, expr_co_4, expr_co_5;
+    ExpressionCall expr_call_1(&expr_dot, &expr_co_1);
+    ExpressionCall expr_call_2(&expr_dot, &expr_co_2);
+    // ExpressionCall expr_call_3(&expr_dot, &expr_co_3);
+    // ExpressionCall expr_call_4(&expr_dot, &expr_co_4);
+    // ExpressionCall expr_call_5(&expr_dot, &expr_co_5);
+    ExpressionCall expr_call_6(&expr_dot, &expr_co_6);
+
+    // a_1.method()
+    ExpressionDot a_1_expr_dot_inner(&tok_method_method, &a_1_expr);
+
+    ExpressionCallOrdered expr_co_inner_1;
+    ExpressionCallOrdered expr_co_inner_2;
+    // ExpressionCallOrdered expr_co_inner_3;
+    // ExpressionCallOrdered expr_co_inner_4;
+    // ExpressionCallOrdered expr_co_inner_5;
+    ExpressionCall expr_call_inner_1(&a_1_expr_dot_inner, &expr_co_inner_1);
+    ExpressionCall expr_call_inner_2(&a_1_expr_dot_inner, &expr_co_inner_2);
+    // ExpressionCall expr_call_inner_3(&a_1_expr_dot_inner, &expr_co_inner_3);
+    // ExpressionCall expr_call_inner_4(&a_1_expr_dot_inner, &expr_co_inner_4);
+    // ExpressionCall expr_call_inner_5(&a_1_expr_dot_inner, &expr_co_inner_5);
+
+
+    // id.some(a_1.method())
+    expr_co_1.addArg(&expr_call_inner_1);
+    StatementExpression st_1(&expr_call_1);
+
+    // id.some(a_1.method(100))
+    LiteralInteger lit_int_100(new Token("100"));
+    ExpressionLiteral lit_int_100_expr(&lit_int_100);
+    expr_co_inner_2.addArg(&lit_int_100_expr);
+    expr_co_2.addArg(&expr_call_inner_2);
+    StatementExpression st_2(&expr_call_2);
+    // id.some(a_1.method(100), abc)
+    // expr_co_inner_2.addArg(&lit_int_100);
+    // expr_co_3.addArg(&expr_call_inner_3);
+    // id.some(a_1.method(id_2[100]))
+    // expr_co_4.addArg(&expr_call_inner_4);
+    // id.some(arg1, a_1.method())
+    // expr_co_5.addArg(&expr_call_inner_5);
+
+    // ExpressionId expr_arg_id_1(&token_arg1);
+    // ExpressionCallOrdered expr_co_2({
+    //     &expr_arg_id_1
+    // });
+    // ExpressionCall expr_call_2(&expr_dot, &expr_co_2);
+    //
+    // ExpressionId id_expr(new Token("i_1"));
+
+    // id.some(id_2[0])
+    LiteralInteger lit_int(new Token("0"));
+    ExpressionLiteral lit_int_expr(&lit_int);
+    ExpressionAt expr_at(&id_2_expr, &lit_int_expr);
+    expr_co_6.addArg(&expr_at);
+    StatementExpression st_6(&expr_call_6);
+
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+    StatementList lst_6({&st_6});
+
+    RunTestsV2({
+        {t6, &lst_6},
+        {t1, &lst_1},
+        {t2, &lst_2},
+    });
+}
+
+void Test_StatementExpression_Complex_CallNamed()
+{
+    throw std::runtime_error("DUMMY");
+    vector<pair<string, string>> tests = {
         {"i_1 = id.some(key = blabla.method());",     "i_1 = id.some(key = blabla.method())"},
         {"i_1 = id.some(key = blabla.method(abc, 100), key2 = 500);",     "i_1 = id.some(key = blabla.method(abc, 100), key2 = 500)"},
         {"i_1 = id.some(key = blabla.method(), key2 = 9999);",     "i_1 = id.some(key = blabla.method(), key2 = 9999)"},
@@ -552,56 +735,205 @@ void Test_StatementExpression_Complex()
 
 void Test_StatementDefinition_Types()
 {
-    throw std::runtime_error(" DUMMY");
-    vector<pair<string, string>> tests = {
-        {"Type t = Integer;",           "Type t = Integer"},
-        {"Type t = Vector(String);",    "Type t = Vector(String)"},
-        {"Type t = Map(Integer, Map(String, Float));",    "Type t = Map(Integer, Map(String, Float))"},
-    };
-    RunTests(tests);
+    // vector<pair<string, string>> tests = {
+    //     {"Type t = Integer;",           "Type t = Integer"},
+    //     {"Type t = Vector(String);",    "Type t = Vector(String)"},
+    //     {"Type t = Map(Integer, Map(String, Float));",    "Type t = Map(Integer, Map(String, Float))"},
+    // };
+    // RunTests(tests);
+
+    string t1 = "Type t = Integer;";
+    string t2 = "Type t = Vector(Integer);";
+
+    VariableType var_type_type(new Token("Type"), {});
+    VariableType var_type_int(new Token("Integer"), {});
+    VariableType var_type_vec(new Token("Vector"), {&var_type_int});
+
+    ExpressionType expr_type(&var_type_int);
+    ExpressionType expr_type_vector(&var_type_vec);
+
+    StatementDefinition st_1(&var_type_type, new Token("t"), &expr_type);
+    StatementDefinition st_2(&var_type_type, new Token("t"), &expr_type_vector);
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+
+    RunTestsV2({
+        {t1, &lst_1},
+        {t2, &lst_2},
+    });
 }
 
 void Test_StatementExpression_Types()
 {
-    throw std::runtime_error(" DUMMY");
-    vector<pair<string, string>> tests = {
-        {"t = Integer;",           "t = Integer"},
-        {"t = Vector(String);",    "t = Vector(String)"},
-        {"t = Map(Integer, Map(String, Float));",    "t = Map(Integer, Map(String, Float))"},
-    };
-    RunTests(tests);
+    // vector<pair<string, string>> tests = {
+    //     {"t = Integer;",           "t = Integer"},
+    //     {"t = Vector(String);",    "t = Vector(String)"},
+    //     {"t = Map(Integer, Map(String, Float));",    "t = Map(Integer, Map(String, Float))"},
+    // };
+    // RunTests(tests);
+
+    string t1 = "t = Integer;";
+    string t2 = "t = Vector(Integer);";
+
+    VariableType var_type_int(new Token("Integer"), {});
+    VariableType var_type_vec(new Token("Vector"), {&var_type_int});
+
+    ExpressionType expr_type(&var_type_int);
+    ExpressionType expr_type_vector(&var_type_vec);
+
+    ExpressionId expr_id(new Token("t"));
+    ExpressionAssign expr_assign_1(&expr_id, &expr_type);
+    ExpressionAssign expr_assign_2(&expr_id, &expr_type_vector);
+
+    StatementExpression st_1(&expr_assign_1);
+    StatementExpression st_2(&expr_assign_2);
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+
+    RunTestsV2({
+        {t1, &lst_1},
+        {t2, &lst_2},
+    });
 }
 
 void Test_StatementExpression_At()
 {
-    throw std::runtime_error(" DUMMY");
-    vector<pair<string, string>> tests = {
-        {"id[10];",    "id[10]"},
-        {"id[key];",    "id[key]"},
-        {"id[vec.at(0)];", "id[vec.at(0)]"},
-        {"id.some[key];", "id.some[key]"},
-        {"id.some()[key];", "id.some()[key]"},
-        {"id.some(abc)[key];", "id.some(abc)[key]"},
-        {"id.some(abc = val)[key];", "id.some(abc = val)[key]"},
-    };
-    RunTests(tests);
+    // throw std::runtime_error(" DUMMY");
+    // vector<pair<string, string>> tests = {
+    //     {"id[10];",    "id[10]"},
+    //     {"id[key];",    "id[key]"},
+    //     {"id[vec.at(0)];", "id[vec.at(0)]"},
+    //     {"id.some[key];", "id.some[key]"},
+    //     {"id.some()[key];", "id.some()[key]"},
+    //     {"id.some(abc)[key];", "id.some(abc)[key]"},
+    //     {"id.some(abc = val)[key];", "id.some(abc = val)[key]"},
+    // };
+    // RunTests(tests);
+
+    string t1 = "id[10];";
+    string t2 = "id[key];";
+    string t3 = "id[vec.at(0)];";
+    string t4 = "id.some[key];";
+    string t5 = "id.some()[key];";
+    string t6 = "id.some(arg)[key];";
+    // string t7 = "id.some(arg = val)[key];";
+
+    ExpressionId id_expr(new Token("id"));
+
+    // id[10]
+    LiteralInteger lit_10_int(new Token("10"));
+    ExpressionLiteral lit_10_expr(&lit_10_int);
+    ExpressionAt expr_at_1(&id_expr, &lit_10_expr);
+
+    // vec.at(0)
+    ExpressionId vec_expr(new Token("vec"));
+    ExpressionDot expr_dot_at(new Token("at"), &vec_expr);
+    LiteralInteger lit_0_int(new Token("0"));
+    ExpressionLiteral lit_0_expr(&lit_0_int);
+    ExpressionCallOrdered expr_co({&lit_0_expr});
+    ExpressionCall expr_call(&expr_dot_at, {&expr_co});
+
+    // key
+    ExpressionId key_expr(new Token("key"));
+    // id[key]
+    ExpressionAt expr_at_2(&id_expr, &key_expr);
+
+    // id[vec.at(0)]
+    ExpressionAt expr_at_3(&id_expr, &expr_call);
+
+    // id.some()[key]
+    ExpressionDot expr_dot_some(new Token("some"), &id_expr);
+    ExpressionAt expr_at_4(&expr_dot_some, &key_expr);
+
+    // id.some()[key];
+    ExpressionCall expr_call_rb(&expr_dot_some, {new ExpressionCallOrdered});
+    ExpressionAt expr_at_5(&expr_call_rb, &key_expr);
+
+    // id.some(arg)[key];
+    ExpressionId ei_arg(new Token("arg"));
+    ExpressionCall expr_call_rb_w_arg(&expr_dot_some, {new ExpressionCallOrdered({&ei_arg})});
+    ExpressionAt expr_at_6(&expr_call_rb_w_arg, &key_expr);
+
+    StatementExpression st_1(&expr_at_1);
+    StatementExpression st_2(&expr_at_2);
+    StatementExpression st_3(&expr_at_3);
+    StatementExpression st_4(&expr_at_4);
+    StatementExpression st_5(&expr_at_5);
+    StatementExpression st_6(&expr_at_6);
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+    StatementList lst_3({&st_3});
+    StatementList lst_4({&st_4});
+    StatementList lst_5({&st_5});
+    StatementList lst_6({&st_6});
+
+    RunTestsV2({
+        {t1, &lst_1},
+        {t2, &lst_2},
+        {t3, &lst_3},
+        {t4, &lst_4},
+        {t5, &lst_5},
+        {t6, &lst_6},
+    });
 }
 
 void Test_StatementExpression_Equal()
 {
-    throw std::runtime_error(" DUMMY");
+    // throw std::runtime_error(" DUMMY");
     vector<pair<string, string>> tests = {
         {"a == b;",                "a == b"},
         {"a == 10;",                "a == 10"},
         {"a == \"string\";",                "a == \"string\""},
         {"vc_1.type() == Vector(Integer);", "vc_1.type() == Vector(Integer)"},
     };
-    RunTests(tests);
+
+    string t1 = "a == b;";
+    string t2 = "a == 10;";
+    string t3 = "a == \"string\";";
+    string t4 = "vc_1.type() == Vector(Integer);";
+    // RunTests(tests);
+    ExpressionId id_expr(new Token("a"));
+
+    ExpressionId b_expr(new Token("b"));
+    ExpressionEqual expr_equal_1(&id_expr, &b_expr);
+
+    LiteralInteger lit_int(new Token("10"));
+    ExpressionEqual expr_equal_2(&id_expr, new ExpressionLiteral(&lit_int));
+
+    LiteralString lit_string(new Token("\"string\""));
+    ExpressionEqual expr_equal_3(&id_expr, new ExpressionLiteral(&lit_string));
+
+    ExpressionId expr_vc_1(new Token("vc_1"));
+    ExpressionDot expr_dot(new Token("type"), &expr_vc_1);
+
+    ExpressionCallOrdered expr_co;
+    ExpressionCall expr_call(&expr_dot, &expr_co);
+
+    VariableType var_type_int(new Token("Integer"), {});
+    VariableType var_type_vector(new Token("Vector"), {&var_type_int});
+
+    ExpressionEqual expr_equal_4(&expr_call, new ExpressionType(&var_type_vector));
+
+    StatementExpression st_1(&expr_equal_1);
+    StatementExpression st_2(&expr_equal_2);
+    StatementExpression st_3(&expr_equal_3);
+    StatementExpression st_4(&expr_equal_4);
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+    StatementList lst_3({&st_3});
+    StatementList lst_4({&st_4});
+
+    RunTestsV2({
+        {t1, &lst_1},
+        {t2, &lst_2},
+        {t3, &lst_3},
+        {t4, &lst_4},
+    });
 }
 
 void Test_StatementList()
 {
-    throw std::runtime_error(" DUMMY");
+    // throw std::runtime_error(" DUMMY");
     vector<pair<string, string>> tests = {
         {
             "Integer abc; abc = 10;",
@@ -641,7 +973,7 @@ void Test_StatementList()
             "mp1 = Map(Integer, Vector(Integer))[10 : v1, 15 : v2]"
         },
     };
-    RunTests(tests);
+    // RunTests(tests);
 }
 
 
@@ -659,11 +991,12 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementExpression_TwoParam, "Parser: Test_StatementExpression_TwoParam");
     tr.RunTest(Test_ExpressionCallOrdered, "Parser: Test_ExpressionCallOrdered");
     tr.RunTest(Test_ExpressionCallNamed, "Parser: Test_ExpressionCallNamed");
-    tr.RunTest(Test_StatementExpression_Complex, "Parser: Test_StatementExpression_Complex");
+    tr.RunTest(Test_StatementExpression_Complex_CallOrdered, "Parser: Test_StatementExpression_Complex_CallOrdered");
+    tr.RunTest(Test_StatementExpression_Complex_CallNamed, "Parser: Test_StatementExpression_Complex_CallNamed");
     tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
     tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
     tr.RunTest(Test_StatementExpression_At, "Parser: Test_StatementExpression_At");
     tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
-    tr.RunTest(Test_StatementList, "Parser: Test_StatementList");
+    // tr.RunTest(Test_StatementList, "Parser: Test_StatementList");
 
 }

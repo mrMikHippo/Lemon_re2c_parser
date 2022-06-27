@@ -139,6 +139,7 @@ private:
     Literal* literal;
 };
 
+// Integer
 class ExpressionType : public Expression
 {
 public:
