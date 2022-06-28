@@ -346,7 +346,6 @@ void Test_Statement_Assign_Definition_TwoParam()
     ExpressionId id_expr_abc(new Token("abc"));
     ExpressionId id_expr_100(new Token("100"));
     ExpressionId id_expr_yoyo(new Token("yoyo"));
-    // ExpressionId id_expr_300(new Token("300"));
     LiteralTwoParam lit_two_param_w_params(&var_type_map, {
         {&expr_lit_int_100, &id_expr_abc},
         {&id_expr_yoyo, &expr_lit_int_300},
@@ -360,7 +359,7 @@ void Test_Statement_Assign_Definition_TwoParam()
 
     RunTestsV2({
         {t1, &lst_1},
-        // {t2, &lst_2},
+        {t2, &lst_2},
     });
 }
 
@@ -629,21 +628,22 @@ void Test_ExpressionCallNamed()
 
 void Test_StatementExpression_Complex_CallOrdered()
 {
-    vector<pair<string, string>> tests = {
-        {"id.some(a_1.method());",                  "id.some(a_1.method())"},
-        {"id.some(a_1.method(100));",                  "id.some(a_1.method(100))"},
-        {"id.some(a_1.method(100), abc);",                  "id.some(a_1.method(100), abc)"},
-        {"i_1 = id.some(a_1.method());",     "i_1 = id.some(a_1.method())"},
-        {"i_1 = id.some(arg1, a_1.method());",     "i_1 = id.some(arg1, a_1.method())"},
-    };
+    // vector<pair<string, string>> tests = {
+    //     {"id.some(a_1.method());",                  "id.some(a_1.method())"},
+    //     {"id.some(a_1.method(100));",                  "id.some(a_1.method(100))"},
+    //     {"id.some(a_1.method(100), abc);",                  "id.some(a_1.method(100), abc)"},
+    //     {"i_1 = id.some(a_1.method());",     "i_1 = id.some(a_1.method())"},
+    //     {"i_1 = id.some(arg1, a_1.method());",     "i_1 = id.some(arg1, a_1.method())"},
+    // };
     // RunTests(tests);
 
     string t1 = "id.some(a_1.method());";
     string t2 = "id.some(a_1.method(100));";
     string t3 = "id.some(a_1.method(100), abc);";
-    string t4 = "i_1 = id.some(a_1.method(id_2[100]));";
-    string t5 = "i_1 = id.some(arg1, a_1.method());";
-    string t6 = "id.some(id_2[0]);";
+    string t4 = "i_1 = id.some(a_1.method());";
+    string t5 = "i_1 = id.some(a_1.method(id_2[100]));";
+    string t6 = "i_1 = id.some(arg1, a_1.method());";
+    string t7 = "id.some(id_2[0]);";
 
     Token tok_method_some("some");
     Token tok_method_method("method");
@@ -654,13 +654,13 @@ void Test_StatementExpression_Complex_CallOrdered()
     // id.some
     ExpressionDot expr_dot(&tok_method_some, &id_expr);
     // id.some()
-    ExpressionCallOrdered expr_co_1, expr_co_2, expr_co_6;//, expr_co_3, expr_co_4, expr_co_5;
+    ExpressionCallOrdered expr_co_1, expr_co_2, expr_co_7;//, expr_co_3, expr_co_4, expr_co_5;
     ExpressionCall expr_call_1(&expr_dot, &expr_co_1);
     ExpressionCall expr_call_2(&expr_dot, &expr_co_2);
     // ExpressionCall expr_call_3(&expr_dot, &expr_co_3);
     // ExpressionCall expr_call_4(&expr_dot, &expr_co_4);
     // ExpressionCall expr_call_5(&expr_dot, &expr_co_5);
-    ExpressionCall expr_call_6(&expr_dot, &expr_co_6);
+    ExpressionCall expr_call_7(&expr_dot, &expr_co_7);
 
     // a_1.method()
     ExpressionDot a_1_expr_dot_inner(&tok_method_method, &a_1_expr);
@@ -707,15 +707,15 @@ void Test_StatementExpression_Complex_CallOrdered()
     LiteralInteger lit_int(new Token("0"));
     ExpressionLiteral lit_int_expr(&lit_int);
     ExpressionAt expr_at(&id_2_expr, &lit_int_expr);
-    expr_co_6.addArg(&expr_at);
-    StatementExpression st_6(&expr_call_6);
+    expr_co_7.addArg(&expr_at);
+    StatementExpression st_7(&expr_call_7);
 
     StatementList lst_1({&st_1});
     StatementList lst_2({&st_2});
-    StatementList lst_6({&st_6});
+    StatementList lst_7({&st_7});
 
     RunTestsV2({
-        {t6, &lst_6},
+        {t7, &lst_7},
         {t1, &lst_1},
         {t2, &lst_2},
     });

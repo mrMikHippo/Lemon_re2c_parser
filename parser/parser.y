@@ -124,60 +124,60 @@ expression(left) ::= expression_wo_assign(ewa) . {
 			left = module->createToken<ExpressionDot>(t_vi, t_e);
 		}
 
-expression(left) ::= expression_call(ec) . {
-	left = ec;
-}
-	expression_call(left) ::= expression(e) LRB arguments_call(ac) RRB . {
-	    auto t_e = module->getToken<Expression>(e);
-	    auto t_ac = module->getToken<Expression>(ac);
-	    left = module->createToken<ExpressionCall>(t_e, t_ac);
+	expression_wo_assign(left) ::= expression_call(ec) . {
+		left = ec;
 	}
-		arguments_call(left) ::= . {
-			left = module->createToken<ExpressionCallOrdered>(std::vector<Expression*>{});
+		expression_call(left) ::= expression_wo_assign(e) LRB arguments_call(ac) RRB . {
+		    auto t_e = module->getToken<Expression>(e);
+		    auto t_ac = module->getToken<Expression>(ac);
+		    left = module->createToken<ExpressionCall>(t_e, t_ac);
 		}
-		arguments_call(left) ::= arguments_call_ordered_content(acoc) . {
-			auto t_acoc = module->getToken<OneParamContent>(acoc);
-			left = module->createToken<ExpressionCallOrdered>(t_acoc->getElements());
-		}
-			arguments_call_ordered_content(left) ::= arguments_call_ordered_body(acob) . {
-				left = acob;
+			arguments_call(left) ::= . {
+				left = module->createToken<ExpressionCallOrdered>(std::vector<Expression*>{});
 			}
-				arguments_call_ordered_body(left) ::= expression_wo_assign(e) . {
-					auto t_e = module->getToken<Expression>(e);
-					left = module->createToken<OneParamContent>(t_e);
-				}
-				arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA expression_wo_assign(e) . {
-					auto t_acob = module->getToken<OneParamContent>(acob);
-					auto t_e = module->getToken<Expression>(e);
-					t_acob->addElement(t_e);
+			arguments_call(left) ::= arguments_call_ordered_content(acoc) . {
+				auto t_acoc = module->getToken<OneParamContent>(acoc);
+				left = module->createToken<ExpressionCallOrdered>(t_acoc->getElements());
+			}
+				arguments_call_ordered_content(left) ::= arguments_call_ordered_body(acob) . {
 					left = acob;
 				}
-				arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA . {
-					left = acob;
-				}
-		arguments_call(left) ::= arguments_call_named_content(acnc) . {
-			auto t_acnc = module->getToken<TwoParamContent>(acnc);
-			left = module->createToken<ExpressionCallNamed>(t_acnc->getElements());
-		}
-			arguments_call_named_content(left) ::= arguments_call_named_body(acnb) . {
-				left = acnb;
+					arguments_call_ordered_body(left) ::= expression_wo_assign(e) . {
+						auto t_e = module->getToken<Expression>(e);
+						left = module->createToken<OneParamContent>(t_e);
+					}
+					arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA expression_wo_assign(e) . {
+						auto t_acob = module->getToken<OneParamContent>(acob);
+						auto t_e = module->getToken<Expression>(e);
+						t_acob->addElement(t_e);
+						left = acob;
+					}
+					arguments_call_ordered_body(left) ::= arguments_call_ordered_body(acob) COMMA . {
+						left = acob;
+					}
+			arguments_call(left) ::= arguments_call_named_content(acnc) . {
+				auto t_acnc = module->getToken<TwoParamContent>(acnc);
+				left = module->createToken<ExpressionCallNamed>(t_acnc->getElements());
 			}
-				// do not use expression_assign ()
-				arguments_call_named_body(left) ::= ID(I) ASSIGN expression(ei) . [DOT] {
-					auto t_vi = module->getToken<Token>(I);
-					auto t_ei = module->getToken<Expression>(ei);
-					left = module->createToken<TwoParamContent>(std::make_pair(t_vi, t_ei));
-				}
-				arguments_call_named_body(left) ::= arguments_call_named_body(acnb) COMMA variable_id(vi) ASSIGN expression(e) . {
-					auto t_acnb = module->getToken<TwoParamContent>(acnb);
-					auto t_vi = module->getToken<Token>(vi);
-					auto t_e = module->getToken<Expression>(e);
-					t_acnb->addElement(std::make_pair(t_vi, t_e));
+				arguments_call_named_content(left) ::= arguments_call_named_body(acnb) . {
 					left = acnb;
 				}
-				arguments_call_named_body(left) ::= arguments_call_named_body(acnb) COMMA . {
-					left = acnb;
-				}
+					// do not use expression_assign ()
+					arguments_call_named_body(left) ::= ID(I) ASSIGN expression_wo_assign(ei) . [DOT] {
+						auto t_vi = module->getToken<Token>(I);
+						auto t_ei = module->getToken<Expression>(ei);
+						left = module->createToken<TwoParamContent>(std::make_pair(t_vi, t_ei));
+					}
+					arguments_call_named_body(left) ::= arguments_call_named_body(acnb) COMMA variable_id(vi) ASSIGN expression_wo_assign(e) . {
+						auto t_acnb = module->getToken<TwoParamContent>(acnb);
+						auto t_vi = module->getToken<Token>(vi);
+						auto t_e = module->getToken<Expression>(e);
+						t_acnb->addElement(std::make_pair(t_vi, t_e));
+						left = acnb;
+					}
+					arguments_call_named_body(left) ::= arguments_call_named_body(acnb) COMMA . {
+						left = acnb;
+					}
 
 expression(left) ::= expression_equal(ee) . {
 	left = ee;
@@ -203,12 +203,7 @@ expression(left) ::= expression_assign(e) . {
 		auto t_e = module->getToken<Expression>(e);
 		left = module->createToken<ExpressionAssign>(t_ei, t_e);
 	}
-/* expression(left) ::= expression_assign_arguments(eaa) . {
-	left = eaa;
-}
-	expression_assign_arguments(left) ::= variable_id(vi) ASSIGN expression(ewa) . {
 
-	} */
 
 variable_type(left) ::= variable_type_simple(vts) . {
 	left = vts;
