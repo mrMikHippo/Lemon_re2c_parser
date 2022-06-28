@@ -452,11 +452,49 @@ void Test_StatementExpression_TwoParam()
 {
     // throw std::runtime_error(" DUMMY");
     vector<pair<string, string>> tests = {
-        {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
+        {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : vec.at(0)];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : vec.at(0)]"},
         {"m_1 = Map(Integer, Integer)[i_1: i_1, 100: i_2, abc : 500];",     "m_1 = Map(Integer, Integer)[i_1 : i_1, 100 : i_2, abc : 500]"},
         {"m_1 = Map(Integer, Map(Integer, String))[i_1: mp1, 100: i_2];",   "m_1 = Map(Integer, Map(Integer, String))[i_1 : mp1, 100 : i_2]"},
     };
-    RunTests(tests);
+    // RunTests(tests);
+    string t1 = "m_1 = Map(Integer, Integer)[i_1: a_1, 100: i_2, abc : vec.at(0)];";
+
+    VariableType var_type_int(new Token("Integer"), {});
+    VariableType var_type_map(new Token("Map"), {&var_type_int, &var_type_int});
+
+    ExpressionId i_1_arg_key(new Token("i_1"));
+    ExpressionId abc_arg_key(new Token("abc"));
+    ExpressionId i_2_arg_val(new Token("i_2"));
+    ExpressionId a_1_arg_val(new Token("a_1"));
+    ExpressionLiteral lit_100_arg_key(new LiteralInteger(new Token("100")));
+
+    // vec.at
+    ExpressionDot vec_at_expr_dot(new Token("at"), new ExpressionId(new Token("vec")));
+
+    // (0)
+    LiteralInteger int_0_lit(new Token("0"));
+    ExpressionLiteral int_0_expr_lit(&int_0_lit);
+    ExpressionCallOrdered arguments_expr_0({&int_0_expr_lit});
+    ExpressionCall vec_at_expr_call(&vec_at_expr_dot, &arguments_expr_0);
+
+    // Map(Integer, Integer)[i_1: a_1, 100: i_2, abc : vec.at(0)]
+    LiteralTwoParam lit_2param(&var_type_map, {
+        {&i_1_arg_key, &a_1_arg_val},
+        {&lit_100_arg_key, &i_2_arg_val},
+        {&abc_arg_key, &vec_at_expr_call},
+    });
+    ExpressionLiteral lit_expr(&lit_2param);
+    ExpressionId id_expr(new Token("m_1"));
+
+    ExpressionAssign expr_assign(&id_expr, &lit_expr);
+
+    StatementExpression st(&expr_assign);
+
+    StatementList lst({&st});
+
+    RunTestsV2({
+        {t1, &lst}
+    });
 }
 
 void Test_ExpressionCallOrdered()
