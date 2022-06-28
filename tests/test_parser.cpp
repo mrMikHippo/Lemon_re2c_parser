@@ -639,10 +639,10 @@ void Test_StatementExpression_Complex_CallOrdered()
 
     string t1 = "id.some(a_1.method());";
     string t2 = "id.some(a_1.method(100));";
-    string t3 = "id.some(a_1.method(100), abc);";
+    string t3 = "id.some(a_1.method(100), arg);";
     string t4 = "i_1 = id.some(a_1.method());";
-    string t5 = "i_1 = id.some(a_1.method(id_2[100]));";
-    string t6 = "i_1 = id.some(arg1, a_1.method());";
+    // string t5 = "i_1 = id.some(a_1.method(id_2[100]));";
+    // string t6 = "i_1 = id.some(arg, a_1.method());";
     string t7 = "id.some(id_2[0]);";
 
     Token tok_method_some("some");
@@ -654,11 +654,11 @@ void Test_StatementExpression_Complex_CallOrdered()
     // id.some
     ExpressionDot expr_dot(&tok_method_some, &id_expr);
     // id.some()
-    ExpressionCallOrdered expr_co_1, expr_co_2, expr_co_7;//, expr_co_3, expr_co_4, expr_co_5;
+    ExpressionCallOrdered expr_co_1, expr_co_2, expr_co_3, expr_co_4, expr_co_7;//, expr_co_5;
     ExpressionCall expr_call_1(&expr_dot, &expr_co_1);
     ExpressionCall expr_call_2(&expr_dot, &expr_co_2);
-    // ExpressionCall expr_call_3(&expr_dot, &expr_co_3);
-    // ExpressionCall expr_call_4(&expr_dot, &expr_co_4);
+    ExpressionCall expr_call_3(&expr_dot, &expr_co_3);
+    ExpressionCall expr_call_4(&expr_dot, &expr_co_4);
     // ExpressionCall expr_call_5(&expr_dot, &expr_co_5);
     ExpressionCall expr_call_7(&expr_dot, &expr_co_7);
 
@@ -667,31 +667,37 @@ void Test_StatementExpression_Complex_CallOrdered()
 
     ExpressionCallOrdered expr_co_inner_1;
     ExpressionCallOrdered expr_co_inner_2;
-    // ExpressionCallOrdered expr_co_inner_3;
-    // ExpressionCallOrdered expr_co_inner_4;
+    ExpressionCallOrdered expr_co_inner_3;
+    ExpressionCallOrdered expr_co_inner_4;
     // ExpressionCallOrdered expr_co_inner_5;
     ExpressionCall expr_call_inner_1(&a_1_expr_dot_inner, &expr_co_inner_1);
     ExpressionCall expr_call_inner_2(&a_1_expr_dot_inner, &expr_co_inner_2);
-    // ExpressionCall expr_call_inner_3(&a_1_expr_dot_inner, &expr_co_inner_3);
-    // ExpressionCall expr_call_inner_4(&a_1_expr_dot_inner, &expr_co_inner_4);
+    ExpressionCall expr_call_inner_3(&a_1_expr_dot_inner, &expr_co_inner_3);
+    ExpressionCall expr_call_inner_4(&a_1_expr_dot_inner, &expr_co_inner_4);
     // ExpressionCall expr_call_inner_5(&a_1_expr_dot_inner, &expr_co_inner_5);
 
 
     // id.some(a_1.method())
     expr_co_1.addArg(&expr_call_inner_1);
-    StatementExpression st_1(&expr_call_1);
+
 
     // id.some(a_1.method(100))
     LiteralInteger lit_int_100(new Token("100"));
     ExpressionLiteral lit_int_100_expr(&lit_int_100);
     expr_co_inner_2.addArg(&lit_int_100_expr);
     expr_co_2.addArg(&expr_call_inner_2);
-    StatementExpression st_2(&expr_call_2);
+
     // id.some(a_1.method(100), abc)
-    // expr_co_inner_2.addArg(&lit_int_100);
-    // expr_co_3.addArg(&expr_call_inner_3);
-    // id.some(a_1.method(id_2[100]))
-    // expr_co_4.addArg(&expr_call_inner_4);
+    expr_co_inner_3.addArg(&lit_int_100_expr);
+    expr_co_3.addArg(&expr_call_inner_3);
+    ExpressionId arg_expr_id(new Token("arg"));
+    expr_co_3.addArg(&arg_expr_id);
+
+    // i_1 = id.some(a_1.method());
+    ExpressionId i_1_expr(new Token("i_1"));
+    expr_co_4.addArg(&expr_call_inner_4);
+    ExpressionAssign expr_assign_4(&i_1_expr, &expr_call_4);
+
     // id.some(arg1, a_1.method())
     // expr_co_5.addArg(&expr_call_inner_5);
 
@@ -708,29 +714,97 @@ void Test_StatementExpression_Complex_CallOrdered()
     ExpressionLiteral lit_int_expr(&lit_int);
     ExpressionAt expr_at(&id_2_expr, &lit_int_expr);
     expr_co_7.addArg(&expr_at);
+
+    StatementExpression st_1(&expr_call_1);
+    StatementExpression st_2(&expr_call_2);
+    StatementExpression st_3(&expr_call_3);
+    StatementExpression st_4(&expr_assign_4);
     StatementExpression st_7(&expr_call_7);
 
     StatementList lst_1({&st_1});
     StatementList lst_2({&st_2});
+    StatementList lst_3({&st_3});
+    StatementList lst_4({&st_4});
     StatementList lst_7({&st_7});
 
     RunTestsV2({
-        {t7, &lst_7},
         {t1, &lst_1},
         {t2, &lst_2},
+        {t3, &lst_3},
+        {t4, &lst_4},
+        {t7, &lst_7},
     });
 }
 
 void Test_StatementExpression_Complex_CallNamed()
 {
-    throw std::runtime_error("DUMMY");
+    // throw std::runtime_error("DUMMY");
     vector<pair<string, string>> tests = {
-        {"i_1 = id.some(key = blabla.method());",     "i_1 = id.some(key = blabla.method())"},
-        {"i_1 = id.some(key = blabla.method(abc, 100), key2 = 500);",     "i_1 = id.some(key = blabla.method(abc, 100), key2 = 500)"},
-        {"i_1 = id.some(key = blabla.method(), key2 = 9999);",     "i_1 = id.some(key = blabla.method(), key2 = 9999)"},
-        {"i_1 = id.some(key = blabla.method(abc = 100), key2 = 500);",     "i_1 = id.some(key = blabla.method(abc = 100), key2 = 500)"},
+        {"i_1 = id.some(key = another.method());",     "i_1 = id.some(key = another.method())"},
+        {"i_1 = id.some(key = another.method(abc, 100), key2 = 500);",     "i_1 = id.some(key = another.method(abc, 100), key2 = 500)"},
+        {"i_1 = id.some(key = another.method(), key2 = 9999);",     "i_1 = id.some(key = another.method(), key2 = 9999)"},
+        {"i_1 = id.some(key = another.method(abc = 100), key2 = 500);",     "i_1 = id.some(key = another.method(abc = 100), key2 = 500)"},
     };
-    RunTests(tests);
+    // RunTests(tests);
+    string t1 = "i_1 = id.some(key = another.method());";
+    string t2 = "i_1 = id.some(key = another.method(abc, 100), key2 = 500);";
+
+    ExpressionId i_1_expr(new Token("i_1"));
+    ExpressionId id_expr(new Token("id"));
+    ExpressionId another_expr(new Token("another"));
+    Token some_token("some");
+    Token method_token("method");
+    Token arg_key_token("key");
+    Token arg_key2_token("key2");
+
+    // id.some
+    ExpressionDot expr_dot(&some_token, &id_expr);
+
+    // another.method
+    ExpressionDot arg_expr_dot(&method_token, &another_expr);
+    ExpressionCallOrdered arg_co_empty;
+    // another.method()
+    ExpressionCall arg_func_expr_1(&arg_expr_dot, &arg_co_empty);
+
+    ExpressionCallNamed expr_cn_1({
+        {&arg_key_token, &arg_func_expr_1},
+    });
+    ExpressionCall expr_call_1(&expr_dot, &expr_cn_1);
+
+    // another.method(abc, 100)
+    ExpressionId abc_arg_inner_expr(new Token("abc"));
+    ExpressionLiteral arg_int_100_expr(new LiteralInteger(new Token("100")));
+    ExpressionCallOrdered arg_co_another({&abc_arg_inner_expr, &arg_int_100_expr});
+    ExpressionCall arg_another_func_expr(&arg_expr_dot, &arg_co_another);
+
+    ExpressionLiteral arg_int_500_expr(new LiteralInteger(new Token("500")));
+    ExpressionCallNamed expr_cn_2({
+        {&arg_key_token, &arg_another_func_expr},
+        {&arg_key2_token, &arg_int_500_expr},
+    });
+    // another.method()
+    ExpressionCall expr_call_2(&expr_dot, &expr_cn_2);
+
+
+    ExpressionAssign expr_assign_1(&i_1_expr, &expr_call_1);
+    ExpressionAssign expr_assign_2(&i_1_expr, &expr_call_2);
+
+    StatementExpression st_1(&expr_assign_1);
+    StatementExpression st_2(&expr_assign_2);
+    // StatementExpression st_3(&expr_assign_3);
+    // StatementExpression st_4(&expr_assign_4);
+
+    StatementList lst_1({&st_1});
+    StatementList lst_2({&st_2});
+    // StatementList lst_3({&st_3});
+    // StatementList lst_4({&st_4});
+
+    RunTestsV2({
+        {t1, &lst_1},
+        {t2, &lst_2},
+        // {t3, &lst_3},
+        // {t4, &lst_4},
+    });
 }
 
 void Test_StatementDefinition_Types()

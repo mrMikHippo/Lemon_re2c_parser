@@ -6,8 +6,15 @@ LEXER_PATH=lexer
 CXXFLAGS =
 #-std=c++11
 
-CXXFILES = main.cpp AST/variable_type.cpp AST/literal.cpp AST/expression.cpp AST/statement.cpp AST/content.cpp module.cpp tests/test_all.cpp tests/test_parser.cpp
-# AST/token.cpp
+SRCS := AST/variable_type.cpp \
+		AST/literal.cpp \
+		AST/expression.cpp \
+		AST/statement.cpp \
+		AST/content.cpp \
+		module.cpp \
+		tests/test_all.cpp \
+		tests/test_parser.cpp \
+		main.cpp
 
 OBJF=lre_test
 
@@ -15,7 +22,7 @@ OBJF=lre_test
 .PHONY: all clean lexer parser
 
 all: lexer parser
-	$(CXX) $(CXXFLAGS) $(CXXFILES) -o $(OBJF)
+	$(CXX) $(CXXFLAGS) $(SRCS) -o $(OBJF)
 
 lexer: $(LEXER_PATH)/lexer.re
 	re2c $(LEXER_PATH)/lexer.re -i --case-ranges -o $(LEXER_PATH)/lexer.h
