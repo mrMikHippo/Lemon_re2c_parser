@@ -774,6 +774,48 @@ void Test_StatementExpression_Complex_CallOrdered()
     });
 }
 
+void Test_StatementExpression_Complex_CallOrdered_WithType()
+{
+    string t1 = "id.some(Integer);";
+
+    VariableType var_type_int(new Token("Integer"), {});
+    ExpressionId id_expr(new Token("id"));
+    ExpressionDot id_some_expr_dot(new Token("some"), &id_expr);
+
+    ExpressionType type_int_expr(&var_type_int);
+    ExpressionCallOrdered arg_int({&type_int_expr});
+    ExpressionCall expr_call(&id_some_expr_dot, &arg_int);
+
+    StatementExpression st(&expr_call);
+    StatementList lst({&st});
+
+    RunTestsV2({
+        {t1, &lst},
+    });
+}
+
+void Test_StatementExpression_Complex_CallNamed_WithType()
+{
+    string t1 = "id.some(key = Integer);";
+
+    VariableType var_type_int(new Token("Integer"), {});
+    ExpressionId id_expr(new Token("id"));
+    ExpressionDot id_some_expr_dot(new Token("some"), &id_expr);
+
+    ExpressionType type_int_expr(&var_type_int);
+    ExpressionCallNamed arg_int({
+        {new Token("key"), &type_int_expr},
+    });
+    ExpressionCall expr_call(&id_some_expr_dot, &arg_int);
+
+    StatementExpression st(&expr_call);
+    StatementList lst({&st});
+
+    RunTestsV2({
+        {t1, &lst},
+    });
+}
+
 void Test_StatementExpression_Complex_CallNamed()
 {
     // throw std::runtime_error("DUMMY");
@@ -1104,7 +1146,9 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_ExpressionCallOrdered, "Parser: Test_ExpressionCallOrdered");
     tr.RunTest(Test_ExpressionCallNamed, "Parser: Test_ExpressionCallNamed");
     tr.RunTest(Test_StatementExpression_Complex_CallOrdered, "Parser: Test_StatementExpression_Complex_CallOrdered");
+    tr.RunTest(Test_StatementExpression_Complex_CallOrdered_WithType, "Parser: Test_StatementExpression_Complex_CallOrdered_WithType");
     tr.RunTest(Test_StatementExpression_Complex_CallNamed, "Parser: Test_StatementExpression_Complex_CallNamed");
+    tr.RunTest(Test_StatementExpression_Complex_CallNamed_WithType, "Parser: Test_StatementExpression_Complex_CallNamed_WithType");
     tr.RunTest(Test_StatementDefinition_Types, "Parser: Test_StatementDefinition_Types");
     tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
     tr.RunTest(Test_StatementExpression_At, "Parser: Test_StatementExpression_At");
