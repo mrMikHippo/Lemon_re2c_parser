@@ -1,7 +1,9 @@
 #pragma once
 
 #include "token.h"
+#include "global_types_map.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <memory>
@@ -20,7 +22,16 @@ public:
 
 	std::string toString();
 	std::string print(int level = 0) const override {
-		std::string res = std::string(level, '\t') + "TYPE";
+		std::string res = std::string(level, '\t');
+
+		std::vector<std::string>& mp_literals = GlobalLiteralTypeMap::getInstance().types;
+		auto it = std::find(mp_literals.begin(), mp_literals.end(), type->value);
+		if (it != mp_literals.end()) {
+			res += "LITERAL_";
+		}
+
+		res += "TYPE";
+
 		switch(types.size()) {
 			case 1:
 				res += "_ONEPARAM";

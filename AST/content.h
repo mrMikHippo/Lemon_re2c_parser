@@ -38,7 +38,7 @@ template<typename T>
 class ParamsContent : public Token
 {
 public:
-    ParamsContent() {};
+    ParamsContent() {}
 
     void addElement(T el_) {
         elements.push_back(el_);
