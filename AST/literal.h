@@ -2,6 +2,7 @@
 
 #include "token.h"
 #include "variable_type.h"
+#include "global_types_map.h"
 
 #include <string>
 #include <vector>
@@ -16,6 +17,8 @@ class Literal : public Token
 public:
 	virtual ~Literal() {};
 
+	virtual void* execute() { std::cout << "Literal execute" << std::endl; return nullptr; }
+
 	virtual std::string toString() const = 0;
 	virtual std::string print(int level = 0) const override { return "LITERAL"; }
 };
@@ -25,6 +28,12 @@ class LiteralInteger : public Literal
 {
 public:
 	LiteralInteger(Token* value_);
+
+	void* execute() {
+		int n = std::stoi(value->value);
+		void *ptr = &n;
+		return ptr;
+	}
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
@@ -83,6 +92,8 @@ class LiteralOneParam : public Literal
 {
 public:
 	LiteralOneParam(VariableType* type_, std::vector<Expression*> content_);
+
+	void* execute();
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;

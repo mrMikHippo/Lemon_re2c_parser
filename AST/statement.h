@@ -8,10 +8,13 @@
 #include "variable_type.h"
 #include "expression.h"
 
+#include <iostream>
+
 class Statement : public Token
 {
 public:
 	virtual ~Statement() = default;
+	virtual void execute() { std::cout << "Statement execute" << std::endl; }
 	virtual std::string toString() const = 0;
 	virtual std::string print(int level = 0) const override { return "Statement\n"; }
 };
@@ -22,6 +25,11 @@ class StatementDefinition : public Statement
 public:
 	StatementDefinition(VariableType* type_, Token* id_, Expression* value_ = nullptr);
 	~StatementDefinition();
+
+	void execute() override {
+		if (value)
+			value->execute();
+	}
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override {
@@ -39,10 +47,15 @@ private:
     Expression* value;
 };
 
+// a = 100
 class StatementExpression : public Statement
 {
 public:
 	StatementExpression(Expression* expr_);
+
+	void execute() override {
+		expr->execute();
+	}
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override {
@@ -63,6 +76,12 @@ public:
 
 	void addStatement(Statement* statement_);
 	std::vector<Statement*> getStatements() const;
+
+	void execute() override {
+		for (const auto& st : statements) {
+			st->execute();
+		}
+	}
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override {

@@ -13,6 +13,9 @@ Module::Module() :
 	// for (const auto& t : GlobalTypeMap::getInstance().types)
 		// cout << "\t" << t << endl;
 	// cout << "]" << endl;
+	cout << "Registered literals:" << endl;
+	for (const auto& e : GlobalLiteralTypeMap::getInstance().getStorage())
+		cout << "\t[ " << e.first << " ]" << endl;
 }
 
 Module::~Module()
@@ -35,6 +38,10 @@ void Module::run(const string& source)
 {
 	Lexer lex(this);
 	lex.scan(source, verbose);
+
+	this->printTree();
+
+	root->execute();
 
 	// bool first = true;
 	// cout << "Tokens: [";

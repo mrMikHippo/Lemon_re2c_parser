@@ -12,6 +12,7 @@ SRCS := AST/variable_type.cpp \
 		AST/statement.cpp \
 		AST/content.cpp \
 		module.cpp \
+		executors/literal_executor.cpp \
 		tests/test_all.cpp \
 		tests/test_parser.cpp \
 		main.cpp

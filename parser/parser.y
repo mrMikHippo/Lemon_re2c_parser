@@ -39,7 +39,6 @@ main ::= statement(S) . {
 	if (module->getToken<Statement>(S))
 		std::cout << " | statement: '" << module->getToken<Statement>(S)->toString() << "'";
 	std::cout << std::endl;
-	module->printTree();
 }
 
 /** Statements **/
@@ -234,13 +233,6 @@ variable_type(left) ::= variable_type_simple(vts) . {
 		auto t = module->getToken<Token>(T);
 		left = module->createToken<VariableType>(t, std::vector<VariableType*>{});
 	}
-variable_type(left) ::= variable_type_cutom(vts) . {
-	left = vts;
-}
-	variable_type_cutom(left) ::= LITERAL_TYPE(LT) . {
-		auto t_lt = module->getToken<Token>(LT);
-		left = module->createToken<VariableType>(t_lt, std::vector<VariableType*>{});
-	}
 variable_type(left) ::= variable_type_complex(vtc) . {
 	left = vtc;
 }
@@ -292,7 +284,7 @@ literal(left) ::= literal_with_params(lwp) . {
 		literal_one_param(left) ::= literal_simple_one_param(lcop) . {
 			left = lcop;
 		}
-			literal_simple_one_param(left) ::= variable_type_cutom(vts) LSB literal_oneparam_content(loc) RSB . {
+			literal_simple_one_param(left) ::= variable_type_simple(vts) LSB literal_oneparam_content(loc) RSB . {
 				auto t_vts = module->getToken<VariableType>(vts);
 				auto t_loc = module->getToken<OneParamContent>(loc);
 				left = module->createToken<LiteralOneParam>(t_vts, t_loc->getElements());

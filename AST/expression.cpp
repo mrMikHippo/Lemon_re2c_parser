@@ -208,6 +208,10 @@ ExpressionLiteral::ExpressionLiteral(Literal* literal_)
 	// Do nothing
 }
 
+void* ExpressionLiteral::execute() {
+   return literal->execute();
+}
+
 std::string ExpressionLiteral::toString() const
 {
 	return literal->toString();

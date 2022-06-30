@@ -1,6 +1,12 @@
 #include "literal.h"
 
 #include "expression.h"
+#include "../executors/literal_executor.h"
+
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 // LiteralInteger
 LiteralInteger::LiteralInteger(Token* value_)
@@ -62,6 +68,23 @@ std::string LiteralType::print(int level) const {
 LiteralOneParam::LiteralOneParam(VariableType* type_, std::vector<Expression*> content_)
 	: type(type_), content(content_)
 {
+}
+
+void* LiteralOneParam::execute() {
+	using std::cout;
+	using std::endl;
+   cout << "LiteralOneParam execute " << endl;
+   cout << "Looking for '"<< type->getType()->value << "'" << endl;
+
+   auto& mp_literals = GlobalLiteralTypeMap::getInstance().getStorage();
+   auto it = mp_literals.find(type->getType()->value);
+   if (it != mp_literals.end()) {
+	   cout << it->first << " Found!" << endl;
+	   auto& literal_executor = it->second;
+	   literal_executor->call(content);
+   } else
+	   cout << "Not found" << endl;
+   return nullptr;
 }
 
 std::string LiteralOneParam::toString() const {

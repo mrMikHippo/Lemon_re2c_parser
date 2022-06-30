@@ -6,7 +6,6 @@
 #include <vector>
 #include <memory>
 
-
 class Literal;
 class VariableType;
 
@@ -16,6 +15,8 @@ public:
 	Expression() {}
 	virtual ~Expression() = default;
 	virtual void setCallee(Expression* callee_) {}
+
+	virtual void* execute() { return nullptr; }
 
 	virtual std::string toString() const = 0;
 	virtual std::string print(int level = 0) const override { return "Expression\n"; }
@@ -27,6 +28,7 @@ class ExpressionId : public Expression
 public:
 	ExpressionId(Token* id_);
 	Token* getToken() const;
+
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
 
@@ -68,10 +70,6 @@ class ExpressionCall : public Expression
 {
 public:
 	ExpressionCall(Expression* caller_, Expression* args_);
-
-	// virtual void setCallee(Expression* callee_) {
-	// 	callee = callee_;
-	// }
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
@@ -131,6 +129,8 @@ class ExpressionLiteral : public Expression
 {
 public:
 	ExpressionLiteral(Literal* literal_);
+
+	void* execute() override;
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;

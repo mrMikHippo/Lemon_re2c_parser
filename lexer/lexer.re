@@ -77,12 +77,9 @@ public:
 			 	ID			{
 			 					// if getTokenID is at global map of types -  create token Type else create token ID
 								std::vector<std::string>& mp = GlobalTypeMap::getInstance().types;
-								std::vector<std::string>& mp_literals = GlobalLiteralTypeMap::getInstance().types;
 								if (std::find(mp.begin(), mp.end(), this->getTokenValue()) != mp.end()) {
 									Parse(pParser, LEX_TYPE, _module->createToken<Token>(this->getTokenValue()), _module);
-					 			} else if (std::find(mp_literals.begin(), mp_literals.end(), this->getTokenValue()) != mp_literals.end()) {
-									Parse(pParser, LEX_LITERAL_TYPE, _module->createToken<Token>(this->getTokenValue()), _module);
-								} else {
+					 			} else {
 									Parse(pParser, LEX_ID, _module->createToken<Token>(this->getTokenValue()), _module);
 					 			}
 					 			continue;
