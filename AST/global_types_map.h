@@ -19,7 +19,7 @@ public:
 		"Vector",
 		"Map",
 		"Type",
-		"Buffer",
+		"DBBuffer",
 		"Mutex"
 	};
 
@@ -39,11 +39,6 @@ public:
 		static GlobalLiteralTypeMap instance;
 		return instance;
 	}
-
-	std::vector<std::string> types = {
-		"Buffer",
-		"Mutex"
-	};
 
 	StorageType& getStorage() {
 		return types_w_executor;

@@ -6,16 +6,17 @@ LEXER_PATH=lexer
 CXXFLAGS =
 #-std=c++11
 
-SRCS := AST/variable_type.cpp \
-		AST/literal.cpp \
-		AST/expression.cpp \
-		AST/statement.cpp \
-		AST/content.cpp \
-		module.cpp \
-		executors/literal_executor.cpp \
-		tests/test_all.cpp \
-		tests/test_parser.cpp \
-		main.cpp
+SRCS_AST   := variable_type.cpp literal.cpp expression.cpp statement.cpp content.cpp
+SRCS_EXECS := literal_executor.cpp
+SRCS_TESTS := test_all.cpp test_parser.cpp
+SRCS_TYPES := dbbuffer.cpp
+SRCS_MAIN  := module.cpp main.cpp
+
+SRCS := $(addprefix AST/,$(SRCS_AST))
+SRCS += $(addprefix executors/,$(SRCS_EXECS))
+SRCS += $(addprefix tests/,$(SRCS_TESTS))
+SRCS += $(addprefix types/,$(SRCS_TYPES))
+SRCS += $(SRCS_MAIN)
 
 OBJ := $(SRCS:.cpp=.o)
 
@@ -26,18 +27,17 @@ OBJF=lre_test
 all: lexer parser comp
 
 comp: $(OBJ)
-	$(CXX) $(OBJ) -o test
+	$(CXX) $(OBJ) -o $(OBJF)
 
 %.o: %.cpp
-	$(CXX) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+lexer:
+	cd $(LEXER_PATH); re2c lexer.re -i --case-ranges -o lexer.h
 
-lexer: $(LEXER_PATH)/lexer.re
-	re2c $(LEXER_PATH)/lexer.re -i --case-ranges -o $(LEXER_PATH)/lexer.h
-
-parser: $(PARSER_PATH)/parser.y
-	lemon -s $(PARSER_PATH)/parser.y
+parser:
+	cd $(PARSER_PATH); lemon -s parser.y
 
 clean:
-	rm -f $(OBJF) $(LEXER_PATH)/lexer.{cpp,h} $(PARSER_PATH)/parser.{h,out,c}
+	rm -fv $(OBJF) $(LEXER_PATH)/lexer.{cpp,h} $(PARSER_PATH)/parser.{h,out,c}
 	find . -type f -name '*.o' | xargs -n1 rm -fv

@@ -300,10 +300,10 @@ void Test_Statement_Assign_Definition_Simple_OneParam()
     // };
     // RunTests(tests);
 
-    string t1 = "Buffer b1 = Buffer[];";
+    string t1 = "DBBuffer b1 = DBBuffer[];";
     Token id("b1");
 
-    VariableType var_type_buf(new Token("Buffer"), {});
+    VariableType var_type_buf(new Token("DBBuffer"), {});
 
     // Buffer[]
     LiteralOneParam lit_op(&var_type_buf, {});
@@ -315,6 +315,19 @@ void Test_Statement_Assign_Definition_Simple_OneParam()
     RunTestsV2({
         {t1, &lst},
     });
+
+    LiteralInteger int_lit(new Token("100"));
+    LiteralFloat float_lit(new Token("20.5"));
+    LiteralString string_lit(new Token("some string"));
+    ExpressionLiteral int_expr(&int_lit);
+    ExpressionLiteral float_expr(&float_lit);
+    ExpressionLiteral string_expr(&string_lit);
+
+    LiteralOneParam dbbuffer_lit_op(&var_type_buf, {&int_expr, &float_expr, &string_expr});
+
+    ExpressionLiteral dbbuffer_expr(&dbbuffer_lit_op);
+
+    dbbuffer_expr.execute();
 }
 
 void Test_Statement_Assign_Definition_TwoParam()
@@ -1138,7 +1151,6 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementDefinition_ComplexTypes, "Parser: Test_StatementDefinition_ComplexTypes");
     tr.RunTest(Test_Statement_Assign_Definition_Simple, "Parser: Test_Statement_Assign_Definition_Simple");
     tr.RunTest(Test_Statement_Assign_Definition_OneParam, "Parser: Test_Statement_Assign_Definition_OneParam");
-    tr.RunTest(Test_Statement_Assign_Definition_Simple_OneParam, "Parser: Test_Statement_Assign_Definition_Simple_OneParam");
     tr.RunTest(Test_Statement_Assign_Definition_TwoParam, "Parser: Test_Statement_Assign_Definition_TwoParam");
     tr.RunTest(Test_StatementExpression_Simple, "Parser: Test_StatementExpression_Simple");
     tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");
@@ -1153,6 +1165,7 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
     tr.RunTest(Test_StatementExpression_At, "Parser: Test_StatementExpression_At");
     tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
+    tr.RunTest(Test_Statement_Assign_Definition_Simple_OneParam, "Parser: Test_Statement_Assign_Definition_Simple_OneParam");
     // tr.RunTest(Test_StatementList, "Parser: Test_StatementList");
 
 }

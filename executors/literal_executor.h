@@ -15,26 +15,12 @@ public:
     virtual void* call(std::vector<Expression*> content_) = 0;
 };
 
-class BufferLiteralExecutor : public LiteralExecutor
+class DBBufferLiteralExecutor : public LiteralExecutor
 {
 public:
-    BufferLiteralExecutor() {}
+    DBBufferLiteralExecutor() {}
 
-    void* call(std::vector<Expression*> content_) override {
-        // std::cout << "[ BufferLiteralExecutor ] call (here we execute some method)" << std::endl;
-        std::vector<int> vec;
-        for (const auto& cnt : content_) {
-            // std::cout << "expression toString: " << cnt->toString() << std::endl;
-            void *ptr = cnt->execute();
-            if (ptr) {
-                int n = *((int *) cnt->execute());
-                // std::cout << "casted: " << n << std::endl;
-                vec.push_back(n);
-            }
-        }
-        return some_action(vec);
-    }
-
+    void* call(std::vector<Expression*> content_) override;
 
     void* some_action(std::vector<int>& vec_) {
         std::cout << "[ BufferLiteralExecutor ] some_action with: ";
@@ -45,3 +31,16 @@ public:
         return reinterpret_cast<void*>(1);
     }
 };
+
+// class VectorLiteralExecutor : public LiteralExecutor
+// {
+// public:
+//     VectorLiteralExecutor() {}
+//
+//     void* call(std::vector<Expression*> content_) override {
+//
+//     }
+//
+// private:
+//     std::vector<BaseType> content;
+// };

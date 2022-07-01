@@ -24,8 +24,8 @@ public:
 	std::string print(int level = 0) const override {
 		std::string res = std::string(level, '\t');
 
-		std::vector<std::string>& mp_literals = GlobalLiteralTypeMap::getInstance().types;
-		auto it = std::find(mp_literals.begin(), mp_literals.end(), type->value);
+		auto& mp_literals = GlobalLiteralTypeMap::getInstance().getStorage();
+		auto it = mp_literals.find(type->value);
 		if (it != mp_literals.end()) {
 			res += "LITERAL_";
 		}

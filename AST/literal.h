@@ -29,11 +29,7 @@ class LiteralInteger : public Literal
 public:
 	LiteralInteger(Token* value_);
 
-	void* execute() {
-		int n = std::stoi(value->value);
-		void *ptr = &n;
-		return ptr;
-	}
+	void* execute();
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
@@ -48,6 +44,8 @@ class LiteralFloat : public Literal
 public:
 	LiteralFloat(Token* value_);
 
+	void* execute();
+
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
 
@@ -60,6 +58,8 @@ class LiteralString : public Literal
 {
 public:
 	LiteralString(Token* value_);
+
+	void* execute();
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;

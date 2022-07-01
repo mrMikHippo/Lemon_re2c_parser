@@ -4,6 +4,7 @@
 #include "../executors/literal_executor.h"
 
 #include <iostream>
+#include <string>
 
 using std::cout;
 using std::endl;
@@ -12,6 +13,11 @@ using std::endl;
 LiteralInteger::LiteralInteger(Token* value_)
 	: value(value_)
 {
+}
+
+void* LiteralInteger::execute() {
+	int n = std::stoi(value->value);
+	return new int(n);
 }
 
 std::string LiteralInteger::toString() const {
@@ -27,6 +33,11 @@ LiteralFloat::LiteralFloat(Token* value_)
 {
 }
 
+void* LiteralFloat::execute() {
+	double n = std::stod(value->value);
+	return new double(n);
+}
+
 std::string LiteralFloat::toString() const {
 	return value->value;
 }
@@ -38,6 +49,10 @@ std::string LiteralFloat::print(int level) const {
 LiteralString::LiteralString(Token* value_)
 	: value(value_)
 {
+}
+
+void* LiteralString::execute() {
+	return new std::string(value->value);
 }
 
 std::string LiteralString::toString() const {
@@ -81,7 +96,7 @@ void* LiteralOneParam::execute() {
    if (it != mp_literals.end()) {
 	   cout << it->first << " Found!" << endl;
 	   auto& literal_executor = it->second;
-	   literal_executor->call(content);
+	   return literal_executor->call(content);
    } else
 	   cout << "Not found" << endl;
    return nullptr;
@@ -96,7 +111,6 @@ std::string LiteralOneParam::toString() const {
 			first = false;
 		} else
 			result += ", ";
-
 		result += el->toString();
 	}
 	result += "]";
