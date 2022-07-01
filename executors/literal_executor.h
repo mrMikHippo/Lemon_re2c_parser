@@ -32,15 +32,13 @@ public:
     }
 };
 
-// class VectorLiteralExecutor : public LiteralExecutor
-// {
-// public:
-//     VectorLiteralExecutor() {}
-//
-//     void* call(std::vector<Expression*> content_) override {
-//
-//     }
-//
+class VectorLiteralExecutor : public LiteralExecutor
+{
+public:
+    VectorLiteralExecutor() {}
+
+    void* call(std::vector<Expression*> content_) override;
+
 // private:
-//     std::vector<BaseType> content;
-// };
+    // std::vector<int> content;
+};

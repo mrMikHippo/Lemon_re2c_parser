@@ -9,7 +9,7 @@ CXXFLAGS =
 SRCS_AST   := variable_type.cpp literal.cpp expression.cpp statement.cpp content.cpp
 SRCS_EXECS := literal_executor.cpp
 SRCS_TESTS := test_all.cpp test_parser.cpp
-SRCS_TYPES := dbbuffer.cpp
+SRCS_TYPES := dbbuffer.cpp vector.cpp
 SRCS_MAIN  := module.cpp main.cpp
 
 SRCS := $(addprefix AST/,$(SRCS_AST))

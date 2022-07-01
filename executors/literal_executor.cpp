@@ -1,8 +1,10 @@
 #include "literal_executor.h"
 
 #include "../types/dbbuffer.h"
+#include "../types/vector.h"
 
-void* DBBufferLiteralExecutor::call(std::vector<Expression*> content_) {
+void* DBBufferLiteralExecutor::call(std::vector<Expression*> content_)
+{
     using std::cout;
     using std::endl;
     using std::string;
@@ -28,12 +30,26 @@ void* DBBufferLiteralExecutor::call(std::vector<Expression*> content_) {
     return dbbuf;
 }
 
+void* VectorLiteralExecutor::call(std::vector<Expression*> content_)
+{
+    Vector* vec = new Vector;
+    for (const auto& ex : content_) {
+        auto int_val = static_cast<int*>(ex->execute());
+        if (int_val) {
+            vec->pushBack(*int_val);
+            delete int_val;
+        }
+    }
+    vec->print();
+    return vec;
+}
+
 bool initialize()
 {
     std::cout << "[ Initialize] Call to register operators" << std::endl;
 
     GlobalLiteralTypeMap::getInstance().registerExecutor("DBBuffer", std::make_shared<DBBufferLiteralExecutor>());
-    // GlobalLiteralTypeMap::getInstance().registerExecutor("Vector", std::make_shared<VectorLiteralExecutor>());
+    GlobalLiteralTypeMap::getInstance().registerExecutor("Vector", std::make_shared<VectorLiteralExecutor>());
     return true;
 }
 
