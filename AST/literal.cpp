@@ -88,18 +88,18 @@ LiteralOneParam::LiteralOneParam(VariableType* type_, std::vector<Expression*> c
 void* LiteralOneParam::execute() {
 	using std::cout;
 	using std::endl;
-   cout << "LiteralOneParam execute " << endl;
-   cout << "Looking for '"<< type->getType()->value << "'" << endl;
+	cout << "LiteralOneParam execute " << endl;
+	cout << "Looking for '"<< type->getType()->value << "'" << endl;
 
-   auto& mp_literals = GlobalLiteralTypeMap::getInstance().getStorage();
-   auto it = mp_literals.find(type->getType()->value);
-   if (it != mp_literals.end()) {
-	   cout << it->first << " Found!" << endl;
+	auto& mp_literals = GlobalLiteralTypeMap::getInstance().getStorage();
+	auto it = mp_literals.find(type->getType()->value);
+	if (it != mp_literals.end()) {
+	   cout << it->first << " Found! Name: " << it->second->getName() << endl;
 	   auto& literal_executor = it->second;
-	   auto le = literal_executor->call(content);
-   } else
+	   auto le = literal_executor->call(type, content);
+	} else
 	   cout << "Not found" << endl;
-   return nullptr;
+	return nullptr;
 }
 
 std::string LiteralOneParam::toString() const {

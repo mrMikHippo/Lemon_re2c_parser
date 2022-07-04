@@ -1143,7 +1143,44 @@ void Test_StatementList()
     // RunTests(tests);
 }
 
+void Test_LiteralExecutors()
+{
+    {
+        // DBBuffer[100, 20.5, "some string"]
+        VariableType var_type_buf(new Token("DBBuffer"), {});
 
+        LiteralInteger int_lit(new Token("100"));
+        LiteralFloat float_lit(new Token("20.5"));
+        LiteralString string_lit(new Token("some string"));
+        ExpressionLiteral int_expr(&int_lit);
+        ExpressionLiteral float_expr(&float_lit);
+        ExpressionLiteral string_expr(&string_lit);
+
+        LiteralOneParam dbbuffer_lit_op(&var_type_buf, {&int_expr, &float_expr, &string_expr});
+
+        ExpressionLiteral dbbuffer_expr(&dbbuffer_lit_op);
+
+        dbbuffer_expr.execute();
+    }
+
+    {
+        // Vector(Integer)[10, 20, 30]
+        VariableType var_type_int(new Token("Integer"), {});
+        VariableType var_type_vec(new Token("Vector"), {&var_type_int});
+        LiteralInteger int_lit_10(new Token("10"));
+        LiteralInteger int_lit_20(new Token("20"));
+        LiteralInteger int_lit_30(new Token("30"));
+        ExpressionLiteral int_expr_10(&int_lit_10);
+        ExpressionLiteral int_expr_20(&int_lit_20);
+        ExpressionLiteral int_expr_30(&int_lit_30);
+
+        LiteralOneParam vec_lit_op(&var_type_vec, {&int_expr_10, &int_expr_20, &int_expr_30});
+
+        ExpressionLiteral vec_expr(&vec_lit_op);
+
+        vec_expr.execute();
+    }
+}
 
 void TestParser(TestRunner& tr)
 {
@@ -1152,6 +1189,7 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_Statement_Assign_Definition_Simple, "Parser: Test_Statement_Assign_Definition_Simple");
     tr.RunTest(Test_Statement_Assign_Definition_OneParam, "Parser: Test_Statement_Assign_Definition_OneParam");
     tr.RunTest(Test_Statement_Assign_Definition_TwoParam, "Parser: Test_Statement_Assign_Definition_TwoParam");
+    tr.RunTest(Test_Statement_Assign_Definition_Simple_OneParam, "Parser: Test_Statement_Assign_Definition_Simple_OneParam");
     tr.RunTest(Test_StatementExpression_Simple, "Parser: Test_StatementExpression_Simple");
     tr.RunTest(Test_StatementExpression_OneParam, "Parser: Test_StatementExpression_OneParam");
     tr.RunTest(Test_StatementExpression_TwoParam, "Parser: Test_StatementExpression_TwoParam");
@@ -1165,7 +1203,7 @@ void TestParser(TestRunner& tr)
     tr.RunTest(Test_StatementExpression_Types, "Parser: Test_StatementExpression_Types");
     tr.RunTest(Test_StatementExpression_At, "Parser: Test_StatementExpression_At");
     tr.RunTest(Test_StatementExpression_Equal, "Parser: Test_StatementExpression_Equal");
-    tr.RunTest(Test_Statement_Assign_Definition_Simple_OneParam, "Parser: Test_Statement_Assign_Definition_Simple_OneParam");
+    tr.RunTest(Test_LiteralExecutors, "Parser: Test_LiteralExecutors");
     // tr.RunTest(Test_StatementList, "Parser: Test_StatementList");
 
 }

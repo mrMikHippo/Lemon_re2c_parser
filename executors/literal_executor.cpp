@@ -1,9 +1,9 @@
 #include "literal_executor.h"
 
+#include "../AST/variable_type.h"
 #include "../types/dbbuffer.h"
-#include "../types/vector.h"
 
-void* DBBufferLiteralExecutor::call(std::vector<Expression*> content_)
+void* DBBufferLiteralExecutor::call(VariableType* type, std::vector<Expression*> content_)
 {
     using std::cout;
     using std::endl;
@@ -26,22 +26,22 @@ void* DBBufferLiteralExecutor::call(std::vector<Expression*> content_)
 
     dbbuf->print();
 
-    // TODO casting
     return dbbuf;
 }
 
-void* VectorLiteralExecutor::call(std::vector<Expression*> content_)
+void* VectorLiteralExecutor::call(VariableType* type, std::vector<Expression*> content_)
 {
-    Vector* vec = new Vector;
-    for (const auto& ex : content_) {
-        auto int_val = static_cast<int*>(ex->execute());
-        if (int_val) {
-            vec->pushBack(*int_val);
-            delete int_val;
-        }
+    auto sub_type = type->getSubTypes().at(0);
+
+    if (sub_type->getType()->value == "Integer") {
+        return createAndFillVector<int>(content_);
+    } else if (sub_type->getType()->value == "Float") {
+        return createAndFillVector<double>(content_);
+    } else if (sub_type->getType()->value == "String") {
+        return createAndFillVector<std::string>(content_);
     }
-    vec->print();
-    return vec;
+
+    return nullptr;
 }
 
 bool initialize()
