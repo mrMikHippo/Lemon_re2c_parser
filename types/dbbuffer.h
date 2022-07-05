@@ -7,12 +7,13 @@
 class DBBuffer : public Base
 {
 public:
-    DBBuffer(int ival_ = 0, float fval_ = .0f, const std::string& sval_ = "");
+    DBBuffer();
+    DBBuffer(int _address, int _size, const std::string& _description);
 
     void print() const override;
 
 private:
-    int ival;
-    float fval;
-    std::string sval;
+    int address;
+    int size;
+    std::string description;
 };

@@ -42,6 +42,12 @@ class ExpressionAssign : public Expression
 public:
 	ExpressionAssign(Expression* left_, Expression* right_);
 
+	void* execute() override {
+		left->execute();
+		right->execute();
+		return nullptr;
+	}
+
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
 

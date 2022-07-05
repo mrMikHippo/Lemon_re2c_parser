@@ -96,7 +96,7 @@ void* LiteralOneParam::execute() {
 	if (it != mp_literals.end()) {
 	   cout << it->first << " Found! Name: " << it->second->getName() << endl;
 	   auto& literal_executor = it->second;
-	   auto le = literal_executor->call(type, content);
+	   return literal_executor->call(type, content);
 	} else
 	   cout << "Not found" << endl;
 	return nullptr;

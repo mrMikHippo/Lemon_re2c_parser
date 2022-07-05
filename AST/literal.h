@@ -69,6 +69,10 @@ private:
 };
 // Other primitives Literals ...
 
+// class LiteralSimple : public Literal
+// {
+	// 	
+	// }
 
 // Integer or Type or Vector(Integer) etc.
 class LiteralType : public Literal
@@ -82,10 +86,6 @@ private:
 	VariableType* type;
 };
 
-// class LiteralSimple : public Literal
-// {
-// 	p
-// }
 
 // Vector(Integer)[100500, id]
 class LiteralOneParam : public Literal

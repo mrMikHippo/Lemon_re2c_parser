@@ -8,19 +8,19 @@ void* DBBufferLiteralExecutor::call(VariableType* type, std::vector<Expression*>
     using std::cout;
     using std::endl;
     using std::string;
-    // std::cout << "[ BufferLiteralExecutor ] call (here we execute some method)" << std::endl;
+    // std::cout << "[ BufferLiteralExecutor ] call " << std::endl;
 
     DBBuffer* dbbuf;
 
     if (content_.size() == 3) {
-        int* ival = static_cast<int*>(content_.at(0)->execute());
-        double* dval = static_cast<double*>(content_.at(1)->execute());
-        string* sval = static_cast<string*>(content_.at(2)->execute());
+        int* address = static_cast<int*>(content_.at(0)->execute());
+        int* size = static_cast<int*>(content_.at(1)->execute());
+        string* description = static_cast<string*>(content_.at(2)->execute());
 
-        dbbuf = new DBBuffer(*ival, *dval, *sval);
-        delete ival;
-        delete dval;
-        delete sval;
+        dbbuf = new DBBuffer(*address, *size, *description);
+        delete address;
+        delete size;
+        delete description;
     } else
         dbbuf = new DBBuffer;
 

@@ -1149,14 +1149,14 @@ void Test_LiteralExecutors()
         // DBBuffer[100, 20.5, "some string"]
         VariableType var_type_buf(new Token("DBBuffer"), {});
 
-        LiteralInteger int_lit(new Token("100"));
-        LiteralFloat float_lit(new Token("20.5"));
+        LiteralInteger int_lit(new Token("100500"));
+        LiteralInteger fint_lit_20(new Token("20"));
         LiteralString string_lit(new Token("some string"));
         ExpressionLiteral int_expr(&int_lit);
-        ExpressionLiteral float_expr(&float_lit);
+        ExpressionLiteral int_expr_20(&fint_lit_20);
         ExpressionLiteral string_expr(&string_lit);
 
-        LiteralOneParam dbbuffer_lit_op(&var_type_buf, {&int_expr, &float_expr, &string_expr});
+        LiteralOneParam dbbuffer_lit_op(&var_type_buf, {&int_expr, &int_expr_20, &string_expr});
 
         ExpressionLiteral dbbuffer_expr(&dbbuffer_lit_op);
 

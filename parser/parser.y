@@ -12,13 +12,11 @@
 
 %include {
 #include <iostream>
-//#include "../token.h"
 #include "../AST/literal.h"
 #include "../AST/expression.h"
 #include "../AST/statement.h"
 #include "../AST/variable_type.h"
 #include "../AST/content.h"
-#include "../colored_o.h"
 }
 
 %syntax_error {

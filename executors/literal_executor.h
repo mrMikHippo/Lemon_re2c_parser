@@ -27,15 +27,6 @@ public:
     void* call(VariableType* type, std::vector<Expression*> content_) override;
 
     std::string getName() const override { return "DBBufferLiteralExecutor"; }
-
-    void* some_action(std::vector<int>& vec_) {
-        std::cout << "[ BufferLiteralExecutor ] some_action with: ";
-        for (const auto& el : vec_) {
-            std::cout << el << " ";
-        }
-        std::cout << std::endl;
-        return reinterpret_cast<void*>(1);
-    }
 };
 
 

@@ -22,9 +22,10 @@ public:
         using std::cout;
         using std::endl;
 
-        cout << "Vector content:" << endl;
+        cout << "Vector content: ";
         for (const auto& el : content)
-            cout << "\t" << el << endl;
+            cout << el << " ";
+        cout << endl;
     }
 
 private:
