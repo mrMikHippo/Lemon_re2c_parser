@@ -2,14 +2,14 @@
 #include <vector>
 #include <string>
 
-#include "tests/test_all.h"
+// #include "tests/test_all.h"
 #include "module.h"
 
 using namespace std;
 
 int main() {
 
-	TestAll();
+	// TestAll();
 
 	bool exit = false;
 	bool print = false;

@@ -1,4 +1,6 @@
-#include "literal_integer.h"
+#include "integer.h"
+
+#include <iostream>
 
 // LiteralInteger
 LiteralInteger::LiteralInteger(Token* value_)

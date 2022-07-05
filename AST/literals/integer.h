@@ -4,7 +4,6 @@
 
 #include <string>
 
-
 class LiteralInteger : public Literal
 {
 public:

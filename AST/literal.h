@@ -24,34 +24,34 @@ public:
 };
 
 //100500
-class LiteralInteger : public Literal
-{
-public:
-	LiteralInteger(Token* value_);
-
-	void* execute();
-
-	std::string toString() const override;
-	std::string print(int level = 0) const override;
-
-private:
-	Token* value;
-};
+// class LiteralInteger : public Literal
+// {
+// public:
+// 	LiteralInteger(Token* value_);
+//
+// 	void* execute();
+//
+// 	std::string toString() const override;
+// 	std::string print(int level = 0) const override;
+//
+// private:
+// 	Token* value;
+// };
 
 //10.5
-class LiteralFloat : public Literal
-{
-public:
-	LiteralFloat(Token* value_);
-
-	void* execute();
-
-	std::string toString() const override;
-	std::string print(int level = 0) const override;
-
-private:
-	Token* value;
-};
+// class LiteralFloat : public Literal
+// {
+// public:
+// 	LiteralFloat(Token* value_);
+// 
+// 	void* execute();
+//
+// 	std::string toString() const override;
+// 	std::string print(int level = 0) const override;
+//
+// private:
+// 	Token* value;
+// };
 
 // "Some string"
 class LiteralString : public Literal
@@ -71,7 +71,7 @@ private:
 
 // class LiteralSimple : public Literal
 // {
-	// 	
+	//
 	// }
 
 // Integer or Type or Vector(Integer) etc.

@@ -10,40 +10,40 @@ using std::cout;
 using std::endl;
 
 // LiteralInteger
-LiteralInteger::LiteralInteger(Token* value_)
-	: value(value_)
-{
-}
-
-void* LiteralInteger::execute() {
-	int n = std::stoi(value->value);
-	return new int(n);
-}
-
-std::string LiteralInteger::toString() const {
-	return value->value;
-}
-std::string LiteralInteger::print(int level) const {
-	return std::string(level, '\t') + "INTEGER(\"" + value->print() + "\")\n";
-}
+// LiteralInteger::LiteralInteger(Token* value_)
+// 	: value(value_)
+// {
+// }
+//
+// void* LiteralInteger::execute() {
+// 	int n = std::stoi(value->value);
+// 	return new int(n);
+// }
+//
+// std::string LiteralInteger::toString() const {
+// 	return value->value;
+// }
+// std::string LiteralInteger::print(int level) const {
+// 	return std::string(level, '\t') + "INTEGER(\"" + value->print() + "\")\n";
+// }
 
 // LiteralFloat
-LiteralFloat::LiteralFloat(Token* value_)
-	: value(value_)
-{
-}
-
-void* LiteralFloat::execute() {
-	double n = std::stod(value->value);
-	return new double(n);
-}
-
-std::string LiteralFloat::toString() const {
-	return value->value;
-}
-std::string LiteralFloat::print(int level) const {
-	return std::string(level, '\t') + "FLOAT(\"" + value->print() + "\")\n";
-}
+// LiteralFloat::LiteralFloat(Token* value_)
+// 	: value(value_)
+// {
+// }
+//
+// void* LiteralFloat::execute() {
+// 	double n = std::stod(value->value);
+// 	return new double(n);
+// }
+//
+// std::string LiteralFloat::toString() const {
+// 	return value->value;
+// }
+// std::string LiteralFloat::print(int level) const {
+// 	return std::string(level, '\t') + "FLOAT(\"" + value->print() + "\")\n";
+// }
 
 // LiteralString
 LiteralString::LiteralString(Token* value_)

@@ -30,30 +30,43 @@ public:
 };
 
 
-template<typename T>
-T castValue(void* value) {
-    auto val = static_cast<T*>(value);
-    T ret_val;
-    if (val) {
-        ret_val = *val;
-        delete val;
-    }
-    return ret_val;
-}
+// template<typename T>
+// T castValue(void* value) {
+//     auto val = static_cast<T*>(value);
+//     T ret_val;
+//     if (val) {
+//         ret_val = *val;
+//         delete val;
+//     }
+//     return ret_val;
+// }
+//
+// template<typename T>
+// Vector<T>* createAndFillVector(std::vector<Expression*> content_) {
+//     Vector<T>* vec = new Vector<T>();
+//
+//     for (const auto& ex : content_) {
+//         auto val = static_cast<T*>(ex->execute());
+//         if (val) {
+//             vec->pushBack(*val);
+//             delete val;
+//         }
+//     }
+//     vec->print();
+//     return vec;
+// }
 
-template<typename T>
-Vector<T>* createAndFillVector(std::vector<Expression*> content_) {
-    Vector<T>* vec = new Vector<T>();
-
-    for (const auto& ex : content_) {
-        auto val = static_cast<T*>(ex->execute());
-        if (val) {
-            vec->pushBack(*val);
-            delete val;
+template<typename VT, typename T>
+void fillVector(Vector* vec, std::vector<Expression*> content_)
+{
+    for (auto& expression_literal : content_) {
+        T* p = static_cast<T*>(expression_literal->execute());
+        if (p) {
+            VT* ret_middle = new VT(*p);
+            vec->pushBack(ret_middle);
+            delete p;
         }
     }
-    vec->print();
-    return vec;
 }
 
 class VectorLiteralExecutor : public LiteralExecutor

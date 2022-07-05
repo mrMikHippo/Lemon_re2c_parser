@@ -13,6 +13,8 @@
 %include {
 #include <iostream>
 #include "../AST/literal.h"
+#include "../AST/literals/integer.h"
+#include "../AST/literals/float.h"
 #include "../AST/expression.h"
 #include "../AST/statement.h"
 #include "../AST/variable_type.h"

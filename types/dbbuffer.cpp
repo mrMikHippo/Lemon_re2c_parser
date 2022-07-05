@@ -3,12 +3,12 @@
 #include <iostream>
 #include <iomanip>
 
-DBBuffer::DBBuffer()
-    : address(0), size(0)
-{
-}
+// DBBuffer::DBBuffer()
+//     : address(0), size(0)
+// {
+// }
 
-DBBuffer::DBBuffer(int _address = 0, int _size = 0, const std::string& _description = "")
+DBBuffer::DBBuffer(int _address, int _size, const std::string& _description)
     : address(_address), size(_size), description(_description)
 {}
 
