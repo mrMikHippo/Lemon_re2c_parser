@@ -3,10 +3,10 @@
 #include <iostream>
 #include <iomanip>
 
-// DBBuffer::DBBuffer()
-//     : address(0), size(0)
-// {
-// }
+DBBuffer::DBBuffer()
+    : address(0), size(0)
+{
+}
 
 DBBuffer::DBBuffer(int _address, int _size, const std::string& _description)
     : address(_address), size(_size), description(_description)
@@ -19,4 +19,11 @@ void DBBuffer::print() const
     std::cout << std::resetiosflags(std::ios_base::basefield);
     std::cout << "\t       size=" << size << std::endl;
     std::cout << "\tdescription=" << description << std::endl;
+}
+
+void DBBuffer::setParameters(int _addr, int _size, const std::string& _descr)
+{
+    address = _addr;
+    size = _size;
+    description = _descr;
 }

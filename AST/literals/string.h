@@ -4,10 +4,10 @@
 
 #include <string>
 
-class LiteralInteger : public Literal
+class LiteralString : public Literal
 {
 public:
-	LiteralInteger(Token* value_);
+	LiteralString(Token* value_);
 
 	void* execute() override;
 

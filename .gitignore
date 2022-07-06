@@ -3,3 +3,4 @@ lre_test*
 parser/parser.*
 !parser/parser.y
 *.o
+*.gch

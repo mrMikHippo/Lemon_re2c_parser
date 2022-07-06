@@ -12,18 +12,22 @@
 class VariableType : public Token
 {
 public:
-	VariableType(Token* type_, const std::vector<VariableType*> types_);
+	VariableType(Token* type_, const std::vector<VariableType*> sub_types_);
 
-	Token* getType() const;
+	std::string getType() const;
+
+	VariableType* getTypeFull();
+
+	std::string getTokenType() const;
 
 	std::vector<VariableType*> getSubTypes() const;
 
 	void addSubType(VariableType* type_);
 
-	std::string toString();
+	std::string toString() const;
 	std::string print(int level = 0) const override;
 
 private:
-	std::vector<VariableType*> types;
+	std::vector<VariableType*> sub_types;
 	Token* type;
 };

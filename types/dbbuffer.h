@@ -12,6 +12,8 @@ public:
 
     void print() const override;
 
+    void setParameters(int _addr, int _size, const std::string& _descr);
+
 private:
     int address;
     int size;

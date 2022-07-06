@@ -40,21 +40,6 @@ public:
 //     }
 //     return ret_val;
 // }
-//
-// template<typename T>
-// Vector<T>* createAndFillVector(std::vector<Expression*> content_) {
-//     Vector<T>* vec = new Vector<T>();
-//
-//     for (const auto& ex : content_) {
-//         auto val = static_cast<T*>(ex->execute());
-//         if (val) {
-//             vec->pushBack(*val);
-//             delete val;
-//         }
-//     }
-//     vec->print();
-//     return vec;
-// }
 
 template<typename VT, typename T>
 void fillVector(Vector* vec, std::vector<Expression*> content_)
@@ -67,6 +52,17 @@ void fillVector(Vector* vec, std::vector<Expression*> content_)
             delete p;
         }
     }
+}
+
+template<typename T>
+void printVector(std::vector<void*> vec)
+{
+    std::cout << "Vector content: ";
+    for (const auto& el : vec) {
+        T val = *(T*)el;
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
 }
 
 class VectorLiteralExecutor : public LiteralExecutor

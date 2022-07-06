@@ -46,22 +46,22 @@ using std::endl;
 // }
 
 // LiteralString
-LiteralString::LiteralString(Token* value_)
-	: value(value_)
-{
-}
-
-void* LiteralString::execute() {
-	return new std::string(value->value);
-}
-
-std::string LiteralString::toString() const {
-	return value->value;
-}
-
-std::string LiteralString::print(int level) const {
-	return std::string(level, '\t') + "STRING(\"" + value->print() + "\")\n";
-}
+// LiteralString::LiteralString(Token* value_)
+// 	: value(value_)
+// {
+// }
+//
+// void* LiteralString::execute() {
+// 	return new std::string(value->value);
+// }
+//
+// std::string LiteralString::toString() const {
+// 	return value->value;
+// }
+//
+// std::string LiteralString::print(int level) const {
+// 	return std::string(level, '\t') + "STRING(\"" + value->print() + "\")\n";
+// }
 
 // LiteralType
 LiteralType::LiteralType(VariableType* type_)
@@ -89,10 +89,10 @@ void* LiteralOneParam::execute() {
 	using std::cout;
 	using std::endl;
 	cout << "LiteralOneParam execute " << endl;
-	cout << "Looking for '"<< type->getType()->value << "'" << endl;
+	cout << "Looking for '"<< type->getType() << "'" << endl;
 
 	auto& mp_literals = GlobalLiteralTypeMap::getInstance().getStorage();
-	auto it = mp_literals.find(type->getType()->value);
+	auto it = mp_literals.find(type->getTokenType());
 	if (it != mp_literals.end()) {
 	   cout << it->first << " Found! Name: " << it->second->getName() << endl;
 	   auto& literal_executor = it->second;

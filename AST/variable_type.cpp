@@ -2,33 +2,43 @@
 
 #include <iostream>
 
-VariableType::VariableType(Token* type_, const std::vector<VariableType*> types_)
-	: type(type_), types(types_)
+VariableType::VariableType(Token* type_, const std::vector<VariableType*> sub_types_)
+	: type(type_), sub_types(sub_types_)
 {
 }
 
-Token* VariableType::getType() const
+std::string VariableType::getType() const
 {
-	return type;
+	return this->toString();
+}
+
+VariableType* VariableType::getTypeFull()
+{
+	return this;
+}
+
+std::string VariableType::getTokenType() const
+{
+	return type->value;
 }
 
 std::vector<VariableType*> VariableType::getSubTypes() const
 {
-	return types;
+	return sub_types;
 }
 
 void VariableType::addSubType(VariableType* type_)
 {
-	types.push_back(type_);
+	sub_types.push_back(type_);
 }
 
-std::string VariableType::toString()
+std::string VariableType::toString() const
 {
 	std::string res = type->value;
-	if (!types.empty()) {
+	if (!sub_types.empty()) {
 		res += "(";
 		bool first = true;
-		for (const auto& t : types) {
+		for (const auto& t : sub_types) {
 			if (first) {
 				first = false;
 			} else
@@ -51,7 +61,7 @@ std::string VariableType::print(int level) const {
 
 	res += "TYPE";
 
-	switch(types.size()) {
+	switch(sub_types.size()) {
 		case 1:
 			res += "_ONEPARAM";
 			break;
@@ -60,8 +70,8 @@ std::string VariableType::print(int level) const {
 			break;
 	}
 	res += "(\"" + type->print() + "\")\n";
-	if (!types.empty()) {
-		for (const auto& t : types) {
+	if (!sub_types.empty()) {
+		for (const auto& t : sub_types) {
 			res += t->print(level+1);
 		}
 	}

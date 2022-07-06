@@ -20,6 +20,8 @@ public:
 
     void print() const override;
 
+    int size() const;
+
 protected:
     Vector() {}
 private:

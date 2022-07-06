@@ -43,7 +43,7 @@ public:
 // {
 // public:
 // 	LiteralFloat(Token* value_);
-// 
+//
 // 	void* execute();
 //
 // 	std::string toString() const override;
@@ -54,19 +54,19 @@ public:
 // };
 
 // "Some string"
-class LiteralString : public Literal
-{
-public:
-	LiteralString(Token* value_);
-
-	void* execute();
-
-	std::string toString() const override;
-	std::string print(int level = 0) const override;
-
-private:
-	Token* value;
-};
+// class LiteralString : public Literal
+// {
+// public:
+// 	LiteralString(Token* value_);
+//
+// 	void* execute();
+//
+// 	std::string toString() const override;
+// 	std::string print(int level = 0) const override;
+//
+// private:
+// 	Token* value;
+// };
 // Other primitives Literals ...
 
 // class LiteralSimple : public Literal

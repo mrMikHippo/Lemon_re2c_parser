@@ -12,7 +12,7 @@ public:
 		return new DBBuffer(std::forward<Args>...);
 	}
 
-	void* execute();
+	void* execute() override;
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
