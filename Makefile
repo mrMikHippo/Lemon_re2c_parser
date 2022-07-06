@@ -10,7 +10,7 @@ SRCS_AST   := variable_type.cpp literal.cpp expression.cpp statement.cpp content
 SRCS_AST_LITERALS := dbbuffer.cpp integer.cpp float.cpp string.cpp
 SRCS_EXECS := literal_executor.cpp
 SRCS_TESTS := test_all.cpp test_parser.cpp
-SRCS_TYPES := dbbuffer.cpp vector.cpp integer.cpp float.cpp string.cpp
+SRCS_TYPES := dbbuffer.cpp vector.cpp integer.cpp float.cpp string.cpp map.cpp
 SRCS_MAIN  := module.cpp main.cpp
 
 SRCS := $(addprefix AST/,$(SRCS_AST))

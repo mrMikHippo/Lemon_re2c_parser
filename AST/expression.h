@@ -29,6 +29,10 @@ public:
 	ExpressionId(Token* id_);
 	Token* getToken() const;
 
+	void* execute() override {
+		return new std::string(id->value);
+	}
+
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
 

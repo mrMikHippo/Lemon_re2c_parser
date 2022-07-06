@@ -11,12 +11,17 @@
 class LiteralExecutor
 {
 public:
-    LiteralExecutor() {}
+    LiteralExecutor();
+    LiteralExecutor(VariableType* type);
     virtual ~LiteralExecutor() = default;
 
     virtual std::string getName() const = 0;
 
     virtual void* call(VariableType* type, std::vector<Expression*> content_) = 0;
+    virtual void* call(VariableType* type, std::vector<std::pair<Token*, Expression*>> content_) { return nullptr; }
+
+private:
+    VariableType* type;
 };
 
 class DBBufferLiteralExecutor : public LiteralExecutor
@@ -73,4 +78,15 @@ public:
     std::string getName() const override { return "VectorLiteralExecutor"; }
 
     void* call(VariableType* type, std::vector<Expression*> content_) override;
+};
+
+class MapLiteralExecutor : public LiteralExecutor
+{
+public:
+    MapLiteralExecutor() {}
+
+    std::string getName() const override { return "MapLiteralExecutor"; }
+
+    void* call(VariableType* type, std::vector<Expression*> content_) override;
+    void* call(VariableType* type, std::vector<std::pair<Token*, Expression*>> content_) override;
 };

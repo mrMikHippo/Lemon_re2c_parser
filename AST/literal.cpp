@@ -129,6 +129,22 @@ std::string LiteralOneParam::print(int level) const {
 LiteralTwoParam::LiteralTwoParam(VariableType* type_, LiteralTwoParam::ContentType content_)
 	: type(type_), content(content_) {}
 
+void* LiteralTwoParam::execute() {
+	using std::cout;
+	using std::endl;
+	cout << "LiteralTwoParam execute " << endl;
+	cout << "Looking for '"<< type->getType() << "'" << endl;
+
+	auto& mp_literals = GlobalLiteralTypeMap::getInstance().getStorage();
+	auto it = mp_literals.find(type->getTokenType());
+	if (it != mp_literals.end()) {
+	   cout << it->first << " Found! Name: " << it->second->getName() << endl;
+	   auto& literal_executor = it->second;
+	   return literal_executor->call(type, content);
+	} else
+	   cout << "Not found" << endl;
+	return nullptr;
+}
 
 std::string LiteralTwoParam::toString() const {
 	std::string res = type->toString();

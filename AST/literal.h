@@ -93,7 +93,7 @@ class LiteralOneParam : public Literal
 public:
 	LiteralOneParam(VariableType* type_, std::vector<Expression*> content_);
 
-	void* execute();
+	void* execute() override;
 
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
@@ -111,6 +111,8 @@ public:
 	// using ContentType = std::vector<std::pair<Expression*, Expression*>>;
 	LiteralTwoParam(VariableType* type_, ContentType content_);
 
+	void* execute() override;
+	
 	std::string toString() const override;
 	std::string print(int level = 0) const override;
 
