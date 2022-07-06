@@ -3,6 +3,7 @@
 #include "../AST/expression.h"
 #include "../AST/global_types_map.h"
 #include "../types/vector.h"
+#include "../types/map.h"
 
 #include <vector>
 #include <iostream>
@@ -79,6 +80,24 @@ public:
 
     void* call(VariableType* type, std::vector<Expression*> content_) override;
 };
+
+template<typename FT, typename ST, typename ST2>
+void fillMap(Map* mp, std::vector<std::pair<Token*, Expression*>> _content)
+{
+    for (auto & el : _content) {
+        auto first = el.first;
+        auto second = el.second;
+
+        // FIXME: Cast to ExpressionId, because earlier I decided to use Token instead of Expression
+        //          This should be fixed
+        ExpressionId* expr = (ExpressionId*)first;
+
+        auto key = *(std::string*)expr->execute();
+        auto val = *(ST2*)second->execute();
+
+        mp->insert({new FT(key), new ST(val)});
+    }
+}
 
 class MapLiteralExecutor : public LiteralExecutor
 {
