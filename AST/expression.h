@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 
+// #include "../types/string.h"
+
 class Literal;
 class VariableType;
 
@@ -30,6 +32,8 @@ public:
 	Token* getToken() const;
 
 	void* execute() override {
+		// String *val = new String(id->value);
+		// return static_cast<void*>(val);
 		return new std::string(id->value);
 	}
 

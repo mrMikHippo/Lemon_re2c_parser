@@ -80,14 +80,18 @@ void* MapLiteralExecutor::call(VariableType* _type, std::vector<std::pair<Token*
 
     Map* mp = Map::create();
 
-    // Call function that return a type from sub_types
-    // fillMap with returned types
-
-    // At this stage, it doesn't important what the first type will be
-    // if (first_sub_type == "Integer" && sec_sub_type == "Integer") {
-    if (sec_sub_type == "Integer") {
+    // At this stage, it doesn't important what the first type will be,
+    //  because ExpressionId execute returns dummy string
+    if (first_sub_type == "Integer" && sec_sub_type == "Integer") {
         std::cout << "Map: " << _type->toString() << std::endl;
-        fillMap<String, Integer, int>(mp, _content);
+        fillMap<String, std::string, Integer,  int>(mp, _content);
+    } else if (first_sub_type == "Integer" && sec_sub_type == "Vector") {
+        for (auto & e : _content) {
+            ExpressionId* expr = (ExpressionId*)e.first;
+            std::string key = *(std::string*)expr->execute();
+            Vector* v1 = (Vector*)e.second->execute();
+            mp->insert(std::make_pair(new String(key), v1));
+        }
     }
 
     std::cout << "Map content: ";

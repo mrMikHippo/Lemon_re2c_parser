@@ -81,7 +81,7 @@ public:
     void* call(VariableType* type, std::vector<Expression*> content_) override;
 };
 
-template<typename FT, typename ST, typename ST2>
+template<typename FT, typename FT2, typename ST, typename ST2>
 void fillMap(Map* mp, std::vector<std::pair<Token*, Expression*>> _content)
 {
     for (auto & el : _content) {
@@ -92,7 +92,7 @@ void fillMap(Map* mp, std::vector<std::pair<Token*, Expression*>> _content)
         //          This should be fixed
         ExpressionId* expr = (ExpressionId*)first;
 
-        auto key = *(std::string*)expr->execute();
+        auto key = *(FT2*)expr->execute();
         auto val = *(ST2*)second->execute();
 
         mp->insert({new FT(key), new ST(val)});
